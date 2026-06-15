@@ -1,0 +1,9 @@
+node_modules
+.next
+.vercel
+.env.local
+.env*.local
+*.pkl
+__pycache__
+.DS_Store
+next-env.d.ts

@@ -1,0 +1,239 @@
+'use client';
+
+import { useState, useCallback } from 'react';
+import { ParameterControl } from '@/components/dashboard/parameter-control';
+import { ResultsPanel } from '@/components/dashboard/results-panel';
+import { PredictionInput, PredictionResult, DashboardHistoryEntry } from '@/lib/types';
+import { Terminal, History, Trash2, Download } from 'lucide-react';
+
+function generateId(): string {
+  return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+}
+
+const DEFAULT_INPUT: PredictionInput = {
+  dayOfWeek: 'Wednesday',
+  scheduledMenu: 'Grilled chicken with rice and vegetables',
+  expectedAttendance: 350,
+  weatherCondition: 'Cloudy',
+  temperature: 70,
+};
+
+export default function DashboardPage() {
+  const [input, setInput] = useState<PredictionInput>(DEFAULT_INPUT);
+  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
+
+  const handleSubmit = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
+
+      const data: PredictionResult = await res.json();
+      setResult(data);
+
+      setHistory((prev) => [
+        {
+          id: generateId(),
+          input: { ...input },
+          result: data,
+          timestamp: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  }, [input]);
+
+  const handleDismissError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between border-b border-emerald-800/20 pb-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <Terminal className="h-5 w-5 text-emerald-500" />
+            <h1 className="text-lg font-bold text-emerald-300 tracking-tight">
+              <span className="text-emerald-600">$</span> food_waste_rescue_radar
+            </h1>
+            <span className="risk-info text-[10px]">v2.5.0</span>
+          </div>
+          <p className="text-xs text-emerald-600/80 font-mono">
+            AI-powered prediction engine for school cafeteria operations // input → insight → action
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-[10px] text-emerald-700">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
+          <span>SYSTEM ONLINE</span>
+          <span className="text-emerald-800">|</span>
+          <span>LLAMA-3-8B</span>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3 space-y-6">
+          <ParameterControl
+            dayOfWeek={input.dayOfWeek}
+            scheduledMenu={input.scheduledMenu}
+            expectedAttendance={input.expectedAttendance}
+            weatherCondition={input.weatherCondition}
+            temperature={input.temperature ?? 70}
+            loading={loading}
+            onDayChange={(val) => setInput((p) => ({ ...p, dayOfWeek: val }))}
+            onMenuChange={(val) => setInput((p) => ({ ...p, scheduledMenu: val }))}
+            onAttendanceChange={(val) => setInput((p) => ({ ...p, expectedAttendance: val }))}
+            onWeatherChange={(val) => setInput((p) => ({ ...p, weatherCondition: val }))}
+            onTemperatureChange={(val) => setInput((p) => ({ ...p, temperature: val }))}
+            onSubmit={handleSubmit}
+          />
+
+          <ResultsPanel
+            result={result}
+            loading={loading}
+            error={error}
+            onDismiss={handleDismissError}
+          />
+
+          {result && (
+            <div className="terminal-panel border-emerald-800/20 animate-fade-in">
+              <div className="terminal-header flex items-center gap-2">
+                <Download className="h-3 w-3 text-emerald-600" />
+                <span className="text-emerald-600 text-[10px]">Impact Summary</span>
+              </div>
+              <div className="terminal-content">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
+                    <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Predicted Waste</p>
+                    <p className="text-lg font-bold text-emerald-300 tabular-nums">{result.predictedWasteKg.toFixed(1)} kg</p>
+                  </div>
+                  <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
+                    <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Interventions</p>
+                    <p className="text-lg font-bold text-emerald-300">{result.actionableInterventions.length}</p>
+                  </div>
+                  <div className="border border-amber-800/30 bg-gray-900 p-3 text-center">
+                    <p className="text-[10px] text-amber-600 uppercase tracking-wider mb-1">Risk Level</p>
+                    <p className="text-lg font-bold text-amber-400">MODERATE</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="lg:col-span-2 space-y-4">
+          <div className="terminal-panel">
+            <div className="terminal-header flex items-center gap-2">
+              <History className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Prediction History</span>
+              {history.length > 0 && (
+                <span className="ml-auto text-[10px] text-emerald-700">{history.length} entries</span>
+              )}
+            </div>
+            <div className="terminal-content">
+              {history.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-xs text-emerald-700">
+                    <span className="text-emerald-600">$</span> no predictions yet
+                  </p>
+                  <p className="text-[10px] text-emerald-800 mt-1">run a prediction to see history</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                  {history.map((entry, i) => (
+                    <div
+                      key={entry.id}
+                      onClick={() => {
+                        setInput(entry.input);
+                        setResult(entry.result);
+                        setError(null);
+                      }}
+                      className="border border-emerald-800/20 bg-gray-900/50 p-3 cursor-pointer
+                                 hover:border-emerald-700/40 hover:bg-gray-900 transition-colors"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-emerald-400 font-mono">
+                          {entry.result.predictedWasteKg.toFixed(1)} kg
+                        </span>
+                        <span className="text-[10px] text-emerald-700">
+                          {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-emerald-600 flex items-center gap-2">
+                        <span>{entry.input.dayOfWeek}</span>
+                        <span>|</span>
+                        <span className="truncate max-w-[120px]">{entry.input.scheduledMenu}</span>
+                        <span>|</span>
+                        <span>{entry.input.expectedAttendance}</span>
+                      </div>
+                      <div className="flex gap-1 mt-1.5">
+                        {entry.result.actionableInterventions.slice(0, 2).map((_, idx) => (
+                          <span key={idx} className="text-[8px] text-emerald-700 border border-emerald-800/30 px-1">
+                            action {idx + 1}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="terminal-panel">
+            <div className="terminal-header flex items-center gap-2">
+              <Terminal className="h-3 w-3 text-emerald-600" />
+              <span className="text-emerald-600 text-[10px]">responsible AI</span>
+            </div>
+            <div className="terminal-content space-y-2 text-[10px] text-emerald-600/80">
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500">&gt;</span>
+                <span>All predictions verified against synthetic benchmarks</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500">&gt;</span>
+                <span>Human review required before supply chain changes</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500">&gt;</span>
+                <span>Model retrained quarterly on latest waste data</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500">&gt;</span>
+                <span>Bias audits conducted on every model version</span>
+              </div>
+              <div className="border-t border-emerald-800/20 pt-2 mt-2 text-emerald-700">
+                USAII Global AI Hackathon 2026 — Direction A: Food Waste Rescue Radar
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] text-emerald-800">
+            <span>EcoOS Core v2.5.0</span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
+              edge runtime
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
