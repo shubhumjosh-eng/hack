@@ -105,7 +105,8 @@ export default function DashboardPage() {
   }, [handleSubmit, loading]);
 
   return (
-    <div className="space-y-6 animate-fade-in pb-16 sm:pb-0">
+    <>
+      <div className="space-y-6 animate-fade-in pb-16 sm:pb-0">
       {showReport && result && (
         <ReportView result={result} input={input} onClose={() => setShowReport(false)} />
       )}
@@ -343,9 +344,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
-    {showTour && (
-      <PageTour steps={DASHBOARD_TOUR} pageId="dashboard" onComplete={() => setShowTour(false)} />
-    )}
+      {showTour && (
+        <PageTour steps={DASHBOARD_TOUR} pageId="dashboard" onComplete={() => setShowTour(false)} />
+      )}
+    </>
   );
 }
