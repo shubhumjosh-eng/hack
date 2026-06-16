@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MetricCard } from '@/components/ui/metric-card';
 import { formatCurrency, formatCo2, formatWeight } from '@/lib/utils';
+import { getPredictions } from '@/lib/storage';
+import { useState, useEffect } from 'react';
 import {
   BarChart3,
   TrendingUp,
@@ -11,32 +13,141 @@ import {
   Clock,
   ArrowUp,
   ArrowDown,
+  AlertCircle,
 } from 'lucide-react';
+import { DashboardHistoryEntry } from '@/lib/types';
 
-const weeklyData = [
-  { label: 'Week 1', waste: 2240, cost: 10080, co2: 5600 },
-  { label: 'Week 2', waste: 2100, cost: 9450, co2: 5250 },
-  { label: 'Week 3', waste: 1980, cost: 8910, co2: 4950 },
-  { label: 'Week 4', waste: 1850, cost: 8325, co2: 4625 },
-];
+function computeAnalytics(history: DashboardHistoryEntry[]) {
+  if (history.length === 0) {
+    return null;
+  }
 
-const topItems = [
-  { name: 'Salad Bar', waste: 420, percentage: 28, trend: 'up' as const },
-  { name: 'Pasta Station', waste: 340, percentage: 22, trend: 'down' as const },
-  { name: 'Grilled Chicken', waste: 280, percentage: 18, trend: 'down' as const },
-  { name: 'Sandwich Line', waste: 250, percentage: 16, trend: 'flat' as const },
-  { name: 'Soup of Day', waste: 230, percentage: 15, trend: 'up' as const },
-  { name: 'Pizza', waste: 190, percentage: 12, trend: 'down' as const },
-];
+  const totalWaste = history.reduce((sum, h) => sum + h.result.predictedWasteKg, 0);
+  const avgWaste = totalWaste / history.length;
+  const latest = history[0].result.predictedWasteKg;
+  const prev = history.length > 1 ? history[1].result.predictedWasteKg : latest;
+  const wasteTrend = prev !== 0 ? ((latest - prev) / prev) * 100 : 0;
 
-const maxWaste = Math.max(...weeklyData.map((d) => d.waste));
-const trendData = {
-  waste: -12.4,
-  cost: -8.2,
-  co2: -15.1,
-};
+  const menuCounts: Record<string, { waste: number; count: number }> = {};
+  history.forEach((h) => {
+    const menu = h.input.scheduledMenu.split(' ').slice(0, 2).join(' ');
+    if (!menuCounts[menu]) menuCounts[menu] = { waste: 0, count: 0 };
+    menuCounts[menu].waste += h.result.predictedWasteKg;
+    menuCounts[menu].count += 1;
+  });
+  const topItems = Object.entries(menuCounts)
+    .map(([name, data]) => ({
+      name,
+      waste: data.waste,
+      percentage: Math.round((data.waste / totalWaste) * 100),
+      avgPerRun: data.waste / data.count,
+    }))
+    .sort((a, b) => b.waste - a.waste)
+    .slice(0, 6);
+
+  const maxTopWaste = topItems.length > 0 ? topItems[0].waste : 1;
+
+  const weeklyLabels = ['Week 4', 'Week 3', 'Week 2', 'Week 1'];
+  const weeklyData = weeklyLabels.map((label, i) => {
+    const weekIndex = history.length - 1 - i;
+    const entry = history[weekIndex] || history[history.length - 1];
+    return {
+      label,
+      waste: entry.result.predictedWasteKg * 100,
+      cost: entry.result.predictedWasteKg * 450,
+      co2: entry.result.predictedWasteKg * 250,
+    };
+  }).reverse();
+  const maxWaste = Math.max(...weeklyData.map((d) => d.waste));
+
+  const dayCounts: Record<string, number> = {};
+  history.forEach((h) => {
+    const day = h.input.dayOfWeek;
+    dayCounts[day] = (dayCounts[day] || 0) + h.result.predictedWasteKg;
+  });
+  const worstDay = Object.entries(dayCounts).sort((a, b) => b[1] - a[1])[0];
+
+  const insights = [];
+  if (worstDay) {
+    insights.push({
+      title: `${worstDay[0]} Spike Detected`,
+      description: `Waste volume is highest on ${worstDay[0]}s. Consider reducing production or adjusting menu rotation.`,
+      impact: `Potential savings: $${Math.round(worstDay[1] * 4.5)}/quarter`,
+    });
+  }
+  const topItem = topItems[0];
+  if (topItem) {
+    insights.push({
+      title: `${topItem.name} Optimization Needed`,
+      description: `${topItem.name} accounts for ${topItem.percentage}% of tracked waste. Implement pre-order or portion control.`,
+      impact: `Potential savings: $${Math.round(topItem.waste * 4.5)}/quarter`,
+    });
+  }
+  if (history.length >= 3) {
+    insights.push({
+      title: 'Trend Direction',
+      description: wasteTrend < 0
+        ? `Waste is trending down ${Math.abs(wasteTrend).toFixed(0)}% — current interventions are working.`
+        : `Waste is trending up ${wasteTrend.toFixed(0)}% — review portion sizes and menu planning.`,
+      impact: wasteTrend < 0
+        ? `Saving ~$${Math.round(Math.abs(wasteTrend) * 100)}/month`
+        : `Losing ~$${Math.round(wasteTrend * 100)}/month`,
+    });
+  }
+
+  return {
+    totalPredictions: history.length,
+    totalWaste,
+    avgWaste,
+    wasteTrend,
+    weeklyData,
+    maxWaste,
+    topItems,
+    maxTopWaste,
+    latest,
+    insights,
+  };
+}
 
 export default function AnalyticsPage() {
+  const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
+
+  useEffect(() => {
+    setHistory(getPredictions());
+  }, []);
+
+  const analytics = computeAnalytics(history);
+
+  if (!analytics) {
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold text-emerald-50">Analytics</h1>
+            <p className="text-sm text-emerald-400/60">
+              Deep dive into waste patterns and environmental impact
+            </p>
+          </div>
+          <Badge variant="outline">No data</Badge>
+        </div>
+        <Card>
+          <CardContent className="py-16">
+            <div className="flex flex-col items-center justify-center gap-4 text-center">
+              <BarChart3 className="h-12 w-12 text-emerald-700/50" />
+              <div className="space-y-1">
+                <p className="text-base font-medium text-emerald-50">No prediction data yet</p>
+                <p className="text-sm text-emerald-400/50 max-w-md">
+                  Run predictions from the Dashboard to see analytics and trends here.
+                  Each prediction will populate this page with real data.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -46,30 +157,28 @@ export default function AnalyticsPage() {
             Deep dive into waste patterns and environmental impact
           </p>
         </div>
-        <Badge variant="success">Auto-refreshing</Badge>
+        <Badge variant="success">{analytics.totalPredictions} predictions</Badge>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <MetricCard
-          label="Waste Trend"
-          value={`${Math.abs(trendData.waste)}%`}
-          sublabel="Quarter-over-quarter"
-          trend={{ value: Math.abs(trendData.waste), positive: trendData.waste < 0 }}
+          label="Average Waste"
+          value={`${analytics.avgWaste.toFixed(1)} kg`}
+          sublabel="Per service period"
+          trend={{ value: Math.abs(analytics.wasteTrend), positive: analytics.wasteTrend < 0 }}
           icon={<TrendingDown className="h-5 w-5" />}
         />
         <MetricCard
-          label="Cost Trend"
-          value={`${Math.abs(trendData.cost)}%`}
-          sublabel="Quarter-over-quarter"
-          trend={{ value: Math.abs(trendData.cost), positive: trendData.cost < 0 }}
-          icon={<TrendingDown className="h-5 w-5" />}
+          label="Latest Prediction"
+          value={`${analytics.latest.toFixed(1)} kg`}
+          sublabel="Most recent run"
+          icon={<Clock className="h-5 w-5" />}
         />
         <MetricCard
-          label="CO₂ Trend"
-          value={`${Math.abs(trendData.co2)}%`}
-          sublabel="Quarter-over-quarter"
-          trend={{ value: Math.abs(trendData.co2), positive: trendData.co2 < 0 }}
-          icon={<TrendingDown className="h-5 w-5" />}
+          label="Total Analyzed"
+          value={formatWeight(analytics.totalWaste)}
+          sublabel="Across all predictions"
+          icon={<BarChart3 className="h-5 w-5" />}
         />
       </div>
 
@@ -79,14 +188,14 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-emerald-50">Weekly Performance</h2>
-                <p className="text-xs text-emerald-400/50">4-week waste reduction trend</p>
+                <p className="text-xs text-emerald-400/50">Recent prediction trend</p>
               </div>
               <BarChart3 className="h-4 w-4 text-emerald-500/40" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {weeklyData.map((week, i) => (
+              {analytics.weeklyData.map((week, i) => (
                 <div key={week.label} className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-emerald-300/80 font-medium">{week.label}</span>
@@ -99,15 +208,15 @@ export default function AnalyticsPage() {
                   <div className="h-3 rounded-full bg-emerald-900/50 overflow-hidden flex">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500"
-                      style={{ width: `${(week.waste / maxWaste) * 100}%` }}
+                      style={{ width: `${(week.waste / analytics.maxWaste) * 100}%` }}
                     />
                   </div>
-                  {i < weeklyData.length - 1 && (
+                  {i < analytics.weeklyData.length - 1 && (
                     <div className="flex justify-end">
                       <span className="text-[10px] text-emerald-500/40">
-                        {week.waste > weeklyData[i + 1].waste
-                          ? `↓ ${Math.round(((week.waste - weeklyData[i + 1].waste) / week.waste) * 100)}%`
-                          : `↑ ${Math.round(((weeklyData[i + 1].waste - week.waste) / week.waste) * 100)}%`}
+                        {week.waste > analytics.weeklyData[i + 1].waste
+                          ? `↓ ${Math.round(((week.waste - analytics.weeklyData[i + 1].waste) / week.waste) * 100)}%`
+                          : `↑ ${Math.round(((analytics.weeklyData[i + 1].waste - week.waste) / week.waste) * 100)}%`}
                       </span>
                     </div>
                   )}
@@ -122,38 +231,30 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-emerald-50">Top Waste Items</h2>
-                <p className="text-xs text-emerald-400/50">By volume (kg)</p>
+                <p className="text-xs text-emerald-400/50">By tracked volume</p>
               </div>
               <Clock className="h-4 w-4 text-emerald-500/40" />
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {topItems.map((item) => (
+            {analytics.topItems.map((item) => (
               <div
                 key={item.name}
                 className="flex items-center justify-between rounded-lg border border-emerald-800/20 bg-emerald-900/20 p-3"
               >
-                <div className="flex items-center gap-3">
-                  <div className="text-sm font-medium text-emerald-50 min-w-[110px]">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="text-sm font-medium text-emerald-50 min-w-[90px] truncate">
                     {item.name}
                   </div>
-                  <div className="text-xs text-emerald-400/50">{item.waste} kg</div>
-                  <div className="h-1.5 w-16 rounded-full bg-emerald-900/50 overflow-hidden">
+                  <div className="text-xs text-emerald-400/50 whitespace-nowrap">{item.waste.toFixed(1)} kg</div>
+                  <div className="h-1.5 w-16 rounded-full bg-emerald-900/50 overflow-hidden flex-shrink-0">
                     <div
                       className="h-full rounded-full bg-emerald-500"
-                      style={{ width: `${item.percentage}%` }}
+                      style={{ width: `${(item.waste / analytics.maxTopWaste) * 100}%` }}
                     />
                   </div>
                 </div>
-                <div>
-                  {item.trend === 'up' ? (
-                    <ArrowUp className="h-3.5 w-3.5 text-red-400" />
-                  ) : item.trend === 'down' ? (
-                    <ArrowDown className="h-3.5 w-3.5 text-emerald-400" />
-                  ) : (
-                    <span className="text-xs text-emerald-500/40">—</span>
-                  )}
-                </div>
+                <div className="text-[10px] text-emerald-600 ml-2">{item.percentage}%</div>
               </div>
             ))}
           </CardContent>
@@ -165,33 +266,14 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-semibold text-emerald-50">Insights</h2>
-              <p className="text-xs text-emerald-400/50">AI-generated observations</p>
+              <p className="text-xs text-emerald-400/50">Generated from your prediction data</p>
             </div>
-            <Badge variant="info">Updated daily</Badge>
+            <Badge variant="info">{analytics.totalPredictions} data points</Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: 'Friday Spike Detected',
-                description:
-                  'Waste volume increases 15% on Fridays. Consider reducing production by 10% on the last day of the week.',
-                impact: 'Potential savings: $1,200/quarter',
-              },
-              {
-                title: 'Salad Bar Optimization',
-                description:
-                  'Salad bar accounts for 28% of total waste. Implement a pre-order system to reduce overproduction.',
-                impact: 'Potential savings: $2,400/quarter',
-              },
-              {
-                title: 'Weather Correlation',
-                description:
-                  'Rainy days show 18% higher waste. Adjust preparation based on weather forecasts.',
-                impact: 'Potential savings: $800/quarter',
-              },
-            ].map((insight, i) => (
+            {analytics.insights.map((insight, i) => (
               <div
                 key={i}
                 className="rounded-lg border border-emerald-800/20 bg-emerald-900/20 p-4 space-y-2"

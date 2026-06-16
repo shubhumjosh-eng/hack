@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 import { StatusIndicator } from '@/components/ui/status-indicator';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Key, Bell, Shield, Database, RefreshCw } from 'lucide-react';
+import { getSettings, saveSettings } from '@/lib/storage';
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
@@ -17,15 +18,51 @@ export default function SettingsPage() {
   ]);
   const [apiKey, setApiKey] = useState('');
   const [model, setModel] = useState('meta-llama/Meta-Llama-3-8B-Instruct');
+  const [apiStatus, setApiStatus] = useState<'idle' | 'checking' | 'connected' | 'invalid' | 'error'>('idle');
   const [exporting, setExporting] = useState(false);
   const [retraining, setRetraining] = useState(false);
   const [retrainDone, setRetrainDone] = useState(false);
+
+  useEffect(() => {
+    const settings = getSettings();
+    if (settings) {
+      setApiKey(settings.apiKey);
+      setModel(settings.model);
+      if (settings.notifications) {
+        setNotifications(settings.notifications);
+      }
+      if (settings.apiKey) {
+        validateKey(settings.apiKey);
+      }
+    }
+  }, []);
+
+  async function validateKey(key: string) {
+    if (!key || !key.startsWith('hf_')) {
+      setApiStatus('idle');
+      return;
+    }
+    setApiStatus('checking');
+    try {
+      const res = await fetch('/api/validate-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key }),
+      });
+      const data = await res.json();
+      setApiStatus(data.valid ? 'connected' : 'invalid');
+    } catch {
+      setApiStatus('error');
+    }
+  }
 
   function toggleNotification(index: number) {
     setNotifications(prev => prev.map((n, i) => i === index ? { ...n, enabled: !n.enabled } : n));
   }
 
   function handleSave() {
+    saveSettings({ apiKey, model, notifications });
+    validateKey(apiKey);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -43,6 +80,16 @@ export default function SettingsPage() {
       setRetrainDone(true);
       setTimeout(() => setRetrainDone(false), 3000);
     }, 2000);
+  }
+
+  function getApiStatusLabel() {
+    switch (apiStatus) {
+      case 'checking': return { status: 'loading' as const, label: 'Validating key...' };
+      case 'connected': return { status: 'online' as const, label: 'API Connected' };
+      case 'invalid': return { status: 'offline' as const, label: 'Invalid API Key' };
+      case 'error': return { status: 'degraded' as const, label: 'Cannot reach API' };
+      default: return { status: 'offline' as const, label: 'No API key configured' };
+    }
   }
 
   return (
@@ -77,7 +124,12 @@ export default function SettingsPage() {
             ]}
           />
           <div className="flex items-center gap-2 pt-2">
-            <StatusIndicator status="online" label="API Connected" />
+            <StatusIndicator status={getApiStatusLabel().status} label={getApiStatusLabel().label} />
+            {apiKey && apiStatus === 'idle' && (
+              <button onClick={() => validateKey(apiKey)} className="text-[10px] text-emerald-600 hover:text-emerald-400 underline underline-offset-2">
+                Test connection
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>

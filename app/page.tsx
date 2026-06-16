@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
 import { PredictionInput, PredictionResult, DashboardHistoryEntry } from '@/lib/types';
-import { Terminal, History, Trash2, Download } from 'lucide-react';
+import { Terminal, History, Download } from 'lucide-react';
+import { getPredictions, addPrediction } from '@/lib/storage';
 
 function generateId(): string {
   return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -24,6 +25,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
+
+  useEffect(() => {
+    const stored = getPredictions();
+    if (stored.length > 0) {
+      setHistory(stored);
+    }
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     setLoading(true);
@@ -45,15 +53,15 @@ export default function DashboardPage() {
       const data: PredictionResult = await res.json();
       setResult(data);
 
-      setHistory((prev) => [
-        {
-          id: generateId(),
-          input: { ...input },
-          result: data,
-          timestamp: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
+      const entry: DashboardHistoryEntry = {
+        id: generateId(),
+        input: { ...input },
+        result: data,
+        timestamp: new Date().toISOString(),
+      };
+
+      setHistory((prev) => [entry, ...prev]);
+      addPrediction(entry);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
