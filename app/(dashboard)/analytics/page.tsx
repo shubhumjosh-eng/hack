@@ -6,6 +6,8 @@ import { MetricCard } from '@/components/ui/metric-card';
 import { formatCurrency, formatCo2, formatWeight } from '@/lib/utils';
 import { getPredictions, seedDemoData } from '@/lib/storage';
 import { useState, useEffect } from 'react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { ANALYTICS_TOUR } from '@/components/onboarding/tour-configs';
 import {
   BarChart3,
   TrendingUp,
@@ -14,6 +16,7 @@ import {
   ArrowUp,
   ArrowDown,
   AlertCircle,
+  HelpCircle,
 } from 'lucide-react';
 import { DashboardHistoryEntry } from '@/lib/types';
 
@@ -111,6 +114,7 @@ function computeAnalytics(history: DashboardHistoryEntry[]) {
 
 export default function AnalyticsPage() {
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     seedDemoData();
@@ -130,6 +134,12 @@ export default function AnalyticsPage() {
             </p>
           </div>
           <Badge variant="outline">No data</Badge>
+          <button
+            onClick={() => setShowTour(true)}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] uppercase border border-emerald-800/30 text-emerald-700 hover:text-emerald-500 transition-colors"
+          >
+            <HelpCircle className="h-3 w-3" /> Guide me
+          </button>
         </div>
         <Card>
           <CardContent className="py-16">
@@ -145,6 +155,7 @@ export default function AnalyticsPage() {
             </div>
           </CardContent>
         </Card>
+        {showTour && <PageTour steps={ANALYTICS_TOUR} pageId="analytics" onComplete={() => setShowTour(false)} />}
       </div>
     );
   }
@@ -158,10 +169,18 @@ export default function AnalyticsPage() {
             Deep dive into waste patterns and environmental impact
           </p>
         </div>
-        <Badge variant="success">{analytics.totalPredictions} predictions</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="success">{analytics.totalPredictions} predictions</Badge>
+          <button
+            onClick={() => setShowTour(true)}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] uppercase border border-emerald-800/30 text-emerald-700 hover:text-emerald-500 transition-colors"
+          >
+            <HelpCircle className="h-3 w-3" /> Guide me
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3" data-tour="analytics-metrics">
         <MetricCard
           label="Average Waste"
           value={`${analytics.avgWaste.toFixed(1)} kg`}
@@ -184,7 +203,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-7">
-        <Card className="lg:col-span-4">
+        <Card className="lg:col-span-4" data-tour="analytics-filters">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -195,7 +214,7 @@ export default function AnalyticsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
+            <div className="space-y-6" data-tour="analytics-chart">
               {analytics.weeklyData.map((week, i) => (
                 <div key={week.label} className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
@@ -292,6 +311,7 @@ export default function AnalyticsPage() {
           </div>
         </CardContent>
       </Card>
+      {showTour && <PageTour steps={ANALYTICS_TOUR} pageId="analytics" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

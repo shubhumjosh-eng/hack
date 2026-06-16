@@ -19,18 +19,18 @@ export interface GeoCluster {
 }
 
 export const MOCK_SITES: WasteSite[] = [
-  { id: 's-1', name: 'Lincoln High School', type: 'school', lat: 37.7749, lng: -122.4194, estimatedWasteKg: 145, riskLevel: 'high', lastAudit: '2026-05-20T10:00:00Z' },
-  { id: 's-2', name: 'Jefferson Middle School', type: 'school', lat: 37.7849, lng: -122.4094, estimatedWasteKg: 98, riskLevel: 'medium', lastAudit: '2026-05-18T14:00:00Z' },
-  { id: 's-3', name: 'Washington Elementary', type: 'school', lat: 37.7649, lng: -122.4294, estimatedWasteKg: 62, riskLevel: 'low', lastAudit: null },
-  { id: 's-4', name: 'Mercy General Hospital', type: 'hospital', lat: 37.7549, lng: -122.4394, estimatedWasteKg: 320, riskLevel: 'critical', lastAudit: '2026-06-01T08:00:00Z' },
-  { id: 's-5', name: 'Café Verde Downtown', type: 'restaurant', lat: 37.7740, lng: -122.4180, estimatedWasteKg: 85, riskLevel: 'medium', lastAudit: null },
-  { id: 's-6', name: 'Corporate Tower Bistro', type: 'restaurant', lat: 37.7790, lng: -122.4150, estimatedWasteKg: 120, riskLevel: 'high', lastAudit: '2026-05-25T11:00:00Z' },
-  { id: 's-7', name: 'Westside Distribution Hub', type: 'warehouse', lat: 37.7690, lng: -122.4250, estimatedWasteKg: 450, riskLevel: 'high', lastAudit: '2026-05-10T09:00:00Z' },
-  { id: 's-8', name: 'Pacific Heights Prep', type: 'school', lat: 37.7910, lng: -122.4360, estimatedWasteKg: 88, riskLevel: 'low', lastAudit: '2026-05-30T13:00:00Z' },
-  { id: 's-9', name: 'St. Francis Medical Center', type: 'hospital', lat: 37.7600, lng: -122.4450, estimatedWasteKg: 280, riskLevel: 'critical', lastAudit: '2026-06-02T10:00:00Z' },
-  { id: 's-10', name: 'Bayview Office Park', type: 'office', lat: 37.7850, lng: -122.4050, estimatedWasteKg: 55, riskLevel: 'low', lastAudit: null },
-  { id: 's-11', name: 'Mission District Kitchen', type: 'restaurant', lat: 37.7640, lng: -122.4160, estimatedWasteKg: 42, riskLevel: 'low', lastAudit: null },
-  { id: 's-12', name: 'Richmond Senior Center', type: 'other', lat: 37.7800, lng: -122.4400, estimatedWasteKg: 35, riskLevel: 'low', lastAudit: '2026-04-15T10:00:00Z' },
+  { id: 's-1', name: 'Central District HS', type: 'school', lat: 22.2820, lng: 114.1580, estimatedWasteKg: 145, riskLevel: 'high', lastAudit: '2026-05-20T10:00:00Z' },
+  { id: 's-2', name: 'Tsim Sha Tsui Kitchen', type: 'restaurant', lat: 22.2940, lng: 114.1720, estimatedWasteKg: 98, riskLevel: 'medium', lastAudit: '2026-05-18T14:00:00Z' },
+  { id: 's-3', name: 'Causeway Bay Mall', type: 'restaurant', lat: 22.2800, lng: 114.1880, estimatedWasteKg: 62, riskLevel: 'low', lastAudit: null },
+  { id: 's-4', name: 'Queen Mary Hospital', type: 'hospital', lat: 22.2690, lng: 114.1310, estimatedWasteKg: 320, riskLevel: 'critical', lastAudit: '2026-06-01T08:00:00Z' },
+  { id: 's-5', name: 'Kowloon City Market', type: 'restaurant', lat: 22.3280, lng: 114.1920, estimatedWasteKg: 85, riskLevel: 'medium', lastAudit: null },
+  { id: 's-6', name: 'Tsuen Wan Plaza', type: 'office', lat: 22.3720, lng: 114.1140, estimatedWasteKg: 120, riskLevel: 'high', lastAudit: '2026-05-25T11:00:00Z' },
+  { id: 's-7', name: 'Sha Tin Distribution Hub', type: 'warehouse', lat: 22.3830, lng: 114.1880, estimatedWasteKg: 450, riskLevel: 'high', lastAudit: '2026-05-10T09:00:00Z' },
+  { id: 's-8', name: 'Tuen Mun Campus', type: 'school', lat: 22.3930, lng: 113.9770, estimatedWasteKg: 88, riskLevel: 'low', lastAudit: '2026-05-30T13:00:00Z' },
+  { id: 's-9', name: 'Prince of Wales Hospital', type: 'hospital', lat: 22.3830, lng: 114.2050, estimatedWasteKg: 280, riskLevel: 'critical', lastAudit: '2026-06-02T10:00:00Z' },
+  { id: 's-10', name: 'Yuen Long Industrial Park', type: 'warehouse', lat: 22.4450, lng: 114.0340, estimatedWasteKg: 205, riskLevel: 'medium', lastAudit: null },
+  { id: 's-11', name: 'Sai Kung Waterfront', type: 'restaurant', lat: 22.3810, lng: 114.2700, estimatedWasteKg: 42, riskLevel: 'low', lastAudit: null },
+  { id: 's-12', name: 'North Point Office Tower', type: 'office', lat: 22.2900, lng: 114.2000, estimatedWasteKg: 55, riskLevel: 'low', lastAudit: '2026-04-15T10:00:00Z' },
 ];
 
 const EARTH_RADIUS_KM = 6371;

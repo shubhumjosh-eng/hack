@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { TRIAGE_TOUR } from '@/components/onboarding/tour-configs';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/input';
@@ -10,6 +12,7 @@ import { StatusIndicator } from '@/components/ui/status-indicator';
 import { TriageResult, ActionItem, TriageHistoryEntry } from '@/lib/types';
 import { getTriages, addTriage, seedDemoTriages } from '@/lib/storage';
 import {
+  HelpCircle,
   Search,
   Zap,
   MapPin,
@@ -54,6 +57,7 @@ export default function TriagePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<TriageHistoryEntry[]>([]);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     seedDemoTriages();
@@ -111,13 +115,16 @@ export default function TriagePage() {
           status="online"
           label="Hugging Face LLM"
         />
+        <Button variant="secondary" size="sm" onClick={() => setShowTour(true)}>
+          <HelpCircle className="h-4 w-4 mr-1" /> Guide me
+        </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-6">
           <Card>
             <CardContent className="pt-6">
-              <div className="space-y-4">
+              <div className="space-y-4" data-tour="triage-input">
                 <Textarea
                   label="Describe the waste situation"
                   placeholder="e.g., Our school cafeteria throws away about 40 pounds of food every day after lunch. Mostly untouched fruit and milk cartons..."
@@ -140,6 +147,7 @@ export default function TriagePage() {
                     ))}
                   </div>
                   <Button
+                    data-tour="triage-analyze-btn"
                     onClick={() => handleSubmit(input)}
                     disabled={!input.trim() || loading}
                     loading={loading}
@@ -189,7 +197,7 @@ export default function TriagePage() {
           )}
 
           {result && !loading && (
-            <div className="space-y-6 animate-slide-in-up">
+            <div data-tour="triage-results" className="space-y-6 animate-slide-in-up">
               <Card className="border-emerald-700/30 bg-gradient-to-r from-emerald-950 via-emerald-900/30 to-emerald-950">
                 <CardContent className="py-5">
                   <div className="flex items-start gap-4">
@@ -455,6 +463,7 @@ export default function TriagePage() {
           </div>
         </div>
       </div>
+      {showTour && <PageTour steps={TRIAGE_TOUR} pageId="triage" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

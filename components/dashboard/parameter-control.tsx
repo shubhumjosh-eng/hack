@@ -56,6 +56,7 @@ export function ParameterControl({
             <select
               id="day_of_week"
               name="day_of_week"
+              data-tour="dashboard-meal"
               value={dayOfWeek}
               onChange={(e) => onDayChange(e.target.value)}
               className="terminal-select"
@@ -122,6 +123,7 @@ export function ParameterControl({
             <input
               id="expected_attendance"
               name="expected_attendance"
+              data-tour="dashboard-headcount"
               type="range"
               min={50}
               max={800}
@@ -171,6 +173,7 @@ export function ParameterControl({
           <select
             id="model_select"
             name="model_select"
+            data-tour="dashboard-model"
             value={modelId}
             onChange={(e) => onModelChange(e.target.value)}
             className="terminal-select"
@@ -185,6 +188,7 @@ export function ParameterControl({
 
         <div className="flex items-center gap-4 pt-2 border-t border-emerald-800/20">
           <button
+            data-tour="dashboard-predict-btn"
             onClick={onSubmit}
             disabled={loading || !scheduledMenu.trim()}
             className="terminal-btn-primary flex-1"

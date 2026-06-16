@@ -4,12 +4,14 @@ import { useState, useCallback, useEffect } from 'react';
 import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
 import { PredictionInput, PredictionResult, DashboardHistoryEntry, computeLandfillMetric } from '@/lib/types';
-import { Terminal, History, Download, Printer, AlertTriangle } from 'lucide-react';
+import { Terminal, History, Download, Printer, AlertTriangle, HelpCircle } from 'lucide-react';
 import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
 import { ReportView } from '@/components/dashboard/report-view';
 import { EventLog } from '@/components/ui/event-log';
 import { useEventLog } from '@/hooks/use-event-log';
 import { useBeep } from '@/hooks/use-beep';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { DASHBOARD_TOUR } from '@/components/onboarding/tour-configs';
 
 function generateId(): string {
   return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -31,6 +33,7 @@ export default function DashboardPage() {
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
   const [showReport, setShowReport] = useState(false);
   const [modelId, setModelId] = useState('rf-2026a');
+  const [showTour, setShowTour] = useState(false);
   const { logs, addLog, clearLogs } = useEventLog();
   const beep = useBeep();
 
@@ -106,6 +109,19 @@ export default function DashboardPage() {
       {showReport && result && (
         <ReportView result={result} input={input} onClose={() => setShowReport(false)} />
       )}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-emerald-50">Dashboard</h1>
+          <p className="text-xs text-emerald-400/60">AI waste prediction engine</p>
+        </div>
+        <button
+          onClick={() => setShowTour(true)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] border border-emerald-700/40 text-emerald-500 hover:border-emerald-500/60 hover:text-emerald-300 transition-all"
+        >
+          <HelpCircle className="h-3 w-3" />
+          Guide me
+        </button>
+      </div>
 
       <div className="border border-emerald-800/30 bg-gradient-to-r from-emerald-950/40 to-gray-950 p-4 sm:p-5 animate-fade-in">
         <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -114,13 +130,13 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-2 flex-1">
             <p className="text-sm font-bold text-emerald-200">
-              US Schools Waste <span className="text-amber-300">$1.2 Billion</span> in Cafeteria Food Annually
+              Hong Kong Landfills <span className="text-amber-300">3,600 Tonnes</span> of Food Waste Daily
             </p>
             <p className="text-xs text-emerald-500/80 leading-relaxed">
-              That&apos;s <span className="text-emerald-300">40%</span> of all cafeteria food thrown away — 
-              <span className="text-emerald-300"> 530,000 tonnes</span> of CO₂e per year. 
-              Every <span className="text-emerald-300">$1</span> invested in waste reduction saves schools 
-              <span className="text-emerald-300"> $7</span> in food, labor, and disposal costs.
+              That&apos;s over <span className="text-emerald-300">30%</span> of all municipal solid waste — 
+              <span className="text-emerald-300"> 446,000 tonnes</span> of CO₂e per year. 
+              Every <span className="text-emerald-300">$1 HKD</span> invested in waste reduction saves 
+              <span className="text-emerald-300">$7 HKD</span> in disposal and operational costs.
               EcoOS uses AI to predict waste before it happens, enabling precise production adjustments.
             </p>
           </div>
@@ -328,5 +344,8 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+    {showTour && (
+      <PageTour steps={DASHBOARD_TOUR} pageId="dashboard" onComplete={() => setShowTour(false)} />
+    )}
   );
 }

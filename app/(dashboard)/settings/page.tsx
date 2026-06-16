@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 import { StatusIndicator } from '@/components/ui/status-indicator';
 import { useState, useEffect } from 'react';
-import { Save, Key, Bell, Shield, Database, RefreshCw, Cpu, CheckCircle, Palette } from 'lucide-react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { SETTINGS_TOUR } from '@/components/onboarding/tour-configs';
+import { Save, Key, Bell, Shield, Database, RefreshCw, Cpu, CheckCircle, Palette, HelpCircle } from 'lucide-react';
 import { getSettings, saveSettings } from '@/lib/storage';
 import { THEMES, getTheme, setTheme } from '@/lib/themes';
 import { MODELS } from '@/lib/models';
@@ -25,6 +27,7 @@ export default function SettingsPage() {
   const [retraining, setRetraining] = useState(false);
   const [retrainDone, setRetrainDone] = useState(false);
   const [activeThemeId, setActiveThemeId] = useState('emerald');
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     setActiveThemeId(getTheme().id);
@@ -106,9 +109,12 @@ export default function SettingsPage() {
         <Button onClick={handleSave} icon={<Save className="h-4 w-4" />}>
           {saved ? 'Saved' : 'Save Changes'}
         </Button>
+        <Button variant="secondary" size="sm" onClick={() => setShowTour(true)}>
+          <HelpCircle className="h-4 w-4 mr-1" /> Guide me
+        </Button>
       </div>
 
-      <Card>
+      <Card data-tour="settings-api">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Key className="h-4 w-4 text-emerald-400" />
@@ -138,7 +144,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="settings-notifications">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Bell className="h-4 w-4 text-emerald-400" />
@@ -160,7 +166,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="settings-themes">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Palette className="h-4 w-4 text-emerald-400" />
@@ -301,7 +307,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="settings-export">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Database className="h-4 w-4 text-emerald-400" />
@@ -330,6 +336,7 @@ export default function SettingsPage() {
         <span>EcoOS Core v2.4.1</span>
         <span>Enterprise License</span>
       </div>
+      {showTour && <PageTour steps={SETTINGS_TOUR} pageId="settings" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

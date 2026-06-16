@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Terminal, Plus, Trash2, ToggleLeft, ToggleRight, Bell, Mail, Globe } from 'lucide-react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { SCHEDULES_TOUR } from '@/components/onboarding/tour-configs';
+import { Terminal, Plus, Trash2, ToggleLeft, ToggleRight, Bell, Mail, Globe, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,6 +25,7 @@ export default function SchedulesPage() {
 
   const [showNewThresh, setShowNewThresh] = useState(false);
   const [newThresh, setNewThresh] = useState({ name: '', metric: 'predictedWasteKg' as ThresholdAlert['metric'], condition: 'above' as ThresholdAlert['condition'], value: 100, cooldown: 60, channels: [] as string[] });
+  const [showTour, setShowTour] = useState(false);
 
   function load() { setSchedules(getSchedules()); setThresholds(getThresholds()); }
   useEffect(() => { load(); }, []);
@@ -79,6 +82,11 @@ export default function SchedulesPage() {
         <div className="terminal-header flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-emerald-500" />
           <span>Schedule & Automation</span>
+          <div className="ml-auto">
+            <Button variant="secondary" size="sm" onClick={() => setShowTour(true)}>
+              <HelpCircle className="h-3 w-3 mr-1" /> Guide
+            </Button>
+          </div>
         </div>
         <div className="terminal-content">
           <div className="flex gap-1 border-b border-emerald-800/20 pb-3 mb-4">
@@ -94,10 +102,10 @@ export default function SchedulesPage() {
           </div>
 
           {tab === 'schedules' && (
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour="schedules-list">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-emerald-600">Automate recurring waste audits on a cron schedule.</p>
-                <Button size="sm" onClick={() => setShowNewSched(!showNewSched)}><Plus className="h-3 w-3" /> New Schedule</Button>
+                <Button size="sm" onClick={() => setShowNewSched(!showNewSched)} data-tour="schedules-create"><Plus className="h-3 w-3" /> New Schedule</Button>
               </div>
 
               {showNewSched && (
@@ -186,7 +194,7 @@ export default function SchedulesPage() {
           )}
 
           {tab === 'thresholds' && (
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour="schedules-alerts">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-emerald-600">Get notified when waste metrics cross defined thresholds.</p>
                 <Button size="sm" onClick={() => setShowNewThresh(!showNewThresh)}><Plus className="h-3 w-3" /> New Threshold</Button>
@@ -263,6 +271,7 @@ export default function SchedulesPage() {
           )}
         </div>
       </div>
+      {showTour && <PageTour steps={SCHEDULES_TOUR} pageId="schedules" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Terminal, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { WASTE_STREAMS_TOUR } from '@/components/onboarding/tour-configs';
+import { Terminal, TrendingUp, TrendingDown, Minus, Info, HelpCircle } from 'lucide-react';
 import { WASTE_CATEGORIES, computeWasteBreakdown, generateTrendData, type WasteStreamBreakdown, type WasteTrendPoint } from '@/lib/waste-streams';
 import { useEventLog } from '@/hooks/use-event-log';
 import { EventLog } from '@/components/ui/event-log';
@@ -13,6 +15,7 @@ export default function WasteStreamsPage() {
   const breakdown = useMemo(() => computeWasteBreakdown(totalKg, days), [totalKg, days]);
   const trend = useMemo(() => generateTrendData(days), [days]);
   const { logs, addLog, clearLogs } = useEventLog();
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     addLog('info', `Waste stream analysis loaded — ${totalKg}kg baseline`);
@@ -28,6 +31,12 @@ export default function WasteStreamsPage() {
         <div className="terminal-header flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-emerald-500" />
           <span>Waste Stream Analysis</span>
+          <button
+            onClick={() => setShowTour(true)}
+            className="ml-auto px-2 py-1 text-[10px] uppercase border border-emerald-800/30 text-emerald-700 hover:text-emerald-500 transition-colors flex items-center gap-1"
+          >
+            <HelpCircle className="h-3 w-3" /> Guide
+          </button>
         </div>
         <div className="terminal-content space-y-5">
           <div className="flex items-center gap-3">
@@ -46,7 +55,7 @@ export default function WasteStreamsPage() {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-tour="waste-categories">
             {sorted.map(b => {
               const cat = WASTE_CATEGORIES.find(c => c.name === b.category);
               const isSelected = selectedCategory === b.category;
@@ -79,7 +88,7 @@ export default function WasteStreamsPage() {
           </div>
 
           {selected && categoryInfo && (
-            <div className="border border-emerald-800/30 bg-gray-900/50 p-4 space-y-3 animate-fade-in">
+            <div className="border border-emerald-800/30 bg-gray-900/50 p-4 space-y-3 animate-fade-in" data-tour="waste-interventions">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{categoryInfo.icon}</span>
                 <div>
@@ -115,7 +124,7 @@ export default function WasteStreamsPage() {
             </div>
           )}
 
-          <div>
+          <div data-tour="waste-trends">
             <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2">Trend — Daily Waste (Last {days} Days)</p>
             <div className="border border-emerald-800/20 p-3 overflow-x-auto">
               <div className="flex items-end gap-0.5 h-32" style={{ minWidth: `${trend.length * 8}px` }}>
@@ -151,6 +160,7 @@ export default function WasteStreamsPage() {
         </div>
       </div>
       <EventLog logs={logs} onClear={clearLogs} />
+      {showTour && <PageTour steps={WASTE_STREAMS_TOUR} pageId="waste-streams" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

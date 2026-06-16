@@ -14,10 +14,10 @@ const TYPED_LINES = [
 ];
 
 const STATS = [
-  { value: '530K', label: 'tonnes CO₂e/year', sub: 'from US school cafeteria waste' },
-  { value: '$1.2B', label: 'wasted annually', sub: 'in food, labor, disposal costs' },
-  { value: '40%', label: 'of cafeteria food', sub: 'thrown away uneaten' },
-  { value: '7x', label: 'ROI', sub: 'every $1 invested saves $7' },
+  { value: '446K', label: 'tonnes CO₂e/year', sub: 'from Hong Kong food waste' },
+  { value: '3,600', label: 'tonnes/day', sub: 'food waste sent to landfills' },
+  { value: '30%', label: 'of municipal waste', sub: 'is food waste in HK' },
+  { value: '7x', label: 'ROI', sub: 'every $1 HKD invested saves $7 HKD' },
 ];
 
 const FEATURES = [
@@ -77,7 +77,7 @@ export default function LandingPage() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const key = e.key.toUpperCase();
-      if (key === 'D' || key === 'E') window.location.href = '/dashboard';
+      if (key === 'D' || key === 'E') window.location.href = '/login?redirect=/dashboard';
       else if (['A', 'B', 'C'].includes(key)) window.location.href = '/signup';
     };
     window.addEventListener('keydown', handler);
@@ -220,7 +220,7 @@ export default function LandingPage() {
                   ].map(opt => (
                     <Link
                       key={opt.key}
-                      href={opt.key === 'D' ? '/dashboard' : opt.key === 'E' ? '/dashboard' : '/signup'}
+                      href={opt.key === 'D' ? '/login?redirect=/dashboard' : opt.key === 'E' ? '/login?redirect=/dashboard' : '/signup'}
                       className="flex items-center gap-3 px-3 py-2 border border-emerald-800/20 hover:border-emerald-600/40 hover:bg-emerald-900/20 transition-colors group"
                     >
                       <span className="text-[10px] font-bold text-emerald-500 w-5 shrink-0">[{opt.key}]</span>

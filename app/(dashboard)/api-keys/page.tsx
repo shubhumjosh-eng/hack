@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Terminal, Plus, Copy, Trash2, ToggleLeft, ToggleRight, Check, ExternalLink, Code } from 'lucide-react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { API_KEYS_TOUR } from '@/components/onboarding/tour-configs';
+import { Terminal, Plus, Copy, Trash2, ToggleLeft, ToggleRight, Check, ExternalLink, Code, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -22,6 +24,7 @@ export default function ApiKeysPage() {
   const [showNewWh, setShowNewWh] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [tab, setTab] = useState<'keys' | 'webhooks' | 'docs'>('keys');
+  const [showTour, setShowTour] = useState(false);
 
   function load() { setKeys(getApiKeys()); setWebhooks(getWebhooks()); }
   useEffect(() => { load(); }, []);
@@ -64,6 +67,11 @@ export default function ApiKeysPage() {
         <div className="terminal-header flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-emerald-500" />
           <span>API & Webhook Management</span>
+          <div className="ml-auto">
+            <Button variant="secondary" size="sm" onClick={() => setShowTour(true)}>
+              <HelpCircle className="h-3 w-3 mr-1" /> Guide
+            </Button>
+          </div>
         </div>
         <div className="terminal-content">
           <div className="flex gap-1 border-b border-emerald-800/20 pb-3 mb-4">
@@ -79,10 +87,10 @@ export default function ApiKeysPage() {
           </div>
 
           {tab === 'keys' && (
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour="apikeys-list">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-emerald-600">Manage API authentication keys for programmatic access.</p>
-                <Button size="sm" onClick={() => setShowNewKey(!showNewKey)}>
+                <Button size="sm" onClick={() => setShowNewKey(!showNewKey)} data-tour="apikeys-create">
                   <Plus className="h-3 w-3" /> New Key
                 </Button>
               </div>
@@ -150,7 +158,7 @@ export default function ApiKeysPage() {
           )}
 
           {tab === 'webhooks' && (
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour="apikeys-webhooks">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-emerald-600">Configure webhook endpoints for event-driven integrations.</p>
                 <Button size="sm" onClick={() => setShowNewWh(!showNewWh)}>
@@ -232,6 +240,7 @@ export default function ApiKeysPage() {
           )}
         </div>
       </div>
+      {showTour && <PageTour steps={API_KEYS_TOUR} pageId="api-keys" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

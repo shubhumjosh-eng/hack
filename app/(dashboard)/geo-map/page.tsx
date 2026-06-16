@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { GEO_MAP_TOUR } from '@/components/onboarding/tour-configs';
 import { Terminal, MapPin, Crosshair, ZoomIn, ZoomOut, Info, HelpCircle } from 'lucide-react';
 import { MOCK_SITES, computeClusters, getRiskColor, getTypeIcon, type WasteSite, type GeoCluster } from '@/lib/geo';
 
@@ -19,6 +21,7 @@ export default function GeoMapPage() {
   const [selectedCluster, setSelectedCluster] = useState<GeoCluster | null>(null);
   const [showClusters, setShowClusters] = useState(true);
   const [filterRisk, setFilterRisk] = useState<string>('all');
+  const [showTour, setShowTour] = useState(false);
 
   const bounds = useMemo(() => ({
     minLat: Math.min(...MOCK_SITES.map(s => s.lat)) - 0.02,
@@ -39,6 +42,14 @@ export default function GeoMapPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      <div className="flex items-center justify-end">
+        <button
+          onClick={() => setShowTour(true)}
+          className="flex items-center gap-1 px-2 py-1 text-[10px] uppercase border border-emerald-800/30 text-emerald-700 hover:text-emerald-500 transition-colors"
+        >
+          <HelpCircle className="h-3 w-3" /> Guide me
+        </button>
+      </div>
       {/* Purpose banner */}
       <div className="terminal-panel border-emerald-700/30">
         <div className="flex items-start gap-3 p-3 text-[11px] text-emerald-400/80">
@@ -66,10 +77,10 @@ export default function GeoMapPage() {
           <div className="terminal-panel">
             <div className="terminal-header flex items-center gap-2">
               <Terminal className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Waste Source Map — San Francisco</span>
+              <span>Waste Source Map — Hong Kong</span>
             </div>
             <div className="p-3">
-              <div className="flex items-center gap-2 mb-3 flex-wrap">
+              <div className="flex items-center gap-2 mb-3 flex-wrap" data-tour="geo-filter">
                 {riskLevels.map(r => (
                   <button
                     key={r}
@@ -87,7 +98,7 @@ export default function GeoMapPage() {
                 </button>
               </div>
 
-              <div className="border border-emerald-800/20 bg-gray-950 overflow-hidden">
+              <div className="border border-emerald-800/20 bg-gray-950 overflow-hidden" data-tour="geo-map-container">
                 <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto">
                   {filtered.map(site => {
                     const pos = latLngToSvg(site.lat, site.lng, bounds);
@@ -146,7 +157,7 @@ export default function GeoMapPage() {
           </div>
 
           {selectedSite && (
-            <div className="terminal-panel animate-fade-in">
+            <div className="terminal-panel animate-fade-in" data-tour="geo-detail">
               <div className="terminal-header flex items-center gap-2">
                 <Info className="h-3 w-3 text-emerald-500" />
                 <span>Site Detail</span>
@@ -210,6 +221,7 @@ export default function GeoMapPage() {
           </div>
         </div>
       </div>
+      {showTour && <PageTour steps={GEO_MAP_TOUR} pageId="geo-map" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }

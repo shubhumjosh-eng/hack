@@ -102,7 +102,7 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
   }
 
   return (
-    <div className="space-y-4 animate-slide-in-up">
+    <div data-tour="dashboard-results" className="space-y-4 animate-slide-in-up">
       <div className="terminal-panel border-emerald-600/30 glow-border">
         <div className="terminal-header flex items-center gap-2 bg-emerald-950/30 flex-wrap">
           <Terminal className="h-3.5 w-3.5 text-emerald-400 shrink-0" />

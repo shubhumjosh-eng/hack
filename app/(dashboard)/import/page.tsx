@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Terminal, Upload as UploadIcon, FileSpreadsheet, Check, AlertTriangle, Download, Table } from 'lucide-react';
+import { PageTour } from '@/components/onboarding/page-tour';
+import { IMPORT_TOUR } from '@/components/onboarding/tour-configs';
+import { Terminal, Upload as UploadIcon, FileSpreadsheet, Check, AlertTriangle, Download, Table, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ImportColumn {
@@ -29,6 +31,7 @@ export default function ImportPage() {
   const [imported, setImported] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [showTour, setShowTour] = useState(false);
 
   function handleFile(f: File) {
     setFile(f);
@@ -76,6 +79,11 @@ export default function ImportPage() {
         <div className="terminal-header flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-emerald-500" />
           <span>Data Import Wizard</span>
+          <div className="ml-auto">
+            <Button variant="secondary" size="sm" onClick={() => setShowTour(true)}>
+              <HelpCircle className="h-3 w-3 mr-1" /> Guide
+            </Button>
+          </div>
         </div>
         <div className="terminal-content">
           <div className="flex items-center gap-2 text-[10px] text-emerald-700 mb-4">
@@ -89,7 +97,7 @@ export default function ImportPage() {
           </div>
 
           {step === 'upload' && (
-            <div className="space-y-4">
+            <div className="space-y-4" data-tour="import-upload">
               <div
                 onClick={() => fileRef.current?.click()}
                 className="border-2 border-dashed border-emerald-800/30 hover:border-emerald-600/40 p-12 text-center cursor-pointer transition-colors"
@@ -110,7 +118,7 @@ export default function ImportPage() {
           )}
 
           {step === 'map' && file && (
-            <div className="space-y-4">
+            <div className="space-y-4" data-tour="import-map">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-emerald-600">Map <span className="text-emerald-300">{file.name}</span> columns to target fields.</p>
                 <Button size="sm" variant="ghost" onClick={autoMap}>Auto-Map</Button>
@@ -158,7 +166,7 @@ export default function ImportPage() {
                 </div>
               )}
 
-              <div className="overflow-x-auto border border-emerald-800/20">
+              <div className="overflow-x-auto border border-emerald-800/20" data-tour="import-preview">
                 <table className="w-full text-[10px] font-mono">
                   <thead><tr className="border-b border-emerald-800/20">{headers.map(h => <th key={h} className="text-left text-emerald-600 px-2 py-1">{h}</th>)}</tr></thead>
                   <tbody>
@@ -196,6 +204,7 @@ export default function ImportPage() {
           )}
         </div>
       </div>
+      {showTour && <PageTour steps={IMPORT_TOUR} pageId="import" onComplete={() => setShowTour(false)} />}
     </div>
   );
 }
