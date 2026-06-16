@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -23,8 +23,16 @@ export default function LoginPage() {
   function getRedirect() {
     if (typeof window === 'undefined') return '/dashboard';
     const params = new URLSearchParams(window.location.search);
-    return params.get('redirect') || '/dashboard';
+    const redirect = params.get('redirect');
+    if (redirect && redirect.startsWith('/')) return redirect;
+    return '/dashboard';
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errMsg = params.get('error');
+    if (errMsg) setError(decodeURIComponent(errMsg));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,7 +44,7 @@ export default function LoginPage() {
     const ok = await login(email, password);
     if (ok) {
       router.push(getRedirect());
-    } else setError('Access denied: invalid email or password.');
+    } else setError('Invalid email or password. If you recently signed up, try the forgot password link.');
   }
 
   function quickFill(email: string, password: string) {
