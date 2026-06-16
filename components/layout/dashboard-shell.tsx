@@ -30,7 +30,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, []);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && pathname !== '/login') {
+    if (!loading && !isAuthenticated && pathname !== '/login' && pathname !== '/signup') {
       router.push('/login');
     }
   }, [loading, isAuthenticated, pathname, router]);

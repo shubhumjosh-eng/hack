@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
 import { Terminal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ export default function LoginPage() {
     setError('');
     const ok = await login(email, password);
     if (ok) router.push('/');
-    else setError('Access denied: user not found in directory.');
+    else setError('Access denied: invalid email or password.');
   }
 
   return (
@@ -72,6 +73,13 @@ export default function LoginPage() {
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> authenticate</>}
           </Button>
+
+          <p className="text-[10px] text-emerald-700 text-center -mt-2">
+            No account?{' '}
+            <Link href="/signup" className="text-emerald-500 hover:text-emerald-400 underline underline-offset-2">
+              register
+            </Link>
+          </p>
 
           <div className="border-t border-emerald-800/20 pt-4">
             <p className="text-[10px] text-emerald-600 mb-2 uppercase tracking-wider">Quick Demo Access</p>

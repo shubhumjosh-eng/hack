@@ -37,6 +37,45 @@ export const MOCK_USERS: User[] = [
   { id: 'user-4', email: 'admin@mercyhealth.org', name: 'Dr. James Okafor', role: 'admin', teamId: 'team-3' },
 ];
 
+const REGISTERED_USERS_KEY = 'ecoos-registered-users';
+
+export function getRegisteredUsers(): User[] {
+  try {
+    return JSON.parse(localStorage.getItem(REGISTERED_USERS_KEY) || '[]');
+  } catch { return []; }
+}
+
+export function registerUser(email: string, name: string, password: string): User {
+  const users = getRegisteredUsers();
+  const existing = [...MOCK_USERS, ...users].find(u => u.email === email);
+  if (existing) throw new Error('Email already registered');
+
+  const newUser: User = {
+    id: `user-reg-${Date.now()}`,
+    email,
+    name,
+    role: 'editor',
+    teamId: 'team-1',
+  };
+
+  users.push(newUser);
+  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+  localStorage.setItem('ecoos-password-' + email, btoa(password));
+  return newUser;
+}
+
+export function findUserByEmail(email: string): User | undefined {
+  const registered = getRegisteredUsers();
+  return [...MOCK_USERS, ...registered].find(u => u.email === email);
+}
+
+export function checkPassword(email: string, password: string): boolean {
+  try {
+    const stored = localStorage.getItem('ecoos-password-' + email);
+    return stored === btoa(password);
+  } catch { return false; }
+}
+
 export function hasPermission(user: User | null, permission: Permission): boolean {
   if (!user) return false;
   return ROLE_PERMISSIONS[user.role]?.includes(permission) ?? false;

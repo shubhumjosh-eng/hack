@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { User, MOCK_USERS, getTeamById, type Team } from '@/lib/auth';
+import { User, MOCK_USERS, getTeamById, findUserByEmail, checkPassword, getRegisteredUsers, type Team } from '@/lib/auth';
 
 interface AuthContextValue {
   user: User | null;
@@ -27,7 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(AUTH_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as { userId: string; teamId: string };
-        const found = MOCK_USERS.find(u => u.id === parsed.userId);
+        const allUsers = [...MOCK_USERS, ...getRegisteredUsers()];
+        const found = allUsers.find(u => u.id === parsed.userId);
         if (found) {
           setUser(found);
           setTeam(getTeamById(parsed.teamId) ?? null);
@@ -37,11 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = useCallback(async (email: string, _password: string): Promise<boolean> => {
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     await new Promise(r => setTimeout(r, 800));
-    const found = MOCK_USERS.find(u => u.email === email);
+    const found = findUserByEmail(email);
+    const mockUser = MOCK_USERS.find(u => u.email === email);
     if (!found) { setLoading(false); return false; }
+    if (!mockUser && !checkPassword(email, password)) { setLoading(false); return false; }
     setUser(found);
     const t = getTeamById(found.teamId) ?? null;
     setTeam(t);
