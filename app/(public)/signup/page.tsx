@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -11,8 +11,22 @@ import { Input } from '@/components/ui/input';
 export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [password, setPassword] = useState('');
   const { signup, loading } = useAuth();
   const router = useRouter();
+
+  const strength = useMemo(() => {
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 10) score += 1;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+    return score;
+  }, [password]);
+
+  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'][strength];
+  const strengthColor = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'][strength];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,23 +34,23 @@ export default function SignupPage() {
     const data = new FormData(e.currentTarget);
     const name = (data.get('name') as string) || '';
     const email = (data.get('email') as string) || '';
-    const password = (data.get('password') as string) || '';
+    const pw = (data.get('password') as string) || '';
     const confirm = (data.get('confirm') as string) || '';
 
-    if (!name.trim() || !email.trim() || !password) {
+    if (!name.trim() || !email.trim() || !pw) {
       setError('All fields are required.');
       return;
     }
-    if (password.length < 6) {
+    if (pw.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
     }
-    if (password !== confirm) {
+    if (pw !== confirm) {
       setError('Passwords do not match.');
       return;
     }
 
-    const err = await signup(email.trim(), password, name.trim());
+    const err = await signup(email.trim(), pw, name.trim());
     if (err) {
       setError(err);
     } else {
@@ -98,8 +112,28 @@ export default function SignupPage() {
             type="password"
             placeholder="at least 6 characters"
             autoComplete="new-password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
             required
           />
+
+          {password && (
+            <div className="space-y-1">
+              <div className="flex gap-1">
+                {[1,2,3,4,5].map(i => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-colors ${
+                      i <= strength ? strengthColor : 'bg-emerald-900/30'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className={`text-[9px] ${strength >= 4 ? 'text-emerald-500' : strength >= 2 ? 'text-yellow-500' : 'text-red-500'}`}>
+                {strengthLabel}
+              </p>
+            </div>
+          )}
 
           <Input
             label="Confirm Password"
