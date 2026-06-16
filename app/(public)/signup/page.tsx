@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
-import { registerUser } from '@/lib/auth';
 import { Terminal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ import { Input } from '@/components/ui/input';
 export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const { login, loading } = useAuth();
+  const { signup, loading } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -37,13 +36,12 @@ export default function SignupPage() {
       return;
     }
 
-    try {
-      registerUser(email.trim(), name.trim(), password);
+    const err = await signup(email.trim(), password, name.trim());
+    if (err) {
+      setError(err);
+    } else {
       setSuccess(true);
-      const ok = await login(email, password);
-      if (ok) router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed.');
+      router.push('/dashboard');
     }
   }
 

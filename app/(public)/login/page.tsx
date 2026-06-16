@@ -90,11 +90,16 @@ export default function LoginPage() {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> authenticate</>}
           </Button>
 
-          <p className="text-[10px] text-emerald-700 text-center -mt-2">
-            No account?{' '}
-            <Link href="/signup" className="text-emerald-500 hover:text-emerald-400 underline underline-offset-2">
-              register
+          <p className="text-[10px] text-emerald-700 text-center flex flex-col gap-1">
+            <Link href="/forgot-password" className="text-emerald-500 hover:text-emerald-400 underline underline-offset-2">
+              forgot password?
             </Link>
+            <span>
+              No account?{' '}
+              <Link href="/signup" className="text-emerald-500 hover:text-emerald-400 underline underline-offset-2">
+                register
+              </Link>
+            </span>
           </p>
 
           <div className="border-t border-emerald-800/20 pt-4">

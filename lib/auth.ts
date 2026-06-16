@@ -1,3 +1,7 @@
+'use client';
+
+import { createClient } from './supabase';
+
 export interface User {
   id: string;
   email: string;
@@ -83,4 +87,87 @@ export function hasPermission(user: User | null, permission: Permission): boolea
 
 export function getTeamById(teamId: string): Team | undefined {
   return MOCK_TEAMS.find(t => t.id === teamId);
+}
+
+export async function logAuthError(email: string, action: string, errorMessage: string) {
+  try {
+    await fetch('/api/auth/error-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, action, errorMessage, userAgent: navigator.userAgent }),
+    });
+  } catch {}
+}
+
+export async function supabaseSignUp(email: string, password: string, name: string): Promise<{ error?: string }> {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } },
+  });
+  if (error) {
+    await logAuthError(email, 'signup', error.message);
+    return { error: error.message };
+  }
+  if (!data.user) {
+    return { error: 'Signup failed: no user returned' };
+  }
+  const sbId = data.user.id;
+  const existing = findUserByEmail(email);
+  if (!existing) {
+    const users = getRegisteredUsers();
+    const newUser: User = {
+      id: sbId,
+      email,
+      name,
+      role: 'editor',
+      teamId: 'team-1',
+    };
+    users.push(newUser);
+    localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+  }
+  return {};
+}
+
+export async function supabaseSignIn(email: string, password: string): Promise<{ error?: string; user?: User }> {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    await logAuthError(email, 'login', error.message);
+    return { error: error.message };
+  }
+  if (!data.user) {
+    return { error: 'Login failed: no user returned' };
+  }
+
+  const found = findUserByEmail(email);
+  if (found) {
+    const users = getRegisteredUsers();
+    const idx = users.findIndex(u => u.email === email);
+    if (idx !== -1 && users[idx].id !== data.user.id) {
+      users[idx].id = data.user.id;
+      localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+    }
+    return { user: { ...found, id: data.user.id } };
+  }
+
+  const metaName = data.user.user_metadata?.name || email.split('@')[0];
+  const newUser: User = {
+    id: data.user.id,
+    email,
+    name: metaName,
+    role: 'editor',
+    teamId: 'team-1',
+  };
+  const users = getRegisteredUsers();
+  users.push(newUser);
+  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+  return { user: newUser };
+}
+
+export async function supabaseSignOut() {
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  localStorage.removeItem('ecoos-auth');
 }

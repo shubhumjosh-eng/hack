@@ -8,6 +8,7 @@ import { TourOverlay } from '@/components/onboarding/tour-overlay';
 import { useState, useEffect } from 'react';
 import { Radar } from 'lucide-react';
 import { useAuth } from './auth-provider';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -83,7 +84,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header />
         <main className="flex-1 overflow-y-auto p-3 sm:p-5 scanlines">
-          <div className="mx-auto max-w-7xl">{children}</div>
+          <div className="mx-auto max-w-7xl">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </div>
         </main>
         {/* Tour trigger button */}
         {!tourActive && (

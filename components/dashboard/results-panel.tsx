@@ -194,7 +194,7 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
               <div className="space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Risk Warning</span>
-                  <span className="risk-warning text-[10px]">SYNTHETIC DATA</span>
+                  {result.riskWarning.toLowerCase().includes('synthetic') && <span className="risk-warning text-[10px]">SYNTHETIC DATA</span>}
                 </div>
                 <p className="text-xs text-amber-300/80 leading-relaxed">
                   <TypewriterText text={result.riskWarning} speed={12} />

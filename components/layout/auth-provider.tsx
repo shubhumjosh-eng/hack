@@ -1,13 +1,15 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { User, MOCK_USERS, getTeamById, findUserByEmail, checkPassword, getRegisteredUsers, type Team } from '@/lib/auth';
+import { User, MOCK_USERS, getTeamById, findUserByEmail, checkPassword, getRegisteredUsers, supabaseSignIn, supabaseSignOut, supabaseSignUp, logAuthError, type Team } from '@/lib/auth';
+import { createClient } from '@/lib/supabase';
 
 interface AuthContextValue {
   user: User | null;
   team: Team | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string, name: string) => Promise<string | null>;
   logout: () => void;
   switchTeam: (teamId: string) => void;
   isAuthenticated: boolean;
@@ -23,40 +25,124 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(AUTH_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as { userId: string; teamId: string };
-        const allUsers = [...MOCK_USERS, ...getRegisteredUsers()];
-        const found = allUsers.find(u => u.id === parsed.userId);
+    async function init() {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const email = session.user.email!;
+          const found = findUserByEmail(email) || MOCK_USERS.find(u => u.email === email);
+          if (found) {
+            const merged = { ...found, id: session.user.id };
+            setUser(merged);
+            setTeam(getTeamById(found.teamId) ?? null);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {}
+
+      try {
+        const stored = localStorage.getItem(AUTH_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as { userId: string; teamId: string };
+          const allUsers = [...MOCK_USERS, ...getRegisteredUsers()];
+          const found = allUsers.find(u => u.id === parsed.userId);
+          if (found) {
+            setUser(found);
+            setTeam(getTeamById(parsed.teamId) ?? null);
+          }
+        }
+      } catch {}
+
+      setLoading(false);
+    }
+
+    init();
+
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setTeam(null);
+        localStorage.removeItem(AUTH_KEY);
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        const email = session.user.email!;
+        const found = findUserByEmail(email) || MOCK_USERS.find(u => u.email === email);
         if (found) {
-          setUser(found);
-          setTeam(getTeamById(parsed.teamId) ?? null);
+          const merged = { ...found, id: session.user.id };
+          setUser(merged);
+          setTeam(getTeamById(found.teamId) ?? null);
+          localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: merged.id, teamId: found.teamId }));
         }
       }
-    } catch { /* ignore */ }
-    setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     await new Promise(r => setTimeout(r, 800));
-    const found = findUserByEmail(email);
+
     const mockUser = MOCK_USERS.find(u => u.email === email);
-    if (!found) { setLoading(false); return false; }
-    if (!mockUser && !checkPassword(email, password)) { setLoading(false); return false; }
-    setUser(found);
-    const t = getTeamById(found.teamId) ?? null;
-    setTeam(t);
-    localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: found.id, teamId: found.teamId }));
+    if (mockUser) {
+      setUser(mockUser);
+      const t = getTeamById(mockUser.teamId) ?? null;
+      setTeam(t);
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: mockUser.id, teamId: mockUser.teamId }));
+      setLoading(false);
+      return true;
+    }
+
+    const result = await supabaseSignIn(email, password);
+    if (result.error) {
+      const found = findUserByEmail(email);
+      if (found && checkPassword(email, password)) {
+        setUser(found);
+        const t = getTeamById(found.teamId) ?? null;
+        setTeam(t);
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: found.id, teamId: found.teamId }));
+        setLoading(false);
+        return true;
+      }
+      setLoading(false);
+      return false;
+    }
+
+    if (result.user) {
+      setUser(result.user);
+      const t = getTeamById(result.user.teamId) ?? null;
+      setTeam(t);
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: result.user.id, teamId: result.user.teamId }));
+      setLoading(false);
+      return true;
+    }
+
     setLoading(false);
-    return true;
+    return false;
   }, []);
 
-  const logout = useCallback(() => {
+  const signup = useCallback(async (email: string, password: string, name: string): Promise<string | null> => {
+    const existing = [...MOCK_USERS, ...getRegisteredUsers()].find(u => u.email === email);
+    if (existing) return 'Email already registered';
+
+    const result = await supabaseSignUp(email, password, name);
+    if (result.error) return result.error;
+
+    const loginOk = await login(email, password);
+    if (!loginOk) return 'Account created but auto-login failed. Please sign in.';
+
+    return null;
+  }, [login]);
+
+  const logout = useCallback(async () => {
     setUser(null);
     setTeam(null);
     localStorage.removeItem(AUTH_KEY);
+    try {
+      await supabaseSignOut();
+    } catch {}
   }, []);
 
   const switchTeam = useCallback((teamId: string) => {
@@ -69,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, team, loading, login, logout, switchTeam, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, team, loading, login, signup, logout, switchTeam, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

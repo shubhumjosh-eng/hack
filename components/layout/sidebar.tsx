@@ -21,6 +21,8 @@ import {
   Upload,
   Layers,
   MapPin,
+  User,
+  AlertTriangle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from './auth-provider';
@@ -118,6 +120,32 @@ export function Sidebar() {
             </div>
           </div>
           <div className={cn('flex', collapsed ? 'flex-col items-center gap-0.5' : 'gap-1')}>
+            <Link
+              href="/profile"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
+                collapsed ? 'justify-center' : ''
+              )}
+              title="Profile"
+            >
+              <User className="h-3 w-3" />
+              <span className={cn(collapsed && 'hidden')}>profile</span>
+            </Link>
+            {user?.role === 'admin' && (
+              <Link
+                href="/errors"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
+                  collapsed ? 'justify-center' : ''
+                )}
+                title="Error Log"
+              >
+                <AlertTriangle className="h-3 w-3" />
+                <span className={cn(collapsed && 'hidden')}>errors</span>
+              </Link>
+            )}
             <button
               onClick={logout}
               className={cn(
