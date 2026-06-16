@@ -300,6 +300,13 @@ export default function LandingPage() {
                 >
                   Sign In
                 </Link>
+                <Link
+                  href="/dashboard?tour=true"
+                  className="inline-flex items-center gap-2 border border-emerald-800/40 text-emerald-500 px-5 py-2.5 text-xs hover:bg-emerald-700/20 transition-all duration-200"
+                >
+                  <Radar className="h-3 w-3" />
+                  Take the Tour
+                </Link>
               </div>
             </div>
           </div>

@@ -39,12 +39,17 @@ export default function GeoMapPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Help banner */}
+      {/* Purpose banner */}
       <div className="terminal-panel border-emerald-700/30">
         <div className="flex items-start gap-3 p-3 text-[11px] text-emerald-400/80">
           <HelpCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
           <div>
-            <p className="text-emerald-300 font-semibold mb-1">How to use the Waste Source Map</p>
+            <p className="text-emerald-300 font-semibold mb-1">Purpose — Waste Source Map</p>
+            <p className="text-[10px] text-emerald-400 mb-2">
+              Visualize all tracked waste sites across your organization on one map. Use it to quickly
+              identify high-risk locations, spot clusters of waste-heavy areas, and decide where to deploy
+              interventions for maximum impact.
+            </p>
             <ul className="space-y-0.5 text-[10px] text-emerald-600">
               <li><span className="text-emerald-500">&bull;</span> <strong className="text-emerald-400">Click</strong> any dot on the map to see site details (name, waste amount, risk level, last audit)</li>
               <li><span className="text-emerald-500">&bull;</span> <strong className="text-emerald-400">Dashed circles</strong> show clusters of multiple nearby sites — click to expand</li>

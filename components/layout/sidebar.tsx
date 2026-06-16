@@ -89,6 +89,7 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour={item.href.replace('/', '')}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   'flex items-center gap-2.5 px-2.5 py-2 text-xs font-mono transition-all duration-200 border-l-2',
@@ -147,6 +148,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              data-tour={item.href.replace('/', '')}
               className={cn(
                 'flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-mono transition-colors',
                 isActive
