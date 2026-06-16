@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 import { StatusIndicator } from '@/components/ui/status-indicator';
 import { useState, useEffect } from 'react';
-import { Save, Key, Bell, Shield, Database, RefreshCw } from 'lucide-react';
+import { Save, Key, Bell, Shield, Database, RefreshCw, Cpu, CheckCircle } from 'lucide-react';
 import { getSettings, saveSettings } from '@/lib/storage';
 
 export default function SettingsPage() {
@@ -153,6 +153,61 @@ export default function SettingsPage() {
               </button>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-sm font-semibold text-emerald-50">Model Information</h2>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="border border-emerald-800/30 bg-gray-900 p-3">
+              <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Architecture</p>
+              <p className="text-sm text-emerald-300">Meta-Llama-3.1-8B-Instruct</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">Transformer decoder 8B params</p>
+            </div>
+            <div className="border border-emerald-800/30 bg-gray-900 p-3">
+              <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Inference</p>
+              <p className="text-sm text-emerald-300">Hugging Face Serverless</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">Router: router.huggingface.co/v1</p>
+            </div>
+            <div className="border border-emerald-800/30 bg-gray-900 p-3">
+              <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Training Data</p>
+              <p className="text-sm text-emerald-300">Synthetic + Public Benchmarks</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">No real institutional data used</p>
+            </div>
+            <div className="border border-emerald-800/30 bg-gray-900 p-3">
+              <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Latency Budget</p>
+              <p className="text-sm text-emerald-300">500–1500ms</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">Cold start: 30-60s first request</p>
+            </div>
+          </div>
+
+          <div className="border border-emerald-800/30 bg-gray-900 p-3">
+            <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2">Capabilities</p>
+            <div className="space-y-1.5 text-sm text-emerald-300/80">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="text-xs">Few-shot waste prediction from 5 input parameters</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="text-xs">Text triage — raw situation descriptions → structured environmental analysis</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="text-xs">Actionable intervention generation with priority ranking</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="text-xs">Risk warnings and human-in-the-loop compliance enforcement</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

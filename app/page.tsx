@@ -5,7 +5,7 @@ import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
 import { PredictionInput, PredictionResult, DashboardHistoryEntry } from '@/lib/types';
 import { Terminal, History, Download } from 'lucide-react';
-import { getPredictions, addPrediction } from '@/lib/storage';
+import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
 
 function generateId(): string {
   return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
 
   useEffect(() => {
+    seedDemoData();
     const stored = getPredictions();
     if (stored.length > 0) {
       setHistory(stored);
@@ -72,6 +73,20 @@ export default function DashboardPage() {
   const handleDismissError = useCallback(() => {
     setError(null);
   }, []);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setError(null);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !loading) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [handleSubmit, loading]);
 
   return (
     <div className="space-y-6 animate-fade-in pb-16 sm:pb-0">
@@ -121,16 +136,20 @@ export default function DashboardPage() {
             onDismiss={handleDismissError}
           />
 
-          {result && (
+          {result && (() => {
+            const annualKg = result.predictedWasteKg * 180;
+            const annualCost = annualKg * 4.50;
+            const annualCo2 = annualKg * 2.5;
+            return (
             <div className="terminal-panel border-emerald-800/20 animate-fade-in">
               <div className="terminal-header flex items-center gap-2">
                 <Download className="h-3 w-3 text-emerald-600" />
                 <span className="text-emerald-600 text-[10px]">Impact Summary</span>
               </div>
-              <div className="terminal-content">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className="terminal-content space-y-4">
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
                   <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
-                    <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Predicted Waste</p>
+                    <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Per Service</p>
                     <p className="text-lg font-bold text-emerald-300 tabular-nums">{result.predictedWasteKg.toFixed(1)} kg</p>
                   </div>
                   <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
@@ -141,10 +160,47 @@ export default function DashboardPage() {
                     <p className="text-[10px] text-amber-600 uppercase tracking-wider mb-1">Risk Level</p>
                     <p className="text-lg font-bold text-amber-400">MODERATE</p>
                   </div>
+                  <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
+                    <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Menu</p>
+                    <p className="text-sm font-bold text-emerald-300 truncate">{result.metadata.inputSnapshot.scheduledMenu.split(' ').slice(0, 3).join(' ')}</p>
+                  </div>
+                </div>
+                <div className="border border-emerald-700/30 bg-emerald-900/20 p-4">
+                  <p className="text-[10px] text-emerald-500 uppercase tracking-widest mb-3">Annual Projection (180 School Days)</p>
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 flex items-center justify-center border border-emerald-700/40 bg-gray-900">
+                        <span className="text-emerald-400 text-xs font-bold">W</span>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-emerald-600">Total Waste</p>
+                        <p className="text-sm font-bold text-emerald-300 tabular-nums">{(annualKg / 1000).toFixed(1)} <span className="text-[10px] text-emerald-600">tonnes</span></p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 flex items-center justify-center border border-emerald-700/40 bg-gray-900">
+                        <span className="text-amber-400 text-xs font-bold">$</span>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-emerald-600">Financial Loss</p>
+                        <p className="text-sm font-bold text-amber-400 tabular-nums">${annualCost.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 flex items-center justify-center border border-emerald-700/40 bg-gray-900">
+                        <span className="text-red-400 text-xs font-bold">CO₂</span>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-emerald-600">Carbon Footprint</p>
+                        <p className="text-sm font-bold text-red-400 tabular-nums">{(annualCo2 / 1000).toFixed(1)} <span className="text-[10px] text-emerald-600">t CO₂e</span></p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
 
         <div className="lg:col-span-2 space-y-4">

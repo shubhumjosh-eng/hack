@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MetricCard } from '@/components/ui/metric-card';
 import { formatCurrency, formatCo2, formatWeight } from '@/lib/utils';
-import { getPredictions } from '@/lib/storage';
+import { getPredictions, seedDemoData } from '@/lib/storage';
 import { useState, useEffect } from 'react';
 import {
   BarChart3,
@@ -113,6 +113,7 @@ export default function AnalyticsPage() {
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
 
   useEffect(() => {
+    seedDemoData();
     setHistory(getPredictions());
   }, []);
 
