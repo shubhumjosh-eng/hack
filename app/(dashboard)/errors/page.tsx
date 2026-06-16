@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/components/layout/auth-provider';
 import { Terminal, Loader2, RefreshCw, Search, Copy, Check } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 
 interface AuthError {
   id: number;
@@ -15,7 +13,6 @@ interface AuthError {
 }
 
 export default function ErrorsPage() {
-  const { user } = useAuth();
   const [errors, setErrors] = useState<AuthError[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
