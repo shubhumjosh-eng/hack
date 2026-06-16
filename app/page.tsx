@@ -3,10 +3,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
-import { PredictionInput, PredictionResult, DashboardHistoryEntry } from '@/lib/types';
+import { PredictionInput, PredictionResult, DashboardHistoryEntry, computeLandfillMetric } from '@/lib/types';
 import { Terminal, History, Download, Printer, AlertTriangle } from 'lucide-react';
 import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
-import { RadarChart } from '@/components/ui/radar-chart';
 import { ReportView } from '@/components/dashboard/report-view';
 import { EventLog } from '@/components/ui/event-log';
 import { useEventLog } from '@/hooks/use-event-log';
@@ -162,13 +161,6 @@ export default function DashboardPage() {
             const annualKg = result.predictedWasteKg * 180;
             const annualCost = annualKg * 4.50;
             const annualCo2 = annualKg * 2.5;
-            const radarData = [
-              { label: 'Cost', value: Math.min(annualCost / 100, 100), max: 100 },
-              { label: 'Waste', value: Math.min(annualKg / 100, 100), max: 100 },
-              { label: 'CO₂', value: Math.min(annualCo2 / 100, 100), max: 100 },
-              { label: 'Risk', value: Math.min(result.predictedWasteKg * 2, 100), max: 100 },
-              { label: 'Volume', value: Math.min(result.predictedWasteKg / 50 * 100, 100), max: 100 },
-            ];
             return (
             <div className="terminal-panel border-emerald-800/20 animate-fade-in">
               <div className="terminal-header flex items-center gap-2">
@@ -234,11 +226,27 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-center border border-emerald-800/20 bg-gray-900/50 p-4">
-                  <div className="flex flex-col items-center gap-2">
-                    <p className="text-[10px] text-emerald-600 uppercase tracking-widest">Waste Impact Radar</p>
-                    <RadarChart data={radarData} size={200} />
-                  </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {(() => {
+                    const m = computeLandfillMetric(annualKg);
+                    return <>
+                      <div className="border border-emerald-800/30 bg-gray-900/50 p-3 text-center">
+                        <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Garbage Trucks</p>
+                        <p className="text-lg font-bold text-emerald-300 tabular-nums">{m.trucks.toFixed(1)}</p>
+                        <p className="text-[9px] text-emerald-700">10t trucks of waste/year</p>
+                      </div>
+                      <div className="border border-emerald-800/30 bg-gray-900/50 p-3 text-center">
+                        <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Trees Absorbing</p>
+                        <p className="text-lg font-bold text-emerald-300 tabular-nums">{m.trees.toLocaleString()}</p>
+                        <p className="text-[9px] text-emerald-700">trees needed/year for CO₂</p>
+                      </div>
+                      <div className="border border-emerald-800/30 bg-gray-900/50 p-3 text-center">
+                        <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Homes Powered</p>
+                        <p className="text-lg font-bold text-emerald-300 tabular-nums">{m.homes.toLocaleString()}</p>
+                        <p className="text-[9px] text-emerald-700">homes' energy equivalent</p>
+                      </div>
+                    </>;
+                  })()}
                 </div>
               </div>
             </div>

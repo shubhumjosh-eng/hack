@@ -1,6 +1,6 @@
 'use client';
 
-import { PredictionResult, PredictionInput } from '@/lib/types';
+import { PredictionResult, PredictionInput, computeInterventionSavings } from '@/lib/types';
 import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download, Copy } from 'lucide-react';
 import { useState } from 'react';
 import { TypewriterText } from '@/components/ui/typewriter-text';
@@ -168,12 +168,23 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
               )}
             </div>
             <div className="space-y-2">
-              {result.actionableInterventions.map((intervention, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
-                  <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
-                  <span><TypewriterText text={intervention} speed={10} /></span>
-                </div>
-              ))}
+              {(() => {
+                const annualCost = result.predictedWasteKg * 180 * 4.50;
+                return result.actionableInterventions.map((intervention, i) => {
+                  const s = computeInterventionSavings(result.predictedWasteKg, annualCost, i);
+                  return (
+                    <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
+                      <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
+                      <div className="flex-1">
+                        <span><TypewriterText text={intervention} speed={10} /></span>
+                        <span className="ml-2 text-[9px] text-emerald-600 border border-emerald-700/40 px-1 py-0.5 whitespace-nowrap">
+                          save ~${s.savingsDollars}/day
+                        </span>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
 

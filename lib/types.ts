@@ -73,3 +73,31 @@ export interface DashboardHistoryEntry {
   result: PredictionResult;
   timestamp: string;
 }
+
+export interface TriageHistoryEntry {
+  id: string;
+  input: TriageInput;
+  result: TriageResult;
+  timestamp: string;
+}
+
+export interface InterventionWithSavings {
+  text: string;
+  savingsKg: number;
+  savingsDollars: number;
+}
+
+export function computeInterventionSavings(predictedWasteKg: number, annualCost: number, index: number): { savingsKg: number; savingsDollars: number } {
+  const factors = [0.25, 0.18, 0.12, 0.20, 0.15, 0.22, 0.10, 0.28];
+  const factor = factors[index % factors.length];
+  const daily = annualCost / 180;
+  return { savingsKg: predictedWasteKg * factor, savingsDollars: Math.round(daily * factor) };
+}
+
+export function computeLandfillMetric(annualKg: number): { trucks: number; trees: number; homes: number } {
+  return {
+    trucks: annualKg / 10000,
+    trees: Math.round(annualKg / 25),
+    homes: Math.round(annualKg / 500),
+  };
+}

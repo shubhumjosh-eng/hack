@@ -1,4 +1,5 @@
 const PREDICTIONS_KEY = 'ecoos-predictions';
+const TRIAGES_KEY = 'ecoos-triages';
 const SETTINGS_KEY = 'ecoos-settings';
 const SEED_KEY = 'ecoos-seeded';
 
@@ -70,5 +71,47 @@ export function saveSettings(settings: SavedSettings): void {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   } catch {
     // storage full or unavailable
+  }
+}
+
+// --- Triage History ---
+
+export function getTriages(): any[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(TRIAGES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addTriage(entry: any): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getTriages();
+    existing.unshift(entry);
+    localStorage.setItem(TRIAGES_KEY, JSON.stringify(existing.slice(0, 50)));
+  } catch {
+    // storage full
+  }
+}
+
+const DEMO_TRIAGES = [
+  { id: 'tdemo-1', timestamp: '2026-06-16T08:30:00Z', input: { text: 'The school cafeteria throws away about 40 pounds of food every single day after lunch. Mostly untouched fruit and milk cartons.' }, result: { rawInput: 'The school cafeteria throws away about 40 pounds of food every single day after lunch. Mostly untouched fruit and milk cartons.', processedAt: '2026-06-16T08:30:00Z', environmentalIntent: { category: 'waste', confidence: 0.92, subcategory: 'Cafeteria post-consumer food waste — primarily untouched fruits and dairy' }, locations: [{ name: 'School cafeteria', type: 'school', estimatedScale: 'medium' }], actions: [{ id: 'a-1', description: 'Implement a share table for unopened fruit and milk', priority: 'high', environmentalImpact: 'Reduces food waste by 30% in pilot schools', estimatedSavings: '~$4,500/year', effort: 'quick' }, { id: 'a-2', description: 'Switch to served fruit cups instead of whole fruit', priority: 'medium', environmentalImpact: 'Students eat 60% more when fruit is pre-cut', estimatedSavings: '~$2,000/year', effort: 'moderate' }, { id: 'a-3', description: 'Start a composting program for unavoidable waste', priority: 'medium', environmentalImpact: 'Keeps 8 tonnes/year out of landfill', estimatedSavings: '~$1,200/year in disposal fees', effort: 'significant' }], recommendation: { summary: 'This is a classic post-consumer waste pattern with easy wins.', reasoning: ['Untouched fruit indicates portion size or presentation issue', 'Milk cartons suggest students want variety or lactose-free options', '40 lbs/day is moderate — share table could capture 50%+'], nextSteps: ['Launch share table trial (1 week)', 'Survey students on fruit/milk preferences', 'Track waste before/after for 2 weeks'], impactProjection: { wasteReduction: '30-50% reduction', costSavings: '$3,000-$5,000/year', co2Reduction: '2-4 tonnes CO₂e/year' } }, modelUsed: 'meta-llama/Llama-3.1-8B-Instruct:fastest', latencyMs: 934 } },
+  { id: 'tdemo-2', timestamp: '2026-06-15T14:00:00Z', input: { text: 'Our hospital kitchen preps too much food — 60kg of sealed sandwiches and yogurt goes in the bin every evening.' }, result: { rawInput: 'Our hospital kitchen preps too much food — 60kg of sealed sandwiches and yogurt goes in the bin every evening.', processedAt: '2026-06-15T14:00:00Z', environmentalIntent: { category: 'waste', confidence: 0.88, subcategory: 'Hospital food service overproduction — sealed packaged goods' }, locations: [{ name: 'Hospital kitchen', type: 'hospital', estimatedScale: 'large' }], actions: [{ id: 'b-1', description: 'Implement just-in-time preparation based on patient census', priority: 'critical', environmentalImpact: 'Reduces overproduction by up to 40%', estimatedSavings: '~$18,000/year', effort: 'moderate' }, { id: 'b-2', description: 'Donate sealed untouched food to local shelters', priority: 'high', environmentalImpact: 'Keeps 10+ tonnes/year edible', estimatedSavings: 'Tax benefits ~$3,000/year', effort: 'quick' }], recommendation: { summary: 'Sealed packaged food has high recovery potential — donation is viable and cost-effective.', reasoning: ['Sealed sandwiches/yogurt are safely recoverable', 'Hospitals have predictable census data for JIT prep', 'Evening discard suggests poor demand forecasting'], nextSteps: ['Contact local food recovery org', 'Integrate census data with kitchen prep system', 'Set up donation pickup schedule'], impactProjection: { wasteReduction: '50-65% reduction', costSavings: '$15,000-$22,000/year', co2Reduction: '8-12 tonnes CO₂e/year' } }, modelUsed: 'meta-llama/Llama-3.1-8B-Instruct:fastest', latencyMs: 872 } },
+];
+
+export function seedDemoTriages(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (localStorage.getItem('ecoos-triages-seeded') === 'true') return false;
+    const existing = getTriages();
+    if (existing.length > 0) return false;
+    localStorage.setItem(TRIAGES_KEY, JSON.stringify(DEMO_TRIAGES));
+    localStorage.setItem('ecoos-triages-seeded', 'true');
+    return true;
+  } catch {
+    return false;
   }
 }
