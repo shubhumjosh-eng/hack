@@ -48,8 +48,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "description": "Enterprise environmental intelligence platform for AI-powered waste prediction and reduction in Hong Kong.",
                 "foundingDate": "2024-11-01",
                 "sameAs": [
-                  "https://github.com/doffeycake-dev/hack2"
-                ]
+                  "https://github.com/doffeycake-dev/hack2",
+                  "https://hack2-pi.vercel.app",
+                  "https://vercel.com/doffeycake-dev/hack2",
+                  "https://huggingface.co/doffeycake"
+                ],
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "url": "https://github.com/doffeycake-dev/hack2",
+                  "contactType": "technical support"
+                }
               },
               {
                 "@context": "https://schema.org",

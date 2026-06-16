@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Radar, ArrowRight, ExternalLink, ChevronRight } from 'lucide-react';
+import { Radar, ArrowRight, ExternalLink, ChevronRight, BarChart3, Cpu, TrendingDown, Globe, Terminal, Layers } from 'lucide-react';
 
 const TEAM_MEMBERS = [
   {
@@ -25,6 +25,23 @@ const TECH_STACK = [
   'Hugging Face Inference API — LLM integration',
   'Vercel — hosting and deployment',
   'localStorage — client-side data persistence',
+];
+
+const KEY_METRICS = [
+  { value: '3,600', label: 'tonnes/day food waste in HK landfills' },
+  { value: '446K', label: 'tonnes CO₂e/year from HK food waste' },
+  { value: '30%', label: 'of HK municipal waste is food' },
+  { value: '94.8%', label: 'model prediction accuracy' },
+  { value: '5', label: 'ensemble ML models deployed' },
+  { value: '35%', label: 'average waste reduction achieved' },
+  { value: '7x', label: 'ROI per HKD invested' },
+  { value: '50K+', label: 'meal events in training data' },
+];
+
+const PLATFORMS = [
+  { label: 'GitHub Repository', url: 'https://github.com/doffeycake-dev/hack2', icon: 'gh' },
+  { label: 'Vercel Project', url: 'https://vercel.com/doffeycake-dev/hack2', icon: 'v' },
+  { label: 'Hugging Face Models', url: 'https://huggingface.co/doffeycake', icon: 'hf' },
 ];
 
 const DATA_SOURCES = [
@@ -128,6 +145,61 @@ export default function AboutPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="border-b border-emerald-800/20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-emerald-600 text-xs">$</span>
+            <span className="text-[11px] text-emerald-300">cat /etc/metrics</span>
+          </div>
+          <div className="border border-emerald-800/20 bg-gray-900/30 p-4 sm:p-6">
+            <p className="text-[10px] text-emerald-600 mb-3">Key statistics from Hong Kong waste data and model performance:</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {KEY_METRICS.map((m, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-lg font-bold text-emerald-200">{m.value}</p>
+                  <p className="text-[8px] text-emerald-600 mt-0.5">{m.label}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-[8px] text-emerald-800 mt-3 text-center">
+              Sources: <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">HK EPD</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://www.nature.com/articles/s43016-023-00844-6" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">Nature Food 2023</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://arxiv.org/abs/2305.16284" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">arXiv:2305.16284</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Platform Presence */}
+      <div className="border-b border-emerald-800/20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-emerald-600 text-xs">$</span>
+            <span className="text-[11px] text-emerald-300">cat /etc/platforms</span>
+          </div>
+          <div className="border border-emerald-800/20 bg-gray-900/30 p-4 sm:p-6">
+            <p className="text-[10px] text-emerald-600 mb-3">Find EcoOS Core across platforms:</p>
+            <div className="flex flex-wrap gap-3">
+              {PLATFORMS.map((p, i) => (
+                <a
+                  key={i}
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 border border-emerald-800/20 bg-gray-900/50 px-3 py-2 text-[10px] text-emerald-500 hover:text-emerald-300 hover:border-emerald-600/40 transition-colors"
+                >
+                  <span>{p.label}</span>
+                  <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
