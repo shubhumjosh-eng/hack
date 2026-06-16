@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeInit } from '@/components/layout/theme-init';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'EcoOS Core — Enterprise Environmental Intelligence',
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeInit />
         {children}
+        <Analytics />
       </body>
     </html>
   );
