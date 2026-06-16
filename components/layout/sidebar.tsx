@@ -23,6 +23,7 @@ import {
   MapPin,
   User,
   AlertTriangle,
+  Fingerprint,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from './auth-provider';
@@ -38,6 +39,7 @@ const NAV_ITEMS = [
   { label: 'API Keys', href: '/api-keys', icon: KeyRound },
   { label: 'Settings', href: '/settings', icon: Settings },
   { label: 'Team', href: '/team', icon: Users },
+  { label: 'Sessions', href: '/sessions', icon: Fingerprint },
 ] as const;
 
 export function Sidebar() {
