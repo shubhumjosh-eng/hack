@@ -10,18 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const { login, loading } = useAuth();
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
+    const data = new FormData(e.currentTarget);
+    const name = (data.get('name') as string) || '';
+    const email = (data.get('email') as string) || '';
+    const password = (data.get('password') as string) || '';
+    const confirm = (data.get('confirm') as string) || '';
 
     if (!name.trim() || !email.trim() || !password) {
       setError('All fields are required.');
@@ -75,40 +76,40 @@ export default function SignupPage() {
           <Input
             label="Full Name"
             id="signup-name"
+            name="name"
             type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
             placeholder="e.g. Alex Rivera"
+            autoComplete="name"
             required
           />
 
           <Input
             label="Email"
             id="signup-email"
+            name="email"
             type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
             placeholder="you@org.edu"
+            autoComplete="email"
             required
           />
 
           <Input
             label="Password"
             id="signup-password"
+            name="password"
             type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
             placeholder="at least 6 characters"
+            autoComplete="new-password"
             required
           />
 
           <Input
             label="Confirm Password"
             id="signup-confirm"
+            name="confirm"
             type="password"
-            value={confirm}
-            onChange={e => setConfirm(e.target.value)}
             placeholder="repeat password"
+            autoComplete="new-password"
             required
           />
 

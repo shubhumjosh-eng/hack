@@ -16,18 +16,27 @@ const QUICK_LOGIN = [
 ];
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
+    const data = new FormData(e.currentTarget);
+    const email = (data.get('email') as string) || '';
+    const password = (data.get('password') as string) || '';
+    if (!email || !password) { setError('Email and password are required.'); return; }
     const ok = await login(email, password);
     if (ok) router.push('/dashboard');
     else setError('Access denied: invalid email or password.');
+  }
+
+  function quickFill(email: string, password: string) {
+    const el = document.getElementById('login-email') as HTMLInputElement;
+    const pw = document.getElementById('login-password') as HTMLInputElement;
+    if (el) el.value = email;
+    if (pw) pw.value = password;
   }
 
   return (
@@ -53,20 +62,20 @@ export default function LoginPage() {
           <Input
             label="Email"
             id="login-email"
+            name="email"
             type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
             placeholder="user@org.edu"
+            autoComplete="email"
             required
           />
 
           <Input
             label="Password"
             id="login-password"
+            name="password"
             type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete="current-password"
             required
           />
 
@@ -88,7 +97,7 @@ export default function LoginPage() {
                 <button
                   key={q.email}
                   type="button"
-                  onClick={() => { setEmail(q.email); setPassword('demo'); }}
+                  onClick={() => quickFill(q.email, 'demo')}
                   className="block w-full text-left text-[11px] text-emerald-500/70 hover:text-emerald-300 font-mono px-2 py-1 border border-transparent hover:border-emerald-800/30 transition-colors"
                 >
                   <span className="text-emerald-600">$</span> ssh {q.label}
