@@ -53,16 +53,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
               {
                 "@context": "https://schema.org",
+                "@type": "Person",
+                "@id": "https://hack2-pi.vercel.app#developer",
+                "name": "EcoOS Core Team",
+                "description": "Developers and researchers specializing in AI-driven environmental intelligence, food waste reduction, and sustainability technology for Hong Kong institutional food service.",
+                "knowsAbout": [
+                  "Machine Learning",
+                  "Food Waste Reduction",
+                  "Environmental Intelligence",
+                  "Sustainability Analytics",
+                  "Hong Kong Waste Management"
+                ],
+                "alumniOf": "Hong Kong University of Science and Technology"
+              },
+              {
+                "@context": "https://schema.org",
                 "@type": "SoftwareApplication",
                 "name": "EcoOS Core",
                 "applicationCategory": "Environmental Management",
                 "operatingSystem": "Web",
                 "description": "AI-powered waste prediction, triage, and analytics for institutional food service in Hong Kong. Reduces waste by up to 35% using ensemble ML models with 94.8% accuracy.",
                 "url": "https://hack2-pi.vercel.app",
-                "author": {
-                  "@type": "Organization",
-                  "@id": "https://hack2-pi.vercel.app#organization"
-                },
+                "author": [
+                  {
+                    "@type": "Organization",
+                    "@id": "https://hack2-pi.vercel.app#organization"
+                  },
+                  {
+                    "@type": "Person",
+                    "@id": "https://hack2-pi.vercel.app#developer"
+                  }
+                ],
                 "offers": {
                   "@type": "Offer",
                   "price": "0",
@@ -79,10 +100,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "description": "AI-powered food waste prediction and reduction platform for Hong Kong institutional food service. Forecast waste before meals are served and reduce environmental impact.",
                 "datePublished": "2024-11-01",
                 "dateModified": "2025-06-16",
-                "author": {
-                  "@type": "Organization",
-                  "@id": "https://hack2-pi.vercel.app#organization"
-                },
+                "author": [
+                  {
+                    "@type": "Organization",
+                    "@id": "https://hack2-pi.vercel.app#organization"
+                  },
+                  {
+                    "@type": "Person",
+                    "@id": "https://hack2-pi.vercel.app#developer"
+                  }
+                ],
                 "publisher": {
                   "@type": "Organization",
                   "@id": "https://hack2-pi.vercel.app#organization"

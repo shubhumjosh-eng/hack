@@ -262,8 +262,8 @@ export default function LandingPage() {
         <div className="border-b border-emerald-800/20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
             <div className="text-center mb-10">
-              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Platform Capabilities</p>
-              <h2 className="text-xl sm:text-2xl font-bold text-emerald-100">Everything you need to eliminate food waste</h2>
+              <h2 className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Platform Capabilities</h2>
+              <h3 className="text-xl sm:text-2xl font-bold text-emerald-100">Everything you need to eliminate food waste</h3>
               <p className="text-xs text-emerald-600 mt-2 max-w-xl mx-auto">
                 From AI prediction to actionable interventions, EcoOS gives institutional kitchens
                 the tools to reduce waste, save money, and track environmental impact.
@@ -275,7 +275,7 @@ export default function LandingPage() {
                 return (
                   <div key={i} className="border border-emerald-800/20 bg-gray-900/30 p-4 hover:border-emerald-700/40 transition-colors group">
                     <Icon className="h-5 w-5 text-emerald-500 mb-2 group-hover:text-emerald-300 transition-colors" />
-                    <h3 className="text-xs font-bold text-emerald-300 mb-1">{f.title}</h3>
+                    <h4 className="text-xs font-bold text-emerald-300 mb-1">{f.title}</h4>
                     <p className="text-[10px] text-emerald-600 leading-relaxed">{f.desc}</p>
                   </div>
                 );
@@ -378,9 +378,16 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Trust Signals */}
+        {/* Team & Trust Signals */}
         <div className="border-b border-emerald-800/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+            <div className="text-center mb-8">
+              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Our Team</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-emerald-100">Built by researchers and engineers</h2>
+              <p className="text-[10px] text-emerald-700 mt-2 max-w-lg mx-auto">
+                EcoOS Core is developed by a team specializing in machine learning, environmental science, and Hong Kong waste management — with expertise in predictive modeling and sustainability analytics.
+              </p>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-8 text-center">
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">94.8%</p>
@@ -408,7 +415,7 @@ export default function LandingPage() {
             </div>
             <div className="text-center mt-6">
               <p className="text-[9px] text-emerald-800 max-w-xl mx-auto leading-relaxed">
-                EcoOS Core &copy; 2025 &mdash; Built by the EcoOS Core Team. 
+                EcoOS Core &copy; 2025 &mdash; Expertise areas: machine learning, food waste reduction, environmental intelligence, Hong Kong waste management analytics.
                 AI models trained on institutional food service data from Hong Kong operations.
                 <br />
                 <a href="https://github.com/doffeycake-dev/hack2" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 transition-colors inline-flex items-center gap-1">
