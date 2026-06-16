@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { BootSequence } from '@/components/ui/boot-sequence';
@@ -16,7 +16,6 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isAuthenticated, loading } = useAuth();
   const [booted, setBooted] = useState(false);
   const [bootReady, setBootReady] = useState(false);
@@ -41,8 +40,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
   // Show tour on first visit or when ?tour=true
   useEffect(() => {
     if (!booted) return;
-    const tourParam = searchParams.get('tour');
-    if (tourParam === 'true') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tour') === 'true') {
       setTourActive(true);
       return;
     }
@@ -51,7 +50,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       setTourActive(true);
       localStorage.setItem('ecoos-tour-seen', 'true');
     }
-  }, [booted, searchParams]);
+  }, [booted]);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('ecoos-booted', 'true');

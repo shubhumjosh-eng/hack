@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
 import { Terminal, Loader2 } from 'lucide-react';
@@ -19,7 +19,12 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  function getRedirect() {
+    if (typeof window === 'undefined') return '/dashboard';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('redirect') || '/dashboard';
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,8 +35,7 @@ export default function LoginPage() {
     if (!email || !password) { setError('Email and password are required.'); return; }
     const ok = await login(email, password);
     if (ok) {
-      const redirect = searchParams.get('redirect') || '/dashboard';
-      router.push(redirect);
+      router.push(getRedirect());
     } else setError('Access denied: invalid email or password.');
   }
 
