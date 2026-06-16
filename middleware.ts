@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 const DASHBOARD_ROUTES = [
   '/dashboard', '/triage', '/analytics', '/waste-streams',
   '/geo-map', '/schedules', '/import', '/api-keys', '/settings',
-  '/profile', '/errors', '/team', '/sessions', '/admin', '/audit', '/invite',
+  '/profile', '/errors', '/team', '/sessions', '/admin', '/audit', '/invite', '/status',
 ];
 
 const RATE_LIMIT_WINDOW = 60_000;
@@ -22,14 +22,14 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-const AUTH_API_PATHS = ['/api/auth/error-log', '/api/auth/sessions'];
+const RATE_LIMITED_PATHS = ['/api/auth/error-log', '/api/auth/sessions', '/api/admin'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-  if (AUTH_API_PATHS.some(p => pathname.startsWith(p))) {
+  if (RATE_LIMITED_PATHS.some(p => pathname.startsWith(p))) {
     if (isRateLimited(ip)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
