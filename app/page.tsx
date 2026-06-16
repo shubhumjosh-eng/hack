@@ -4,8 +4,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
 import { PredictionInput, PredictionResult, DashboardHistoryEntry } from '@/lib/types';
-import { Terminal, History, Download } from 'lucide-react';
+import { Terminal, History, Download, Printer, AlertTriangle } from 'lucide-react';
 import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
+import { RadarChart } from '@/components/ui/radar-chart';
+import { ReportView } from '@/components/dashboard/report-view';
 
 function generateId(): string {
   return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -25,6 +27,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     seedDemoData();
@@ -90,24 +93,33 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-fade-in pb-16 sm:pb-0">
-      <div className="flex items-center justify-between border-b border-emerald-800/20 pb-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <Terminal className="h-5 w-5 text-emerald-500" />
-            <h1 className="text-lg font-bold text-emerald-300 tracking-tight">
-              <span className="text-emerald-600">$</span> food_waste_rescue_radar
-            </h1>
-            <span className="risk-info text-[10px]">v2.5.0</span>
+      {showReport && result && (
+        <ReportView result={result} input={input} onClose={() => setShowReport(false)} />
+      )}
+
+      <div className="border border-emerald-800/30 bg-gradient-to-r from-emerald-950/40 to-gray-950 p-4 sm:p-5 animate-fade-in">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-emerald-600/40 bg-emerald-900/20">
+            <AlertTriangle className="h-5 w-5 text-emerald-400" />
           </div>
-          <p className="text-xs text-emerald-600/80 font-mono">
-            AI-powered prediction engine for school cafeteria operations // input → insight → action
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-[10px] text-emerald-700">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-          <span>SYSTEM ONLINE</span>
-          <span className="text-emerald-800">|</span>
-          <span>LLAMA-3-8B</span>
+          <div className="space-y-2 flex-1">
+            <p className="text-sm font-bold text-emerald-200">
+              US Schools Waste <span className="text-amber-300">$1.2 Billion</span> in Cafeteria Food Annually
+            </p>
+            <p className="text-xs text-emerald-500/80 leading-relaxed">
+              That&apos;s <span className="text-emerald-300">40%</span> of all cafeteria food thrown away — 
+              <span className="text-emerald-300"> 530,000 tonnes</span> of CO₂e per year. 
+              Every <span className="text-emerald-300">$1</span> invested in waste reduction saves schools 
+              <span className="text-emerald-300"> $7</span> in food, labor, and disposal costs.
+              EcoOS uses AI to predict waste before it happens, enabling precise production adjustments.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-emerald-700 shrink-0">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
+            <span>SYSTEM ONLINE</span>
+            <span className="text-emerald-800">|</span>
+            <span>LLAMA-3-8B</span>
+          </div>
         </div>
       </div>
 
@@ -140,11 +152,25 @@ export default function DashboardPage() {
             const annualKg = result.predictedWasteKg * 180;
             const annualCost = annualKg * 4.50;
             const annualCo2 = annualKg * 2.5;
+            const radarData = [
+              { label: 'Cost', value: Math.min(annualCost / 100, 100), max: 100 },
+              { label: 'Waste', value: Math.min(annualKg / 100, 100), max: 100 },
+              { label: 'CO₂', value: Math.min(annualCo2 / 100, 100), max: 100 },
+              { label: 'Risk', value: Math.min(result.predictedWasteKg * 2, 100), max: 100 },
+              { label: 'Volume', value: Math.min(result.predictedWasteKg / 50 * 100, 100), max: 100 },
+            ];
             return (
             <div className="terminal-panel border-emerald-800/20 animate-fade-in">
               <div className="terminal-header flex items-center gap-2">
                 <Download className="h-3 w-3 text-emerald-600" />
                 <span className="text-emerald-600 text-[10px]">Impact Summary</span>
+                <button
+                  onClick={() => setShowReport(true)}
+                  className="ml-auto terminal-btn text-[10px] px-2.5 py-1 h-auto"
+                >
+                  <Printer className="h-3 w-3" />
+                  Report
+                </button>
               </div>
               <div className="terminal-content space-y-4">
                 <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
@@ -195,6 +221,12 @@ export default function DashboardPage() {
                         <p className="text-sm font-bold text-red-400 tabular-nums">{(annualCo2 / 1000).toFixed(1)} <span className="text-[10px] text-emerald-600">t CO₂e</span></p>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center border border-emerald-800/20 bg-gray-900/50 p-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-[10px] text-emerald-600 uppercase tracking-widest">Waste Impact Radar</p>
+                    <RadarChart data={radarData} size={200} />
                   </div>
                 </div>
               </div>
