@@ -37,6 +37,7 @@ const NAV_ITEMS = [
   { label: 'Data Import', href: '/import', icon: Upload },
   { label: 'API Keys', href: '/api-keys', icon: KeyRound },
   { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Team', href: '/team', icon: Users },
 ] as const;
 
 export function Sidebar() {
