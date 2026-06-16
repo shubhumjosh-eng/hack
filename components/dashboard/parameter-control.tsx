@@ -48,10 +48,12 @@ export function ParameterControl({
       <div className="terminal-content space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="terminal-label">
+            <label htmlFor="day_of_week" className="terminal-label">
               <span className="text-emerald-500/50">$</span> day_of_week
             </label>
             <select
+              id="day_of_week"
+              name="day_of_week"
               value={dayOfWeek}
               onChange={(e) => onDayChange(e.target.value)}
               className="terminal-select"
@@ -63,10 +65,12 @@ export function ParameterControl({
           </div>
 
           <div>
-            <label className="terminal-label">
+            <label htmlFor="weather_condition" className="terminal-label">
               <span className="text-emerald-500/50">$</span> weather_condition
             </label>
             <select
+              id="weather_condition"
+              name="weather_condition"
               value={weatherCondition}
               onChange={(e) => onWeatherChange(e.target.value)}
               className="terminal-select"
@@ -79,9 +83,9 @@ export function ParameterControl({
         </div>
 
         <div>
-          <label className="terminal-label">
-            <span className="text-emerald-500/50">$</span> scheduled_menu
-          </label>
+          <label htmlFor="scheduled_menu" className="terminal-label">
+              <span className="text-emerald-500/50">$</span> scheduled_menu
+            </label>
           <div className="flex gap-1 flex-wrap mb-2">
             {MENU_SUGGESTIONS.slice(0, 5).map((m) => (
               <button
@@ -98,6 +102,8 @@ export function ParameterControl({
             ))}
           </div>
           <input
+            id="scheduled_menu"
+            name="scheduled_menu"
             type="text"
             value={scheduledMenu}
             onChange={(e) => onMenuChange(e.target.value)}
@@ -108,10 +114,12 @@ export function ParameterControl({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="terminal-label">
+            <label htmlFor="expected_attendance" className="terminal-label">
               <span className="text-emerald-500/50">$</span> expected_attendance <span className="text-emerald-600">[{expectedAttendance}]</span>
             </label>
             <input
+              id="expected_attendance"
+              name="expected_attendance"
               type="range"
               min={50}
               max={800}
@@ -130,10 +138,12 @@ export function ParameterControl({
           </div>
 
           <div>
-            <label className="terminal-label">
+            <label htmlFor="temperature_f" className="terminal-label">
               <span className="text-emerald-500/50">$</span> temperature_f <span className="text-emerald-600">[{temperature}°F]</span>
             </label>
             <input
+              id="temperature_f"
+              name="temperature_f"
               type="range"
               min={20}
               max={110}
