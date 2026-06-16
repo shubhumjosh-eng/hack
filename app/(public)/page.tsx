@@ -475,6 +475,8 @@ export default function LandingPage() {
             <div className="flex items-center gap-3">
               <span>Updated 2025-06-16</span>
               <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
+              <Link href="/about" className="hover:text-emerald-500 transition-colors">About</Link>
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <span>All systems nominal</span>
               <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <a

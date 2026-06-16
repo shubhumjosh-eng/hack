@@ -3,6 +3,7 @@
 
 ## Core
 - [Landing](https://hack2-pi.vercel.app/)
+- [About](https://hack2-pi.vercel.app/about)
 - [Sign In](https://hack2-pi.vercel.app/login)
 - [Create Account](https://hack2-pi.vercel.app/signup)
 - [Dashboard](https://hack2-pi.vercel.app/dashboard)
