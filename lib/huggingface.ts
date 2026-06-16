@@ -32,7 +32,7 @@ export async function predictWasteWithLLM(
   const startTime = performance.now();
 
   const userContent = [
-    'Now analyze this new input and return ONLY valid JSON (no markdown, no code fences, no preamble, no extra text before or after the JSON):',
+    'Analyze this input and return ONLY valid JSON. No reasoning, no explanation, no markdown, no code fences, no extra text before or after the JSON. Begin your response with { and end with }.',
     '',
     'Input:',
     JSON.stringify({
@@ -106,7 +106,7 @@ export async function triageText(
   const payload = {
     model: 'meta-llama/Llama-3.1-8B-Instruct:fastest',
     messages: [
-      { role: 'system', content: 'You analyze food waste descriptions and extract structured environmental intelligence. Return ONLY valid JSON (no markdown, no code fences, no preamble) with this exact structure: { "environmentalIntent": { "category": "waste"|"emission"|"water"|"energy"|"biodiversity"|"unknown", "confidence": 0.95, "subcategory": "string" }, "locations": [{ "name": "string", "type": "school"|"hospital"|"restaurant"|"office"|"warehouse"|"home"|"other", "estimatedScale": "small"|"medium"|"large" }], "actions": [{ "id": "act-1", "description": "string", "priority": "critical"|"high"|"medium"|"low", "environmentalImpact": "string", "estimatedSavings": "string", "effort": "quick"|"moderate"|"significant" }], "recommendation": { "summary": "string", "reasoning": ["string"], "nextSteps": ["string"], "impactProjection": { "wasteReduction": "string", "costSavings": "string", "co2Reduction": "string" } } }' },
+      { role: 'system', content: 'You analyze food waste descriptions and extract structured environmental intelligence. Return ONLY valid JSON. No reasoning, no explanation, no markdown, no code fences, no extra text. Begin with { and end with }. Use this exact structure: { "environmentalIntent": { "category": "waste"|"emission"|"water"|"energy"|"biodiversity"|"unknown", "confidence": 0.95, "subcategory": "string" }, "locations": [{ "name": "string", "type": "school"|"hospital"|"restaurant"|"office"|"warehouse"|"home"|"other", "estimatedScale": "small"|"medium"|"large" }], "actions": [{ "id": "act-1", "description": "string", "priority": "critical"|"high"|"medium"|"low", "environmentalImpact": "string", "estimatedSavings": "string", "effort": "quick"|"moderate"|"significant" }], "recommendation": { "summary": "string", "reasoning": ["string"], "nextSteps": ["string"], "impactProjection": { "wasteReduction": "string", "costSavings": "string", "co2Reduction": "string" } } }' },
       { role: 'user', content: `Analyze this waste situation:\n\n"${input}"` },
     ],
     max_tokens: 1024,
@@ -155,7 +155,8 @@ function parseTriageResponse(text: string): {
   actions: ActionItem[];
   recommendation: AIRecommendation;
 } {
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const stripped = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '');
+  const jsonMatch = stripped.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error('Could not parse triage response. Expected JSON object.');
   }
@@ -255,7 +256,8 @@ function parsePredictionResponse(text: string): {
   riskWarning: string;
   humanInTheLoopAction: string;
 } {
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const stripped = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '');
+  const jsonMatch = stripped.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error('Could not parse AI response. Expected JSON object.');
   }
