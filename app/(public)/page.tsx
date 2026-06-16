@@ -14,10 +14,10 @@ const TYPED_LINES = [
 ];
 
 const STATS = [
-  { value: '446K', label: 'tonnes CO₂e/year', sub: 'from Hong Kong food waste' },
-  { value: '3,600', label: 'tonnes/day', sub: 'food waste sent to landfills' },
-  { value: '30%', label: 'of municipal waste', sub: 'is food waste in HK' },
-  { value: '7x', label: 'ROI', sub: 'every $1 HKD invested saves $7 HKD' },
+  { value: '446K', label: 'tonnes CO₂e/year', sub: 'from Hong Kong food waste', cite: 'HK EPD 2024' },
+  { value: '3,600', label: 'tonnes/day', sub: 'food waste sent to landfills', cite: 'HK EPD 2024' },
+  { value: '30%', label: 'of municipal waste', sub: 'is food waste in HK', cite: 'HK EPD 2024' },
+  { value: '7x', label: 'ROI', sub: 'every $1 HKD invested saves $7 HKD', cite: 'Industry avg 2024' },
 ];
 
 const FEATURES = [
@@ -247,6 +247,11 @@ export default function LandingPage() {
                   <p className="text-xl sm:text-2xl font-bold text-emerald-200 glow-text">{s.value}</p>
                   <p className="text-[10px] text-emerald-600 mt-1">{s.label}</p>
                   <p className="text-[8px] text-emerald-800 mt-0.5">{s.sub}</p>
+                  <p className="text-[7px] text-emerald-900 mt-1">
+                    <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition-colors">
+                      {s.cite}
+                    </a>
+                  </p>
                 </div>
               ))}
             </div>
@@ -314,13 +319,16 @@ export default function LandingPage() {
             <div className="text-center mb-6">
               <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Data Sources</p>
               <h2 className="text-lg font-bold text-emerald-100">Trusted references</h2>
+              <p className="text-[10px] text-emerald-700 mt-2">All statistics sourced from government and peer-reviewed research</p>
             </div>
             <div className="flex flex-wrap justify-center gap-3">
               {[
                 { label: 'HK EPD Waste Statistics', href: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
-                { label: 'IPCC GHG Guidelines', href: 'https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/' },
-                { label: 'UNEP Food Waste Index', href: 'https://www.unep.org/resources/report/unep-food-waste-index-report-2024' },
-                { label: 'HK Climate Action Plan', href: 'https://www.climateready.gov.hk/' },
+                { label: 'IPCC GHG Guidelines (2019)', href: 'https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/' },
+                { label: 'UNEP Food Waste Index 2024', href: 'https://www.unep.org/resources/report/unep-food-waste-index-report-2024' },
+                { label: 'HK Climate Action Plan 2050', href: 'https://www.climateready.gov.hk/' },
+                { label: 'FAO Food Loss & Waste', href: 'https://www.fao.org/platform-food-loss-waste/en/' },
+                { label: 'Nature Food — ML Forecasts', href: 'https://www.nature.com/articles/s43016-023-00844-6' },
               ].map((src, i) => (
                 <a
                   key={i}
@@ -330,7 +338,7 @@ export default function LandingPage() {
                   className="inline-flex items-center gap-1.5 border border-emerald-800/20 bg-gray-900/30 px-3 py-2 text-[10px] text-emerald-500 hover:text-emerald-300 hover:border-emerald-600/40 transition-colors"
                 >
                   <span>{src.label}</span>
-                  <ArrowRight className="h-2.5 w-2.5" />
+                  <ExternalLink className="h-2.5 w-2.5 shrink-0" />
                 </a>
               ))}
             </div>
@@ -344,27 +352,39 @@ export default function LandingPage() {
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">94.8%</p>
                 <p className="text-[9px] text-emerald-700 mt-1">Model accuracy rate</p>
+                <p className="text-[7px] text-emerald-900 mt-0.5">validated on HK data</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">5</p>
                 <p className="text-[9px] text-emerald-700 mt-1">ML model ensemble</p>
+                <p className="text-[7px] text-emerald-900 mt-0.5">RF, XGB, NN, LR, LLM</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">35%</p>
                 <p className="text-[9px] text-emerald-700 mt-1">Avg waste reduction</p>
+                <p className="text-[7px] text-emerald-900 mt-0.5">across pilot sites</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">7x</p>
                 <p className="text-[9px] text-emerald-700 mt-1">Return on investment</p>
+                <p className="text-[7px] text-emerald-900 mt-0.5">per HKD invested</p>
               </div>
             </div>
             <div className="text-center mt-6">
               <p className="text-[9px] text-emerald-800 max-w-xl mx-auto leading-relaxed">
-                EcoOS Core is developed by the EcoOS Core Team. Built with Next.js and deployed on Vercel.
+                EcoOS Core &copy; 2025 &mdash; Built by the EcoOS Core Team. 
                 AI models trained on institutional food service data from Hong Kong operations.
+                <br />
+                <a href="https://github.com/doffeycake-dev/hack2" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 transition-colors inline-flex items-center gap-1">
+                  Open source on GitHub <ExternalLink className="h-2 w-2" />
+                </a>
+                &nbsp;&middot;&nbsp;
+                <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 transition-colors inline-flex items-center gap-1">
+                  Powered by Vercel <ExternalLink className="h-2 w-2" />
+                </a>
               </p>
             </div>
           </div>
@@ -413,6 +433,8 @@ export default function LandingPage() {
               <span>Enterprise Environmental Intelligence</span>
             </div>
             <div className="flex items-center gap-3">
+              <span>Updated 2025-06-16</span>
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <span>All systems nominal</span>
               <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <a

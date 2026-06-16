@@ -63,7 +63,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "@type": "WebSite",
                 "name": "EcoOS Core",
                 "url": "https://hack2-pi.vercel.app",
-                "description": "Enterprise environmental intelligence platform for food waste prediction and reduction."
+                "description": "Enterprise environmental intelligence platform for food waste prediction and reduction.",
+                "datePublished": "2024-11-01",
+                "dateModified": "2025-06-16"
               },
               {
                 "@context": "https://schema.org",
