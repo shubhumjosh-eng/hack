@@ -99,12 +99,12 @@ export async function logAuthError(email: string, action: string, errorMessage: 
   } catch {}
 }
 
-export async function supabaseSignUp(email: string, password: string, name: string): Promise<{ error?: string }> {
+export async function supabaseSignUp(email: string, password: string, name: string, teamId?: string): Promise<{ error?: string }> {
   const supabase = createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: { data: { name, teamId: teamId || 'team-1' } },
   });
   if (error) {
     await logAuthError(email, 'signup', error.message);
@@ -115,6 +115,7 @@ export async function supabaseSignUp(email: string, password: string, name: stri
   }
   const sbId = data.user.id;
   const existing = findUserByEmail(email);
+  const targetTeamId = teamId || 'team-1';
   if (!existing) {
     const users = getRegisteredUsers();
     const newUser: User = {
@@ -122,7 +123,7 @@ export async function supabaseSignUp(email: string, password: string, name: stri
       email,
       name,
       role: 'editor',
-      teamId: 'team-1',
+      teamId: targetTeamId,
     };
     const isFirst = users.length === 0;
     newUser.role = isFirst ? 'admin' : 'editor';

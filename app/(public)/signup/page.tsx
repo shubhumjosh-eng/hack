@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -16,9 +16,26 @@ export default function SignupPage() {
   const [success, setSuccess] = useState(false);
   const [password, setPassword] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [inviteTeam, setInviteTeam] = useState<string | null>(null);
   const captchaRef = useRef<ReCAPTCHA>(null);
   const { signup, loading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('invite');
+    if (code) {
+      setInviteCode(code);
+      fetch('/api/invite/validate?code=' + encodeURIComponent(code))
+        .then(r => r.json())
+        .then(data => {
+          if (data.valid && data.teamId) setInviteTeam(data.teamId);
+          else setError('Invalid or expired invite code.');
+        })
+        .catch(() => setError('Failed to validate invite code.'));
+    }
+  }, []);
 
   const strength = useMemo(() => {
     let score = 0;
@@ -74,7 +91,7 @@ export default function SignupPage() {
       return;
     }
 
-    const err = await signup(email.trim(), pw, name.trim());
+    const err = await signup(email.trim(), pw, name.trim(), inviteTeam || undefined);
     if (err) {
       setError(err);
     } else {
@@ -95,6 +112,11 @@ export default function SignupPage() {
           <div>
             <p className="text-xs text-emerald-500/70 font-mono mb-1">$ Create a new account</p>
             <p className="text-[10px] text-emerald-700">Register to access the environmental intelligence terminal.</p>
+            {inviteCode && (
+              <p className="text-[10px] text-emerald-500 mt-2 flex items-center gap-1">
+                <span className="text-emerald-600">*</span> Invite code applied
+              </p>
+            )}
           </div>
 
           {error && (

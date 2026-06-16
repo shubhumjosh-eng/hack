@@ -26,6 +26,7 @@ import {
   Fingerprint,
   Shield,
   ClipboardList,
+  Send,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from './auth-provider';
@@ -43,6 +44,7 @@ const NAV_ITEMS = [
   { label: 'Team', href: '/team', icon: Users },
   { label: 'Sessions', href: '/sessions', icon: Fingerprint },
   { label: 'Audit', href: '/audit', icon: ClipboardList },
+  { label: 'Invite', href: '/invite', icon: Send },
 ] as const;
 
 export function Sidebar() {

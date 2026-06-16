@@ -9,7 +9,7 @@ interface AuthContextValue {
   team: Team | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string, name: string) => Promise<string | null>;
+  signup: (email: string, password: string, name: string, teamId?: string) => Promise<string | null>;
   logout: () => void;
   switchTeam: (teamId: string) => void;
   isAuthenticated: boolean;
@@ -140,11 +140,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   }, []);
 
-  const signup = useCallback(async (email: string, password: string, name: string): Promise<string | null> => {
+  const signup = useCallback(async (email: string, password: string, name: string, teamId?: string): Promise<string | null> => {
     const existing = [...MOCK_USERS, ...getRegisteredUsers()].find(u => u.email === email);
     if (existing) return 'Email already registered';
 
-    const result = await supabaseSignUp(email, password, name);
+    const result = await supabaseSignUp(email, password, name, teamId);
     if (result.error) return result.error;
 
     const loginOk = await login(email, password);

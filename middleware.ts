@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 const DASHBOARD_ROUTES = [
   '/dashboard', '/triage', '/analytics', '/waste-streams',
   '/geo-map', '/schedules', '/import', '/api-keys', '/settings',
-  '/profile', '/errors', '/team', '/sessions', '/admin', '/audit',
+  '/profile', '/errors', '/team', '/sessions', '/admin', '/audit', '/invite',
 ];
 
 const RATE_LIMIT_WINDOW = 60_000;
