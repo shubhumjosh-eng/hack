@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
-import { Terminal, Loader2 } from 'lucide-react';
+import { Terminal, Loader2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = '6Lee7SItAAAAACfifkAALUdpv68XcY2cBWhsSthG';
 
 const QUICK_LOGIN = [
   { email: 'admin@greenvalley.edu', label: 'Admin — Green Valley Unified' },
@@ -17,6 +20,8 @@ const QUICK_LOGIN = [
 
 export default function LoginPage() {
   const [error, setError] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<ReCAPTCHA>(null);
   const { login, loading } = useAuth();
   const router = useRouter();
 
@@ -37,6 +42,25 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
+
+    if (!captchaToken) {
+      setError('Please complete the security check.');
+      return;
+    }
+
+    const verify = await fetch('/api/auth/verify-captcha', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: captchaToken }),
+    });
+    const captchaResult = await verify.json();
+    if (!captchaResult.success) {
+      setError('Security check failed. Please try again.');
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
+      return;
+    }
+
     const data = new FormData(e.currentTarget);
     const email = (data.get('email') as string) || '';
     const password = (data.get('password') as string) || '';
@@ -94,6 +118,15 @@ export default function LoginPage() {
             required
           />
 
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={captchaRef}
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={(token) => setCaptchaToken(token)}
+              theme="dark"
+            />
+          </div>
+
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> authenticate</>}
           </Button>
@@ -124,6 +157,11 @@ export default function LoginPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-1 text-[8px] text-emerald-700">
+            <Shield className="h-2.5 w-2.5" />
+            Protected by reCAPTCHA
           </div>
         </form>
       </div>
