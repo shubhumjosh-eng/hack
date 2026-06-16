@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { Radar } from 'lucide-react';
 import { useAuth } from './auth-provider';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { PwaInstall } from '@/components/ui/pwa-install';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -103,6 +104,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         )}
       </div>
       {tourActive && <TourOverlay onComplete={handleTourComplete} onSkip={handleTourSkip} />}
+      <PwaInstall />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: 'EcoOS Core — Enterprise Environmental Intelligence',
+  manifest: '/manifest.json',
   description:
     'AI-powered waste triage, prediction, and analytics for institutional food service operations. Reduce waste, cut costs, and minimize environmental impact.',
   keywords: [
@@ -35,6 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Analytics />
         <SpeedInsights />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
