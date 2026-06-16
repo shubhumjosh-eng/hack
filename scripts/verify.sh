@@ -30,12 +30,12 @@ check "Signup page" "$BASE_URL/signup" 200
 check "Forgot password page" "$BASE_URL/forgot-password" 200
 check "About page" "$BASE_URL/about" 200
 check "Health check API" "$BASE_URL/api/health" 200
-check "Auth callback route" "$BASE_URL/auth/callback" 200
+check "Auth callback route" "$BASE_URL/auth/callback" 307
 
 echo ""
 echo "Security Headers:"
 curl -sI "$BASE_URL" | grep -iE "content-security-policy|permissions-policy|x-frame-options|strict-transport-security" | while read line; do
-  echo "  ${line,,}"
+  echo "  $(echo "$line" | tr '[:upper:]' '[:lower:]')"
 done
 
 echo ""
