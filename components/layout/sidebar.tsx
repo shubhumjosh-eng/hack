@@ -24,6 +24,7 @@ import {
   User,
   AlertTriangle,
   Fingerprint,
+  Shield,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from './auth-provider';
@@ -147,6 +148,20 @@ export function Sidebar() {
               <AlertTriangle className="h-3 w-3" />
               <span className={cn(collapsed && 'hidden')}>errors</span>
             </Link>
+            {user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
+                  collapsed ? 'justify-center' : ''
+                )}
+                title="Admin"
+              >
+                <Shield className="h-3 w-3" />
+                <span className={cn(collapsed && 'hidden')}>admin</span>
+              </Link>
+            )}
             <button
               onClick={logout}
               className={cn(
