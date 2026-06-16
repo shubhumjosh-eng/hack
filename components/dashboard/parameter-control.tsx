@@ -37,8 +37,8 @@ const MENU_SUGGESTIONS = [
 
 export function ParameterControl({
   dayOfWeek, scheduledMenu, expectedAttendance, weatherCondition, temperature,
-  loading, onDayChange, onMenuChange, onAttendanceChange, onWeatherChange,
-  onTemperatureChange, onSubmit,
+  loading, modelId, onDayChange, onMenuChange, onAttendanceChange, onWeatherChange,
+  onTemperatureChange, onModelChange, onSubmit,
 }: ParameterControlProps) {
   return (
     <div className="terminal-panel animate-fade-in">
