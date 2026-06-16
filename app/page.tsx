@@ -74,7 +74,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-16 sm:pb-0">
       <div className="flex items-center justify-between border-b border-emerald-800/20 pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
@@ -117,6 +117,7 @@ export default function DashboardPage() {
             result={result}
             loading={loading}
             error={error}
+            input={input}
             onDismiss={handleDismissError}
           />
 

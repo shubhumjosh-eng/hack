@@ -1,17 +1,20 @@
 'use client';
 
-import { PredictionResult } from '@/lib/types';
-import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2 } from 'lucide-react';
+import { PredictionResult, PredictionInput } from '@/lib/types';
+import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download } from 'lucide-react';
 import { useState } from 'react';
+import { TypewriterText } from '@/components/ui/typewriter-text';
+import { downloadPredictionCSV } from '@/lib/utils';
 
 interface ResultsPanelProps {
   result: PredictionResult | null;
   loading: boolean;
   error: string | null;
+  input: PredictionInput | null;
   onDismiss: () => void;
 }
 
-export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanelProps) {
+export function ResultsPanel({ result, loading, error, input, onDismiss }: ResultsPanelProps) {
   const [acknowledged, setAcknowledged] = useState(false);
 
   if (loading) {
@@ -100,15 +103,15 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
   return (
     <div className="space-y-4 animate-slide-in-up">
       <div className="terminal-panel border-emerald-600/30 glow-border">
-        <div className="terminal-header flex items-center gap-2 bg-emerald-950/30">
-          <Terminal className="h-3.5 w-3.5 text-emerald-400" />
+        <div className="terminal-header flex items-center gap-2 bg-emerald-950/30 flex-wrap">
+          <Terminal className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
           <span>AI Insight Engine — Prediction Complete</span>
-          <span className="ml-auto text-[10px] text-emerald-700 tracking-normal">
+          <span className="ml-auto text-[10px] text-emerald-700 tracking-normal whitespace-nowrap">
             {result.metadata.latencyMs}ms
           </span>
         </div>
         <div className="terminal-content space-y-6">
-          <div className="flex items-center justify-between border border-emerald-800/30 bg-gray-900 p-4">
+          <div className="flex items-center justify-between border border-emerald-800/30 bg-gray-900 p-4 flex-wrap gap-2">
             <div className="space-y-1">
               <p className="text-[10px] text-emerald-600 uppercase tracking-widest">Predicted Food Waste</p>
               <p className="text-3xl font-bold text-emerald-300 glow-text tabular-nums">
@@ -123,15 +126,24 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
           </div>
 
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+              <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
               <span className="text-xs text-emerald-400 uppercase tracking-wider">Actionable Interventions</span>
+              {input && (
+                <button
+                  onClick={() => downloadPredictionCSV(result, input)}
+                  className="ml-auto terminal-btn text-[10px] px-2.5 py-1 h-auto"
+                >
+                  <Download className="h-3 w-3" />
+                  CSV
+                </button>
+              )}
             </div>
             <div className="space-y-2">
               {result.actionableInterventions.map((intervention, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
                   <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
-                  <span>{intervention}</span>
+                  <span><TypewriterText text={intervention} speed={10} /></span>
                 </div>
               ))}
             </div>
@@ -141,11 +153,13 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Risk Warning</span>
                   <span className="risk-warning text-[10px]">SYNTHETIC DATA</span>
                 </div>
-                <p className="text-xs text-amber-300/80 leading-relaxed">{result.riskWarning}</p>
+                <p className="text-xs text-amber-300/80 leading-relaxed">
+                  <TypewriterText text={result.riskWarning} speed={12} />
+                </p>
               </div>
             </div>
           </div>
@@ -154,7 +168,7 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
             <div className="flex items-start gap-3">
               <Shield className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
               <div className="space-y-3 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Human-in-the-Loop Required</span>
                   <span className="risk-critical text-[10px]">ACTION REQUIRED</span>
                 </div>
@@ -177,7 +191,7 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
             </div>
           </div>
 
-          <div className="text-[10px] text-emerald-800 flex items-center justify-between border-t border-emerald-800/20 pt-3">
+          <div className="text-[10px] text-emerald-800 flex items-center justify-between border-t border-emerald-800/20 pt-3 flex-wrap gap-1">
             <span>MODEL: {result.metadata.modelUsed}</span>
             <span>PROCESSED: {new Date(result.metadata.processedAt).toLocaleTimeString()}</span>
           </div>
@@ -186,11 +200,11 @@ export function ResultsPanel({ result, loading, error, onDismiss }: ResultsPanel
 
       <div className="terminal-panel border-emerald-800/20">
         <div className="terminal-header flex items-center gap-2">
-          <Terminal className="h-3 w-3 text-emerald-600" />
+          <Terminal className="h-3 w-3 text-emerald-600 shrink-0" />
           <span className="text-emerald-600 text-[10px]">raw_response.json</span>
         </div>
-        <div className="terminal-content">
-          <pre className="text-[11px] text-emerald-500/70 leading-relaxed overflow-x-auto">
+        <div className="terminal-content overflow-x-auto">
+          <pre className="text-[11px] text-emerald-500/70 leading-relaxed whitespace-pre-wrap break-all">
 {JSON.stringify({
   predictedWasteKg: result.predictedWasteKg,
   actionableInterventions: result.actionableInterventions,

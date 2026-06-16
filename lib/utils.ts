@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { PredictionResult, PredictionInput } from './types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -96,4 +97,31 @@ export function getConfidenceColor(confidence: number): string {
   if (confidence >= 0.85) return 'text-green-500';
   if (confidence >= 0.6) return 'text-yellow-500';
   return 'text-red-500';
+}
+
+export function downloadPredictionCSV(result: PredictionResult, input: PredictionInput): void {
+  const rows = [
+    ['Field', 'Value'],
+    ['Timestamp', result.metadata.processedAt],
+    ['Day of Week', input.dayOfWeek],
+    ['Weather', input.weatherCondition],
+    ['Expected Attendance', input.expectedAttendance.toString()],
+    ['Menu', input.scheduledMenu],
+    ['Temperature (°F)', (input.temperature ?? 70).toString()],
+    ['Predicted Waste (kg)', result.predictedWasteKg.toFixed(2)],
+    ['Model', result.metadata.modelUsed],
+    ['Latency (ms)', result.metadata.latencyMs.toString()],
+    ...result.actionableInterventions.map((v, i) => [`Intervention ${i + 1}`, v]),
+    ['Risk Warning', result.riskWarning],
+    ['Human Action Required', result.humanInTheLoopAction],
+  ];
+
+  const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `waste-prediction-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

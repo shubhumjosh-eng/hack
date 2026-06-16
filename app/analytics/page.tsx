@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
 
   if (!analytics) {
     return (
-      <div className="space-y-8 animate-fade-in">
+      <div className="space-y-8 animate-fade-in pb-16 sm:pb-0">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-emerald-50">Analytics</h1>
@@ -149,7 +149,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in pb-16 sm:pb-0">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-emerald-50">Analytics</h1>

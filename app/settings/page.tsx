@@ -93,7 +93,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in pb-16 sm:pb-0">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-emerald-50">Settings</h1>
