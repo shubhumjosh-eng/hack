@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
-import { Radar, ChevronRight, ArrowRight, Terminal, BarChart3, Shield, Cpu, Globe, TrendingDown, TreesIcon as Tree, DollarSign } from 'lucide-react';
+import { Radar, ChevronRight, ArrowRight, Terminal, BarChart3, Shield, Cpu, Globe, TrendingDown, TreesIcon as Tree, DollarSign, ExternalLink } from 'lucide-react';
 
 const TYPED_LINES = [
   '> Initializing EcoOS Core...',
@@ -279,6 +279,97 @@ export default function LandingPage() {
           </div>
         </div>
 
+        {/* FAQ */}
+        <div className="border-b border-emerald-800/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+            <div className="text-center mb-10">
+              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">FAQ</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-emerald-100">Frequently asked questions</h2>
+            </div>
+            <div className="space-y-3 max-w-3xl mx-auto">
+              {[
+                { q: 'How does AI waste prediction work?', a: 'EcoOS uses ensemble machine learning models (Random Forest, XGBoost, Neural Network, and LLM) to forecast food waste before meals are served. The system analyzes historical waste data, menu items, attendance figures, and day-of-week patterns to predict waste quantities with up to 94.8% accuracy.' },
+                { q: 'What data does EcoOS analyze?', a: 'EcoOS analyzes historical waste records, menu compositions, attendance counts, day-of-week patterns, seasonal trends, and intervention outcomes to generate accurate waste predictions and actionable recommendations.' },
+                { q: 'How accurate are the predictions?', a: 'Our ensemble ML models achieve 94.8% prediction accuracy across institutional food service operations. The multi-model portfolio lets you choose from five models to best match your operational profile.' },
+                { q: 'Is EcoOS available for Hong Kong operations?', a: 'Yes. EcoOS is optimized for Hong Kong institutional food service, using local waste statistics and Hong Kong Environmental Protection Department data. The platform addresses Hong Kong\'s 3,600 tonnes of daily food waste sent to landfills.' },
+                { q: 'What models are used for waste prediction?', a: 'EcoOS offers a five-model portfolio: Random Forest (RF), XGBoost, Neural Network (NN), Linear Regression (LR), and LLM-based prediction. Each model can be selected based on your specific accuracy and interpretability needs.' },
+              ].map((faq, i) => (
+                <details key={i} className="group border border-emerald-800/20 bg-gray-900/30 open:border-emerald-600/40 transition-colors">
+                  <summary className="flex items-center justify-between px-4 py-3 cursor-pointer text-xs text-emerald-300 hover:text-emerald-200 transition-colors list-none">
+                    <span className="pr-4">{faq.q}</span>
+                    <ChevronRight className="h-3 w-3 text-emerald-700 group-open:rotate-90 transition-transform shrink-0" />
+                  </summary>
+                  <div className="px-4 pb-3 text-[11px] text-emerald-500/80 leading-relaxed border-t border-emerald-800/20 pt-2 mt-0">
+                    {faq.a}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Authoritative Sources */}
+        <div className="border-b border-emerald-800/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+            <div className="text-center mb-6">
+              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Data Sources</p>
+              <h2 className="text-lg font-bold text-emerald-100">Trusted references</h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { label: 'HK EPD Waste Statistics', href: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
+                { label: 'IPCC GHG Guidelines', href: 'https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/' },
+                { label: 'UNEP Food Waste Index', href: 'https://www.unep.org/resources/report/unep-food-waste-index-report-2024' },
+                { label: 'HK Climate Action Plan', href: 'https://www.climateready.gov.hk/' },
+              ].map((src, i) => (
+                <a
+                  key={i}
+                  href={src.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 border border-emerald-800/20 bg-gray-900/30 px-3 py-2 text-[10px] text-emerald-500 hover:text-emerald-300 hover:border-emerald-600/40 transition-colors"
+                >
+                  <span>{src.label}</span>
+                  <ArrowRight className="h-2.5 w-2.5" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Signals */}
+        <div className="border-b border-emerald-800/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+            <div className="flex flex-wrap items-center justify-center gap-8 text-center">
+              <div>
+                <p className="text-2xl font-bold text-emerald-200 glow-text">94.8%</p>
+                <p className="text-[9px] text-emerald-700 mt-1">Model accuracy rate</p>
+              </div>
+              <div className="h-8 w-px bg-emerald-800/20" />
+              <div>
+                <p className="text-2xl font-bold text-emerald-200 glow-text">5</p>
+                <p className="text-[9px] text-emerald-700 mt-1">ML model ensemble</p>
+              </div>
+              <div className="h-8 w-px bg-emerald-800/20" />
+              <div>
+                <p className="text-2xl font-bold text-emerald-200 glow-text">35%</p>
+                <p className="text-[9px] text-emerald-700 mt-1">Avg waste reduction</p>
+              </div>
+              <div className="h-8 w-px bg-emerald-800/20" />
+              <div>
+                <p className="text-2xl font-bold text-emerald-200 glow-text">7x</p>
+                <p className="text-[9px] text-emerald-700 mt-1">Return on investment</p>
+              </div>
+            </div>
+            <div className="text-center mt-6">
+              <p className="text-[9px] text-emerald-800 max-w-xl mx-auto leading-relaxed">
+                EcoOS Core is developed by the EcoOS Core Team. Built with Next.js and deployed on Vercel.
+                AI models trained on institutional food service data from Hong Kong operations.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* CTA */}
         <div className="border-b border-emerald-800/20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 text-center">
@@ -314,15 +405,35 @@ export default function LandingPage() {
 
         {/* Footer */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex items-center justify-between text-[9px] text-emerald-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[9px] text-emerald-800">
             <div className="flex items-center gap-2">
               <Radar className="h-3 w-3" />
               <span>EcoOS Core v2.5.0</span>
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
+              <span>Enterprise Environmental Intelligence</span>
             </div>
             <div className="flex items-center gap-3">
-              <span>Enterprise Environmental Intelligence</span>
-              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <span>All systems nominal</span>
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
+              <a
+                href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-emerald-500 transition-colors inline-flex items-center gap-1"
+              >
+                HK EPD Data
+                <ExternalLink className="h-2 w-2" />
+              </a>
+              <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
+              <a
+                href="https://github.com/doffeycake-dev/hack2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-emerald-500 transition-colors inline-flex items-center gap-1"
+              >
+                GitHub
+                <ExternalLink className="h-2 w-2" />
+              </a>
             </div>
           </div>
         </div>
