@@ -344,6 +344,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+    </div>
       {showTour && (
         <PageTour steps={DASHBOARD_TOUR} pageId="dashboard" onComplete={() => setShowTour(false)} />
       )}
