@@ -132,20 +132,18 @@ export function Sidebar() {
               <User className="h-3 w-3" />
               <span className={cn(collapsed && 'hidden')}>profile</span>
             </Link>
-            {user?.role === 'admin' && (
-              <Link
-                href="/errors"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
-                  collapsed ? 'justify-center' : ''
-                )}
-                title="Error Log"
-              >
-                <AlertTriangle className="h-3 w-3" />
-                <span className={cn(collapsed && 'hidden')}>errors</span>
-              </Link>
-            )}
+            <Link
+              href="/errors"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
+                collapsed ? 'justify-center' : ''
+              )}
+              title="Error Log"
+            >
+              <AlertTriangle className="h-3 w-3" />
+              <span className={cn(collapsed && 'hidden')}>errors</span>
+            </Link>
             <button
               onClick={logout}
               className={cn(

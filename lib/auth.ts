@@ -124,6 +124,8 @@ export async function supabaseSignUp(email: string, password: string, name: stri
       role: 'editor',
       teamId: 'team-1',
     };
+    const isFirst = users.length === 0;
+    newUser.role = isFirst ? 'admin' : 'editor';
     users.push(newUser);
     localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
   }
@@ -153,14 +155,15 @@ export async function supabaseSignIn(email: string, password: string): Promise<{
   }
 
   const metaName = data.user.user_metadata?.name || email.split('@')[0];
+  const users = getRegisteredUsers();
+  const isFirst = users.length === 0;
   const newUser: User = {
     id: data.user.id,
     email,
     name: metaName,
-    role: 'editor',
+    role: isFirst ? 'admin' : 'editor',
     teamId: 'team-1',
   };
-  const users = getRegisteredUsers();
   users.push(newUser);
   localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
   return { user: newUser };

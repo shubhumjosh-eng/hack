@@ -37,8 +37,6 @@ export default function ErrorsPage() {
     loadErrors();
   }, []);
 
-  const isAdmin = user?.role === 'admin';
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -53,20 +51,13 @@ export default function ErrorsPage() {
         </div>
         <button
           onClick={loadErrors}
-          disabled={loading || !isAdmin}
+          disabled={loading}
           className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] border border-emerald-700/40 text-emerald-500 hover:border-emerald-500/60 disabled:opacity-40"
         >
           <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
           refresh
         </button>
       </div>
-
-      {!isAdmin && (
-        <div className="border border-amber-800/40 bg-amber-950/20 p-4 flex items-center gap-3">
-          <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
-          <p className="text-xs text-amber-300/80">Admin access required to view error logs.</p>
-        </div>
-      )}
 
       {fetchError && (
         <div className="border border-red-800/40 bg-red-950/20 px-3 py-2 text-xs text-red-400 font-mono">
@@ -80,13 +71,13 @@ export default function ErrorsPage() {
         </div>
       )}
 
-      {!loading && isAdmin && errors.length === 0 && (
+      {!loading && errors.length === 0 && (
         <div className="border border-emerald-800/20 p-6 text-center">
           <p className="text-xs text-emerald-600">No auth errors recorded.</p>
         </div>
       )}
 
-      {!loading && isAdmin && errors.length > 0 && (
+      {!loading && errors.length > 0 && (
         <div className="space-y-2">
           {errors.map(err => (
             <div key={err.id} className="border border-red-800/20 bg-red-950/5 p-3">
