@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { DashboardShell } from '@/components/layout/dashboard-shell';
-import { AuthProvider } from '@/components/layout/auth-provider';
 import { ThemeInit } from '@/components/layout/theme-init';
 
 export const metadata: Metadata = {
@@ -31,10 +29,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body>
-        <AuthProvider>
-          <ThemeInit />
-          <DashboardShell>{children}</DashboardShell>
-        </AuthProvider>
+        <ThemeInit />
+        {children}
       </body>
     </html>
   );

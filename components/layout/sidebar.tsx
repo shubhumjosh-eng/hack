@@ -26,7 +26,7 @@ import { useState } from 'react';
 import { useAuth } from './auth-provider';
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Triage', href: '/triage', icon: Search },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
   { label: 'Waste Streams', href: '/waste-streams', icon: Layers },
