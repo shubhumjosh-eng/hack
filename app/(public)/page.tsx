@@ -66,6 +66,16 @@ export default function LandingPage() {
     tick();
   }, []);
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const key = e.key.toUpperCase();
+      if (key === 'D' || key === 'E') window.location.href = '/dashboard';
+      else if (['A', 'B', 'C'].includes(key)) window.location.href = '/signup';
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-950 font-mono text-emerald-400">
       {/* Boot animation */}
@@ -168,6 +178,53 @@ export default function LandingPage() {
                 <p className="text-emerald-400/80">{'>>'} Risk level: <span className="text-amber-400">MODERATE</span></p>
                 <p className="text-emerald-400/80">{'>>'} Interventions: 3 actionable recommendations</p>
                 <p className="text-emerald-600 mt-2">$ <span className="animate-blink inline-block h-3 w-1.5 bg-emerald-500 ml-0.5" /></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Interactive Onboarding Terminal */}
+        <div className="border-b border-emerald-800/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+            <div className="text-center mb-6">
+              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Onboarding</p>
+              <h2 className="text-lg font-bold text-emerald-100">What brings you here today?</h2>
+              <p className="text-xs text-emerald-600 mt-1">Select an option to see how EcoOS can help you.</p>
+            </div>
+            <div className="terminal-panel max-w-2xl mx-auto">
+              <div className="terminal-header flex items-center gap-2">
+                <Terminal className="h-3 w-3 text-emerald-500" />
+                <span className="text-[10px]">type a command to begin</span>
+                <span className="ml-auto text-[8px] text-emerald-800">ONBOARDING v1.0</span>
+              </div>
+              <div className="terminal-content space-y-3">
+                <p className="text-[11px] text-emerald-500/70">
+                  <span className="text-emerald-600">$</span> ecoos --help --onboarding
+                </p>
+                <div className="space-y-1.5">
+                  <p className="text-[10px] text-emerald-700">Select a topic to learn more:</p>
+                  {[
+                    { key: 'A', label: 'Predict food waste with AI', desc: 'See how our ML models forecast waste before meals are served' },
+                    { key: 'B', label: 'Reduce costs & save money', desc: 'Discover intervention strategies with real dollar savings' },
+                    { key: 'C', label: 'Track environmental impact', desc: 'Measure CO₂, landfill diversion, and sustainability metrics' },
+                    { key: 'D', label: 'Get started with a demo', desc: 'Jump straight into the dashboard with pre-loaded data' },
+                    { key: 'E', label: 'Explore all features', desc: 'Full tour of the EcoOS platform capabilities' },
+                  ].map(opt => (
+                    <Link
+                      key={opt.key}
+                      href={opt.key === 'D' ? '/dashboard' : opt.key === 'E' ? '/dashboard' : '/signup'}
+                      className="flex items-center gap-3 px-3 py-2 border border-emerald-800/20 hover:border-emerald-600/40 hover:bg-emerald-900/20 transition-colors group"
+                    >
+                      <span className="text-[10px] font-bold text-emerald-500 w-5 shrink-0">[{opt.key}]</span>
+                      <div className="flex-1">
+                        <p className="text-xs text-emerald-300 group-hover:text-emerald-200 transition-colors">{opt.label}</p>
+                        <p className="text-[9px] text-emerald-700">{opt.desc}</p>
+                      </div>
+                      <ChevronRight className="h-3 w-3 text-emerald-700 group-hover:text-emerald-500 transition-colors shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+                <p className="text-[9px] text-emerald-800 text-center pt-1">Tip: You can also type <span className="text-emerald-600">A</span>, <span className="text-emerald-600">B</span>, <span className="text-emerald-600">C</span>, <span className="text-emerald-600">D</span>, or <span className="text-emerald-600">E</span> on your keyboard</p>
               </div>
             </div>
           </div>

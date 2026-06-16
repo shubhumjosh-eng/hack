@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Terminal, MapPin, Crosshair, ZoomIn, ZoomOut, Info } from 'lucide-react';
+import { Terminal, MapPin, Crosshair, ZoomIn, ZoomOut, Info, HelpCircle } from 'lucide-react';
 import { MOCK_SITES, computeClusters, getRiskColor, getTypeIcon, type WasteSite, type GeoCluster } from '@/lib/geo';
 
 const SVG_W = 600;
@@ -39,6 +39,23 @@ export default function GeoMapPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      {/* Help banner */}
+      <div className="terminal-panel border-emerald-700/30">
+        <div className="flex items-start gap-3 p-3 text-[11px] text-emerald-400/80">
+          <HelpCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-emerald-300 font-semibold mb-1">How to use the Waste Source Map</p>
+            <ul className="space-y-0.5 text-[10px] text-emerald-600">
+              <li><span className="text-emerald-500">&bull;</span> <strong className="text-emerald-400">Click</strong> any dot on the map to see site details (name, waste amount, risk level, last audit)</li>
+              <li><span className="text-emerald-500">&bull;</span> <strong className="text-emerald-400">Dashed circles</strong> show clusters of multiple nearby sites — click to expand</li>
+              <li><span className="text-emerald-500">&bull;</span> <strong className="text-emerald-400">Filter</strong> by risk level using the buttons above the map</li>
+              <li><span className="text-emerald-500">&bull;</span> Toggle <strong className="text-emerald-400">Clusters On/Off</strong> to group nearby sites or view individually</li>
+              <li><span className="text-emerald-500">&bull;</span> Dot <strong className="text-emerald-400">size</strong> = estimated waste volume (larger = more waste)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex-1 min-w-0">
           <div className="terminal-panel">

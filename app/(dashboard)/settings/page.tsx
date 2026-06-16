@@ -24,8 +24,10 @@ export default function SettingsPage() {
   const [exporting, setExporting] = useState(false);
   const [retraining, setRetraining] = useState(false);
   const [retrainDone, setRetrainDone] = useState(false);
+  const [activeThemeId, setActiveThemeId] = useState('emerald');
 
   useEffect(() => {
+    setActiveThemeId(getTheme().id);
     const settings = getSettings();
     if (settings) {
       setApiKey(settings.apiKey);
@@ -168,11 +170,11 @@ export default function SettingsPage() {
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {THEMES.map(theme => {
-              const active = getTheme().id === theme.id;
+              const active = activeThemeId === theme.id;
               return (
                 <button
                   key={theme.id}
-                  onClick={() => { setTheme(theme.id); setSaved(true); setTimeout(() => setSaved(false), 2000); }}
+                  onClick={() => { setTheme(theme.id); setActiveThemeId(theme.id); setSaved(true); setTimeout(() => setSaved(false), 2000); }}
                   className={`border p-2 text-left transition-all ${active ? 'border-emerald-500/60 bg-emerald-900/15' : 'border-emerald-800/20 hover:border-emerald-700/40 bg-gray-900/30'}`}
                 >
                   <div className="flex items-center gap-1.5 mb-1">
