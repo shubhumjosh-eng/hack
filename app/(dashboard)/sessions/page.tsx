@@ -1,80 +1,43 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/components/layout/auth-provider';
 import { createClient } from '@/lib/supabase';
-import { Terminal, Loader2, Smartphone, Monitor, LogOut, RefreshCw } from 'lucide-react';
-
-interface Session {
-  id: string;
-  created_at: string;
-  user_agent: string | null;
-  ip: string | null;
-  is_current: boolean;
-}
+import { Terminal, Loader2, Monitor, Smartphone, LogOut, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function SessionsPage() {
   const { user, logout } = useAuth();
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [revoking, setRevoking] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  async function loadSessions() {
+  async function handleLogoutAll() {
     setLoading(true);
+    setMessage('');
     try {
-      const res = await fetch('/api/auth/sessions');
-      const data = await res.json();
-      setSessions(Array.isArray(data) ? data : []);
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password: crypto.randomUUID() + '!Aa1' });
+      if (error) {
+        setMessage('Failed to invalidate sessions: ' + error.message);
+      } else {
+        setMessage('Password changed — all other sessions have been invalidated. You will be logged out.');
+        setTimeout(() => logout(), 2000);
+      }
     } catch {
-      setSessions([]);
+      setMessage('Failed to invalidate sessions.');
     }
     setLoading(false);
   }
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  async function revokeSession(sessionId: string) {
-    setRevoking(sessionId);
-    setMessage('');
-    try {
-      const res = await fetch('/api/auth/sessions', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setSessions(prev => prev.filter(s => s.id !== sessionId));
-        setMessage('Session revoked.');
-      } else {
-        setMessage(data.error || 'Failed to revoke session.');
-      }
-    } catch {
-      setMessage('Failed to revoke session.');
-    }
-    setRevoking(null);
-  }
-
   if (!user) return null;
+
+  const isMockUser = ['user-1', 'user-2', 'user-3', 'user-4'].includes(user.id);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-emerald-500" />
-          <h2 className="text-lg font-bold text-emerald-400 uppercase tracking-wider">Active Sessions</h2>
-        </div>
-        <button
-          onClick={loadSessions}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] border border-emerald-700/40 text-emerald-500 hover:border-emerald-500/60 disabled:opacity-40"
-        >
-          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
-          refresh
-        </button>
+      <div className="flex items-center gap-2">
+        <Terminal className="h-4 w-4 text-emerald-500" />
+        <h2 className="text-lg font-bold text-emerald-400 uppercase tracking-wider">Active Sessions</h2>
       </div>
 
       {message && (
@@ -83,66 +46,49 @@ export default function SessionsPage() {
         </div>
       )}
 
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-emerald-500" />
-        </div>
-      )}
-
-      {!loading && sessions.length === 0 && (
-        <div className="border border-emerald-800/20 p-6 text-center">
-          <p className="text-xs text-emerald-600">No active sessions found.</p>
-        </div>
-      )}
-
-      {!loading && sessions.length > 0 && (
-        <div className="space-y-2">
-          {sessions.map(s => (
-            <div
-              key={s.id}
-              className={`border p-4 text-xs flex items-center justify-between ${
-                s.is_current ? 'border-emerald-600/40 bg-emerald-950/15' : 'border-emerald-800/20'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-emerald-500">
-                  {s.user_agent?.includes('Mobile') ? <Smartphone className="h-4 w-4" /> : <Monitor className="h-4 w-4" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-300">
-                      {s.user_agent ? parseUA(s.user_agent) : 'Unknown device'}
-                    </span>
-                    {s.is_current && <span className="text-[8px] text-emerald-500 uppercase border border-emerald-700/30 px-1">current</span>}
-                  </div>
-                  <p className="text-emerald-600 mt-0.5">
-                    {new Date(s.created_at).toLocaleString()}
-                    {s.ip && ` · ${s.ip}`}
-                  </p>
-                </div>
-              </div>
-              {!s.is_current && (
-                <button
-                  onClick={() => revokeSession(s.id)}
-                  disabled={revoking === s.id}
-                  className="text-emerald-700 hover:text-red-400 transition-colors disabled:opacity-40"
-                  title="Revoke session"
-                >
-                  {revoking === s.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogOut className="h-3.5 w-3.5" />}
-                </button>
-              )}
+      <div className="border border-emerald-800/20 p-4 text-xs">
+        <div className="flex items-center gap-3">
+          <Monitor className="h-4 w-4 text-emerald-500" />
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-300">Current session</span>
+              <span className="text-[8px] text-emerald-500 uppercase border border-emerald-700/30 px-1">active</span>
             </div>
-          ))}
+            <p className="text-emerald-600 mt-0.5">
+              Logged in as {user.email} · {typeof navigator !== 'undefined' ? navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop' : 'Unknown'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {isMockUser ? (
+        <div className="border border-amber-800/40 bg-amber-950/20 p-4 flex items-center gap-3">
+          <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
+          <p className="text-xs text-amber-300/80">
+            Session management is not available for demo accounts. Create a real account to manage sessions.
+          </p>
+        </div>
+      ) : (
+        <div className="border border-red-800/20 bg-red-950/5 p-4">
+          <div className="flex items-start gap-3">
+            <LogOut className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-red-400 uppercase tracking-wider">Invalidate All Other Sessions</p>
+              <p className="text-[10px] text-red-300/70">
+                This will change your password and sign out all other devices. You will be logged out and need to sign in again.
+              </p>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleLogoutAll}
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <><LogOut className="h-3 w-3" /> invalidate all</>}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
-}
-
-function parseUA(ua: string): string {
-  if (ua.includes('Chrome/')) return 'Chrome';
-  if (ua.includes('Firefox/')) return 'Firefox';
-  if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
-  if (ua.includes('Edge/')) return 'Edge';
-  return 'Browser';
 }
