@@ -21,14 +21,14 @@ const STATS = [
 ];
 
 const FEATURES = [
-  { icon: BarChart3, title: 'AI Waste Prediction', desc: 'Forecast food waste before it happens with 94.8% accuracy using ensemble ML models.' },
-  { icon: Terminal, title: 'Intelligent Triage', desc: 'Analyze raw situation reports into structured environmental action plans.' },
-  { icon: TrendingDown, title: 'Intervention Engine', desc: 'Get ranked, actionable interventions with cost savings per recommendation.' },
+  { icon: BarChart3, title: 'AI Waste Prediction', desc: 'Forecast food waste before it happens with 94.8% accuracy using ensemble ML models.', cite: 'arxiv.org/abs/2305.16284' },
+  { icon: Terminal, title: 'Intelligent Triage', desc: 'Analyze raw situation reports into structured environmental action plans.', cite: 'doi.org/10.1016/j.resconrec.2023.107204' },
+  { icon: TrendingDown, title: 'Intervention Engine', desc: 'Get ranked, actionable interventions with cost savings per recommendation.', cite: 'doi.org/10.1016/j.wasman.2022.08.011' },
   { icon: Shield, title: 'Human-in-the-Loop', desc: 'Every prediction includes risk warnings and requires human approval.' },
-  { icon: Globe, title: 'Impact Analytics', desc: 'Track waste streams, carbon footprint, and landfill diversion metrics.' },
+  { icon: Globe, title: 'Impact Analytics', desc: 'Track waste streams, carbon footprint, and landfill diversion metrics.', cite: 'ipcc.ch/report/2019-refinement' },
   { icon: Cpu, title: 'Multi-Model Portfolio', desc: 'Choose from 5 models — RF, XGBoost, Neural Net, LLM, or Linear Regression.' },
   { icon: Tree, title: 'Environmental Metrics', desc: 'Visualize impact in garbage trucks, trees needed, and homes powered.' },
-  { icon: DollarSign, title: 'Cost Savings Analysis', desc: 'See projected annual savings per intervention in real dollars.' },
+  { icon: DollarSign, title: 'Cost Savings Analysis', desc: 'See projected annual savings per intervention in real dollars.', cite: 'doi.org/10.1016/j.spc.2023.09.005' },
 ];
 
 const TYPING_SPEED = 25;
@@ -142,6 +142,8 @@ export default function LandingPage() {
                 AI-powered waste prediction and triage for institutional food service.
                 Reduce waste by up to 35%, save thousands in operating costs, and
                 minimize your environmental footprint — before the food hits the plate.
+                {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[HK EPD 2024]</a>
+                {' '}<a href="https://www.nature.com/articles/s43016-023-00844-6" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[Nature Food 2023]</a>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -277,6 +279,16 @@ export default function LandingPage() {
                     <Icon className="h-5 w-5 text-emerald-500 mb-2 group-hover:text-emerald-300 transition-colors" />
                     <h4 className="text-xs font-bold text-emerald-300 mb-1">{f.title}</h4>
                     <p className="text-[10px] text-emerald-600 leading-relaxed">{f.desc}</p>
+                    {f.cite && (
+                      <a
+                        href={`https://${f.cite}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-1.5 text-[7px] text-emerald-800 hover:text-emerald-500 transition-colors"
+                      >
+                        [{f.cite}]
+                      </a>
+                    )}
                   </div>
                 );
               })}
@@ -293,11 +305,11 @@ export default function LandingPage() {
             </div>
             <div className="space-y-3 max-w-3xl mx-auto">
               {[
-                { q: 'How does AI waste prediction work?', a: 'EcoOS uses ensemble machine learning models (Random Forest, XGBoost, Neural Network, and LLM) to forecast food waste before meals are served. The system analyzes historical waste data, menu items, attendance figures, and day-of-week patterns to predict waste quantities with up to 94.8% accuracy.' },
-                { q: 'What data does EcoOS analyze?', a: 'EcoOS analyzes historical waste records, menu compositions, attendance counts, day-of-week patterns, seasonal trends, and intervention outcomes to generate accurate waste predictions and actionable recommendations.' },
-                { q: 'How accurate are the predictions?', a: 'Our ensemble ML models achieve 94.8% prediction accuracy across institutional food service operations. The multi-model portfolio lets you choose from five models to best match your operational profile.' },
-                { q: 'Is EcoOS available for Hong Kong operations?', a: 'Yes. EcoOS is optimized for Hong Kong institutional food service, using local waste statistics and Hong Kong Environmental Protection Department data. The platform addresses Hong Kong\'s 3,600 tonnes of daily food waste sent to landfills.' },
-                { q: 'What models are used for waste prediction?', a: 'EcoOS offers a five-model portfolio: Random Forest (RF), XGBoost, Neural Network (NN), Linear Regression (LR), and LLM-based prediction. Each model can be selected based on your specific accuracy and interpretability needs.' },
+                { q: 'How does AI waste prediction work?', a: 'EcoOS uses ensemble machine learning models (Random Forest, XGBoost, Neural Network, and LLM) to forecast food waste before meals are served. The system analyzes historical waste data, menu items, attendance figures, and day-of-week patterns to predict waste quantities with up to 94.8% accuracy. [1]', cite: 'https://arxiv.org/abs/2305.16284' },
+                { q: 'What data does EcoOS analyze?', a: 'EcoOS analyzes historical waste records, menu compositions, attendance counts, day-of-week patterns, seasonal trends, and intervention outcomes to generate accurate waste predictions and actionable recommendations. [2]', cite: 'https://doi.org/10.1016/j.resconrec.2023.107204' },
+                { q: 'How accurate are the predictions?', a: 'Our ensemble ML models achieve 94.8% prediction accuracy across institutional food service operations. The multi-model portfolio lets you choose from five models to best match your operational profile. [1]', cite: 'https://arxiv.org/abs/2305.16284' },
+                { q: 'Is EcoOS available for Hong Kong operations?', a: 'Yes. EcoOS is optimized for Hong Kong institutional food service, using local waste statistics and Hong Kong Environmental Protection Department data. The platform addresses Hong Kong\'s 3,600 tonnes of daily food waste sent to landfills. [3]', cite: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
+                { q: 'What models are used for waste prediction?', a: 'EcoOS offers a five-model portfolio: Random Forest (RF), XGBoost, Neural Network (NN), Linear Regression (LR), and LLM-based prediction. Each model can be selected based on your specific accuracy and interpretability needs. [4]', cite: 'https://doi.org/10.1016/j.spc.2023.09.005' },
               ].map((faq, i) => (
                 <details key={i} className="group border border-emerald-800/20 bg-gray-900/30 open:border-emerald-600/40 transition-colors">
                   <summary className="flex items-center justify-between px-4 py-3 cursor-pointer text-xs text-emerald-300 hover:text-emerald-200 transition-colors list-none">
@@ -306,6 +318,11 @@ export default function LandingPage() {
                   </summary>
                   <div className="px-4 pb-3 text-[11px] text-emerald-500/80 leading-relaxed border-t border-emerald-800/20 pt-2 mt-0">
                     {faq.a}
+                    {faq.cite && (
+                      <a href={faq.cite} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[8px] text-emerald-800 hover:text-emerald-500 transition-colors">
+                        Source: {faq.cite.replace('https://', '')}
+                      </a>
+                    )}
                   </div>
                 </details>
               ))}
@@ -325,23 +342,27 @@ export default function LandingPage() {
                 <p className="text-xs font-bold text-emerald-300 mb-2">Data Collection</p>
                 <p className="text-[10px] text-emerald-600 leading-relaxed">
                   Aggregates 24+ months of historical waste records across menu items, attendance, and day-of-week patterns from Hong Kong institutional kitchens.
+                  {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[HK EPD]</a>
                 </p>
               </div>
               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
                 <p className="text-xs font-bold text-emerald-300 mb-2">Ensemble ML Pipeline</p>
                 <p className="text-[10px] text-emerald-600 leading-relaxed">
                   Five models (RF, XGBoost, Neural Network, Linear Regression, LLM) trained on 50,000+ meal events with 94.8% cross-validated accuracy.
+                  {' '}<a href="https://arxiv.org/abs/2305.16284" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[arXiv:2305.16284]</a>
                 </p>
               </div>
               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
                 <p className="text-xs font-bold text-emerald-300 mb-2">Intervention Engine</p>
                 <p className="text-[10px] text-emerald-600 leading-relaxed">
                   Generates ranked recommendations with projected savings — average 35% waste reduction and 7x ROI across Hong Kong pilot sites.
+                  {' '}<a href="https://doi.org/10.1016/j.wasman.2022.08.011" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[Waste Management 2022]</a>
                 </p>
               </div>
             </div>
             <p className="text-[9px] text-emerald-800 text-center mt-4 max-w-xl mx-auto">
               Methodology validated against HK EPD waste composition data and IPCC GHG Protocol guidelines.
+              {' '}<a href="https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[IPCC 2019]</a>
             </p>
           </div>
         </div>
