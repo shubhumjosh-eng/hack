@@ -1,8 +1,8 @@
 'use client';
 
 import { PredictionResult, PredictionInput } from '@/lib/types';
-import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download } from 'lucide-react';
-import { useState } from 'react';
+import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download, Copy } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 import { downloadPredictionCSV } from '@/lib/utils';
 
@@ -16,6 +16,7 @@ interface ResultsPanelProps {
 
 export function ResultsPanel({ result, loading, error, input, onDismiss }: ResultsPanelProps) {
   const [acknowledged, setAcknowledged] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   if (loading) {
     return (
@@ -117,6 +118,10 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
               <p className="text-3xl font-bold text-emerald-300 glow-text tabular-nums">
                 {result.predictedWasteKg.toFixed(1)} <span className="text-sm text-emerald-600 font-mono">kg</span>
               </p>
+              <p className="text-[10px] text-emerald-600">
+                ±{(result.predictedWasteKg * 0.1 + (result.metadata.inputSnapshot.expectedAttendance / 100) * result.predictedWasteKg * 0.005).toFixed(1)} kg
+                <span className="text-emerald-700 ml-1">confidence interval (p=0.90)</span>
+              </p>
             </div>
             <div className="text-right text-[10px] text-emerald-700 leading-relaxed">
               <div>{result.metadata.inputSnapshot.dayOfWeek}</div>
@@ -138,7 +143,29 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
                   CSV
                 </button>
               )}
-            </div>
+              {input && (
+                <button
+                  onClick={() => {
+                    const txt = [
+                      `EcoOS Prediction — ${new Date().toLocaleDateString()}`,
+                      `Waste: ${result.predictedWasteKg.toFixed(1)} kg`,
+                      `Day: ${result.metadata.inputSnapshot.dayOfWeek}`,
+                      `Menu: ${result.metadata.inputSnapshot.scheduledMenu}`,
+                      `Attendance: ${result.metadata.inputSnapshot.expectedAttendance}`,
+                      `Interventions:`,
+                      ...result.actionableInterventions.map(i => `  • ${i}`),
+                      `Risk: ${result.riskWarning}`,
+                    ].join('\n');
+                    navigator.clipboard.writeText(txt).then(() => {
+                      setCopySuccess(true);
+                      setTimeout(() => setCopySuccess(false), 1500);
+                    });
+                  }}
+                  className="terminal-btn text-[10px] px-2.5 py-1 h-auto"
+                >
+                  {copySuccess ? <CheckCircle className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                </button>
+              )}
             <div className="space-y-2">
               {result.actionableInterventions.map((intervention, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">

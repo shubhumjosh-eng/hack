@@ -8,6 +8,9 @@ import { Terminal, History, Download, Printer, AlertTriangle } from 'lucide-reac
 import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
 import { RadarChart } from '@/components/ui/radar-chart';
 import { ReportView } from '@/components/dashboard/report-view';
+import { EventLog } from '@/components/ui/event-log';
+import { useEventLog } from '@/hooks/use-event-log';
+import { useBeep } from '@/hooks/use-beep';
 
 function generateId(): string {
   return `pred-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -28,6 +31,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
   const [showReport, setShowReport] = useState(false);
+  const { logs, addLog, clearLogs } = useEventLog();
+  const beep = useBeep();
 
   useEffect(() => {
     seedDemoData();
@@ -41,6 +46,7 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     setResult(null);
+    addLog('info', 'submitting prediction', `${input.dayOfWeek} | ${input.expectedAttendance} students`);
 
     try {
       const res = await fetch('/api/predict', {
@@ -56,6 +62,7 @@ export default function DashboardPage() {
 
       const data: PredictionResult = await res.json();
       setResult(data);
+      beep(880, 100);
 
       const entry: DashboardHistoryEntry = {
         id: generateId(),
@@ -66,12 +73,15 @@ export default function DashboardPage() {
 
       setHistory((prev) => [entry, ...prev]);
       addPrediction(entry);
+      addLog('success', 'prediction complete', `${data.predictedWasteKg.toFixed(1)} kg | ${data.metadata.latencyMs}ms`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(msg);
+      addLog('error', 'prediction failed', msg);
     } finally {
       setLoading(false);
     }
-  }, [input]);
+  }, [input, addLog, beep]);
 
   const handleDismissError = useCallback(() => {
     setError(null);
@@ -177,6 +187,7 @@ export default function DashboardPage() {
                   <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
                     <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Per Service</p>
                     <p className="text-lg font-bold text-emerald-300 tabular-nums">{result.predictedWasteKg.toFixed(1)} kg</p>
+                    <p className="text-[9px] text-emerald-600">±{(result.predictedWasteKg * 0.1 + (result.metadata.inputSnapshot.expectedAttendance / 100) * result.predictedWasteKg * 0.005).toFixed(1)} kg</p>
                   </div>
                   <div className="border border-emerald-800/30 bg-gray-900 p-3 text-center">
                     <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">Interventions</p>
@@ -294,33 +305,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="terminal-panel">
-            <div className="terminal-header flex items-center gap-2">
-              <Terminal className="h-3 w-3 text-emerald-600" />
-              <span className="text-emerald-600 text-[10px]">responsible AI</span>
-            </div>
-            <div className="terminal-content space-y-2 text-[10px] text-emerald-600/80">
-              <div className="flex items-start gap-2">
-                <span className="text-emerald-500">&gt;</span>
-                <span>All predictions verified against synthetic benchmarks</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-emerald-500">&gt;</span>
-                <span>Human review required before supply chain changes</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-emerald-500">&gt;</span>
-                <span>Model retrained quarterly on latest waste data</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-emerald-500">&gt;</span>
-                <span>Bias audits conducted on every model version</span>
-              </div>
-              <div className="border-t border-emerald-800/20 pt-2 mt-2 text-emerald-700">
-                USAII Global AI Hackathon 2026 — Direction A: Food Waste Rescue Radar
-              </div>
-            </div>
-          </div>
+          <EventLog logs={logs} onClear={clearLogs} />
 
           <div className="flex items-center justify-between text-[10px] text-emerald-800">
             <span>EcoOS Core v2.5.0</span>

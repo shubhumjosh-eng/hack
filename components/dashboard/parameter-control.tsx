@@ -177,6 +177,7 @@ export function ParameterControl({
               <>
                 <span className="text-emerald-500/70">&gt;</span>
                 <span>run waste prediction</span>
+                <span className="ml-2 text-[9px] text-emerald-700 border border-emerald-700/40 px-1 py-0.5">Ctrl+Enter</span>
               </>
             )}
           </button>
