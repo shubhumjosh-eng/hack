@@ -12,7 +12,7 @@ export default function WasteStreamsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const breakdown = useMemo(() => computeWasteBreakdown(totalKg, days), [totalKg, days]);
   const trend = useMemo(() => generateTrendData(days), [days]);
-  const { logs, addLog } = useEventLog();
+  const { logs, addLog, clearLogs } = useEventLog();
 
   useEffect(() => {
     addLog('info', `Waste stream analysis loaded — ${totalKg}kg baseline`);
@@ -150,7 +150,7 @@ export default function WasteStreamsPage() {
           </div>
         </div>
       </div>
-      <EventLog logs={logs} onClear={() => {}} />
+      <EventLog logs={logs} onClear={clearLogs} />
     </div>
   );
 }

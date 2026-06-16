@@ -39,11 +39,12 @@ export function computeWasteBreakdown(totalKg: number, seed?: number): WasteStre
     const variance = (Math.sin(rng * 100 + i * 7) * 0.3 + 1);
     const pct = Math.min(cat.typicalPercentage * variance, 0.6);
     const trendRand = Math.sin(rng * 200 + i * 13);
+    const trend: 'up' | 'down' | 'stable' = trendRand > 0.3 ? 'up' : trendRand < -0.3 ? 'down' : 'stable';
     return {
       category: cat.name,
       amountKg: Math.round(totalKg * pct * 100) / 100,
       percentage: Math.round(pct * 10000) / 100,
-      trend: trendRand > 0.3 ? 'up' : trendRand < -0.3 ? 'down' : 'stable',
+      trend,
       trendPercent: Math.round(Math.abs(trendRand) * 15 * 10) / 10,
     };
   }).sort((a, b) => b.amountKg - a.amountKg);
