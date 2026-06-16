@@ -14,13 +14,26 @@ import {
   Radar,
   Menu,
   X,
+  LogOut,
+  Users,
+  KeyRound,
+  Clock,
+  Upload,
+  Layers,
+  MapPin,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from './auth-provider';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Triage', href: '/triage', icon: Search },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { label: 'Waste Streams', href: '/waste-streams', icon: Layers },
+  { label: 'Geo Map', href: '/geo-map', icon: MapPin },
+  { label: 'Schedules', href: '/schedules', icon: Clock },
+  { label: 'Data Import', href: '/import', icon: Upload },
+  { label: 'API Keys', href: '/api-keys', icon: KeyRound },
   { label: 'Settings', href: '/settings', icon: Settings },
 ] as const;
 
@@ -28,6 +41,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, team, logout } = useAuth();
 
   return (
     <>
@@ -92,12 +106,28 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="border-t border-emerald-800/20 p-3">
-          <div className={cn('flex items-center gap-2', collapsed && 'justify-center')}>
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-600 shadow-[0_0_6px_rgba(52,211,153,0.3)]" />
-            <div className={cn('transition-opacity duration-300', collapsed && 'opacity-0 w-0')}>
-              <p className="text-[10px] text-emerald-700 font-mono">edge runtime</p>
+        <div className="border-t border-emerald-800/20 px-2 py-2 space-y-0.5">
+          <div className={cn('flex items-center gap-2 px-1', collapsed && 'justify-center')}>
+            <div className="h-5 w-5 rounded-full bg-emerald-700/30 border border-emerald-600/40 flex items-center justify-center text-[9px] font-bold text-emerald-300">
+              {user?.name?.charAt(0) ?? '?'}
             </div>
+            <div className={cn('flex-1 min-w-0 transition-opacity duration-300', collapsed && 'opacity-0 w-0 hidden')}>
+              <p className="text-[10px] text-emerald-400 truncate leading-tight">{user?.name}</p>
+              <p className="text-[8px] text-emerald-700 truncate leading-tight">{team?.name} · {user?.role}</p>
+            </div>
+          </div>
+          <div className={cn('flex', collapsed ? 'flex-col items-center gap-0.5' : 'gap-1')}>
+            <button
+              onClick={logout}
+              className={cn(
+                'flex items-center gap-1.5 text-[9px] text-emerald-700 hover:text-emerald-500 transition-colors px-1 py-0.5',
+                collapsed ? 'justify-center' : ''
+              )}
+              title="Logout"
+            >
+              <LogOut className="h-3 w-3" />
+              <span className={cn(collapsed && 'hidden')}>logout</span>
+            </button>
           </div>
         </div>
 
@@ -110,7 +140,7 @@ export function Sidebar() {
       </aside>
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 flex sm:hidden border-t border-emerald-800/25 bg-gray-950">
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.filter(i => i.href !== '/api-keys').map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (

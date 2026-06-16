@@ -1,16 +1,21 @@
 'use client';
 
+import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { cn } from '@/lib/utils';
 import { BootSequence } from '@/components/ui/boot-sequence';
 import { useState, useEffect } from 'react';
+import { useAuth } from './auth-provider';
 
 interface DashboardShellProps {
   children: React.ReactNode;
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, loading } = useAuth();
   const [booted, setBooted] = useState(false);
   const [bootReady, setBootReady] = useState(false);
 
@@ -23,6 +28,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       setBootReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [loading, isAuthenticated, pathname, router]);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('ecoos-booted', 'true');

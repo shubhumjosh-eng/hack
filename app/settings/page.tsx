@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 import { StatusIndicator } from '@/components/ui/status-indicator';
 import { useState, useEffect } from 'react';
-import { Save, Key, Bell, Shield, Database, RefreshCw, Cpu, CheckCircle } from 'lucide-react';
+import { Save, Key, Bell, Shield, Database, RefreshCw, Cpu, CheckCircle, Palette } from 'lucide-react';
 import { getSettings, saveSettings } from '@/lib/storage';
+import { THEMES, getTheme, setTheme } from '@/lib/themes';
+import { MODELS } from '@/lib/models';
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
@@ -159,6 +161,40 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
+            <Palette className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-sm font-semibold text-emerald-50">Terminal Theme</h2>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {THEMES.map(theme => {
+              const active = getTheme().id === theme.id;
+              return (
+                <button
+                  key={theme.id}
+                  onClick={() => { setTheme(theme.id); setSaved(true); setTimeout(() => setSaved(false), 2000); }}
+                  className={`border p-2 text-left transition-all ${active ? 'border-emerald-500/60 bg-emerald-900/15' : 'border-emerald-800/20 hover:border-emerald-700/40 bg-gray-900/30'}`}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.colors.accent }} />
+                    <span className="text-[11px] text-emerald-300 font-mono">{theme.name}</span>
+                  </div>
+                  <p className="text-[9px] text-emerald-700">{theme.description}</p>
+                  <div className="flex gap-0.5 mt-1">
+                    {[theme.colors.accent, theme.colors.text, theme.colors.bg, theme.colors.bgLight].map((c, i) => (
+                      <span key={i} className="inline-block h-2 w-2 border border-emerald-800/20" style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
             <Cpu className="h-4 w-4 text-emerald-400" />
             <h2 className="text-sm font-semibold text-emerald-50">Model Information</h2>
           </div>
@@ -207,6 +243,35 @@ export default function SettingsPage() {
                 <span className="text-xs">Risk warnings and human-in-the-loop compliance enforcement</span>
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-sm font-semibold text-emerald-50">Model Portfolio</h2>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {MODELS.map(m => (
+              <div key={m.id} className="border border-emerald-800/20 bg-gray-900/30 p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs text-emerald-300 font-mono">{m.name}</p>
+                  <span className="text-[9px] uppercase text-emerald-700 border border-emerald-800/30 px-1">{m.type}</span>
+                </div>
+                <p className="text-[9px] text-emerald-600 mb-2">{m.description}</p>
+                <div className="grid grid-cols-2 gap-1 text-[9px]">
+                  <span className="text-emerald-700">Acc: <span className="text-emerald-400">{(m.accuracy * 100).toFixed(1)}%</span></span>
+                  <span className="text-emerald-700">F1: <span className="text-emerald-400">{(m.f1Score * 100).toFixed(1)}%</span></span>
+                  <span className="text-emerald-700">Prec: <span className="text-emerald-400">{(m.precision * 100).toFixed(1)}%</span></span>
+                  <span className="text-emerald-700">Recall: <span className="text-emerald-400">{(m.recall * 100).toFixed(1)}%</span></span>
+                </div>
+                <p className="text-[8px] text-emerald-700 mt-1">Latency: {m.latencyMs}ms | Trained: {m.trainingSize.toLocaleString()} records</p>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

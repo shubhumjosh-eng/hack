@@ -9,11 +9,13 @@ interface ParameterControlProps {
   weatherCondition: string;
   temperature: number;
   loading: boolean;
+  modelId: string;
   onDayChange: (val: string) => void;
   onMenuChange: (val: string) => void;
   onAttendanceChange: (val: number) => void;
   onWeatherChange: (val: string) => void;
   onTemperatureChange: (val: number) => void;
+  onModelChange: (val: string) => void;
   onSubmit: () => void;
 }
 
@@ -162,6 +164,25 @@ export function ParameterControl({
           </div>
         </div>
 
+        <div>
+          <label htmlFor="model_select" className="terminal-label">
+            <span className="text-emerald-500/50">$</span> prediction_model
+          </label>
+          <select
+            id="model_select"
+            name="model_select"
+            value={modelId}
+            onChange={(e) => onModelChange(e.target.value)}
+            className="terminal-select"
+          >
+            <option value="rf-2026a">Random Forest v2026a (acc: 93.7%)</option>
+            <option value="xgb-2026b">XGBoost v2026b (acc: 94.8%)</option>
+            <option value="lr-2026c">Linear Regression v2026c (acc: 87.2%)</option>
+            <option value="nn-2026d">Neural Network v2026d (acc: 92.4%)</option>
+            <option value="llm-2026e">LLM Few-Shot v2026e (acc: 90.3%)</option>
+          </select>
+        </div>
+
         <div className="flex items-center gap-4 pt-2 border-t border-emerald-800/20">
           <button
             onClick={onSubmit}
@@ -182,8 +203,8 @@ export function ParameterControl({
             )}
           </button>
           <div className="text-[10px] text-emerald-700 text-right leading-tight">
-            <div>ENGINE: LLAMA-3-8B</div>
-            <div>MODE: FEW-SHOT</div>
+            <div>ENGINE: {modelId.split('-')[0]?.toUpperCase()}</div>
+            <div>MODE: ENSEMBLE</div>
           </div>
         </div>
       </div>

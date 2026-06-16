@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<DashboardHistoryEntry[]>([]);
   const [showReport, setShowReport] = useState(false);
+  const [modelId, setModelId] = useState('rf-2026a');
   const { logs, addLog, clearLogs } = useEventLog();
   const beep = useBeep();
 
@@ -146,6 +147,8 @@ export default function DashboardPage() {
             onAttendanceChange={(val) => setInput((p) => ({ ...p, expectedAttendance: val }))}
             onWeatherChange={(val) => setInput((p) => ({ ...p, weatherCondition: val }))}
             onTemperatureChange={(val) => setInput((p) => ({ ...p, temperature: val }))}
+            modelId={modelId}
+            onModelChange={setModelId}
             onSubmit={handleSubmit}
           />
 
