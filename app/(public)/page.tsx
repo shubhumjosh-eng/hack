@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/components/layout/auth-provider';
 import { Radar, ChevronRight, ArrowRight, Terminal, BarChart3, Shield, Cpu, Globe, TrendingDown, TreesIcon as Tree, DollarSign } from 'lucide-react';
 
 const TYPED_LINES = [
@@ -33,9 +35,15 @@ const TYPING_SPEED = 25;
 const LINE_DELAY = 600;
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [visibleLines, setVisibleLines] = useState<string[]>([]);
   const [typingIndex, setTypingIndex] = useState(0);
   const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) router.push('/dashboard');
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     let currentLine = 0;

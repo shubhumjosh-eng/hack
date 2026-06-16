@@ -40,7 +40,7 @@ export default function SignupPage() {
       registerUser(email.trim(), name.trim(), password);
       setSuccess(true);
       const ok = await login(email, password);
-      if (ok) router.push('/');
+      if (ok) router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed.');
     }

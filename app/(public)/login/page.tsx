@@ -26,7 +26,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     const ok = await login(email, password);
-    if (ok) router.push('/');
+    if (ok) router.push('/dashboard');
     else setError('Access denied: invalid email or password.');
   }
 
