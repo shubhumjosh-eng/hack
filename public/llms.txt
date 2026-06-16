@@ -2,17 +2,17 @@
 > AI-powered waste prediction, triage, and analytics for institutional food service in Hong Kong.
 
 ## Core
-- Landing: https://hack2-pi.vercel.app/
-- Sign In: https://hack2-pi.vercel.app/login
-- Create Account: https://hack2-pi.vercel.app/signup
-- Dashboard: https://hack2-pi.vercel.app/dashboard
+- [Landing](https://hack2-pi.vercel.app/)
+- [Sign In](https://hack2-pi.vercel.app/login)
+- [Create Account](https://hack2-pi.vercel.app/signup)
+- [Dashboard](https://hack2-pi.vercel.app/dashboard)
 
 ## Features
-- AI Waste Triage: https://hack2-pi.vercel.app/triage
-- Analytics & Reporting: https://hack2-pi.vercel.app/analytics
-- Waste Stream Tracking: https://hack2-pi.vercel.app/waste-streams
-- Hong Kong Geo Map: https://hack2-pi.vercel.app/geo-map
-- Audit Schedules: https://hack2-pi.vercel.app/schedules
-- Data Import: https://hack2-pi.vercel.app/import
-- API & Webhooks: https://hack2-pi.vercel.app/api-keys
-- Settings: https://hack2-pi.vercel.app/settings
+- [AI Waste Triage](https://hack2-pi.vercel.app/triage)
+- [Analytics & Reporting](https://hack2-pi.vercel.app/analytics)
+- [Waste Stream Tracking](https://hack2-pi.vercel.app/waste-streams)
+- [Hong Kong Geo Map](https://hack2-pi.vercel.app/geo-map)
+- [Audit Schedules](https://hack2-pi.vercel.app/schedules)
+- [Data Import](https://hack2-pi.vercel.app/import)
+- [API & Webhooks](https://hack2-pi.vercel.app/api-keys)
+- [Settings](https://hack2-pi.vercel.app/settings)
