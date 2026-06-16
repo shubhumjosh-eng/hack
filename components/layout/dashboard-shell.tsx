@@ -85,7 +85,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header />
         <main className="flex-1 overflow-y-auto p-3 sm:p-5 scanlines">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-7xl animate-fade-in">
             <ErrorBoundary>{children}</ErrorBoundary>
           </div>
         </main>

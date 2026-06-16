@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { useAuth } from '@/components/layout/auth-provider';
 import { createClient } from '@/lib/supabase';
-import { Terminal, Loader2, Monitor, Smartphone, LogOut, AlertTriangle } from 'lucide-react';
+import { Terminal, Loader2, Monitor, LogOut, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function SessionsPage() {
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function handleLogoutAll() {
     setLoading(true);
@@ -80,11 +82,19 @@ export default function SessionsPage() {
               <Button
                 variant="danger"
                 size="sm"
-                onClick={handleLogoutAll}
+                onClick={() => setShowConfirm(true)}
                 disabled={loading}
               >
                 {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <><LogOut className="h-3 w-3" /> invalidate all</>}
               </Button>
+              <ConfirmDialog
+                open={showConfirm}
+                title="Invalidate All Sessions"
+                message="This will change your password and sign out all other devices. You will be logged out and need to sign in again. Continue?"
+                confirmLabel="invalidate all"
+                onConfirm={() => { setShowConfirm(false); handleLogoutAll(); }}
+                onCancel={() => setShowConfirm(false)}
+              />
             </div>
           </div>
         </div>
