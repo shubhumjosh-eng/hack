@@ -9,10 +9,40 @@ import { Save, Key, Bell, Shield, Database, RefreshCw } from 'lucide-react';
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { label: 'Weekly waste summary report', enabled: true },
+    { label: 'Anomaly detection alerts', enabled: true },
+    { label: 'Daily triage digest', enabled: false },
+    { label: 'Model status changes', enabled: true },
+  ]);
+  const [apiKey, setApiKey] = useState('');
+  const [model, setModel] = useState('meta-llama/Meta-Llama-3-8B-Instruct');
+  const [exporting, setExporting] = useState(false);
+  const [retraining, setRetraining] = useState(false);
+  const [retrainDone, setRetrainDone] = useState(false);
+
+  function toggleNotification(index: number) {
+    setNotifications(prev => prev.map((n, i) => i === index ? { ...n, enabled: !n.enabled } : n));
+  }
 
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handleExport() {
+    setExporting(true);
+    setTimeout(() => setExporting(false), 1500);
+  }
+
+  function handleRetrain() {
+    setRetraining(true);
+    setRetrainDone(false);
+    setTimeout(() => {
+      setRetraining(false);
+      setRetrainDone(true);
+      setTimeout(() => setRetrainDone(false), 3000);
+    }, 2000);
   }
 
   return (
@@ -35,9 +65,11 @@ export default function SettingsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Input label="Hugging Face API Key" type="password" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+          <Input label="Hugging Face API Key" type="password" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
           <Select
             label="Default LLM Model"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
             options={[
               { value: 'meta-llama/Meta-Llama-3-8B-Instruct', label: 'Meta Llama 3 8B Instruct' },
               { value: 'mistralai/Mistral-7B-Instruct-v0.3', label: 'Mistral 7B Instruct v0.3' },
@@ -58,17 +90,15 @@ export default function SettingsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[
-            { label: 'Weekly waste summary report', enabled: true },
-            { label: 'Anomaly detection alerts', enabled: true },
-            { label: 'Daily triage digest', enabled: false },
-            { label: 'Model status changes', enabled: true },
-          ].map((notif, i) => (
+          {notifications.map((notif, i) => (
             <div key={i} className="flex items-center justify-between rounded-lg border border-emerald-800/20 bg-emerald-900/20 p-3">
               <span className="text-sm text-emerald-300/80">{notif.label}</span>
-              <div className={`h-5 w-9 rounded-full transition-colors cursor-pointer ${notif.enabled ? 'bg-emerald-600' : 'bg-emerald-800/50'}`}>
+              <button
+                onClick={() => toggleNotification(i)}
+                className={`h-5 w-9 rounded-full transition-colors cursor-pointer ${notif.enabled ? 'bg-emerald-600' : 'bg-emerald-800/50'}`}
+              >
                 <div className={`h-4 w-4 rounded-full bg-white transition-transform mt-0.5 ${notif.enabled ? 'translate-x-4 ml-0.5' : 'translate-x-0.5'}`} />
-              </div>
+              </button>
             </div>
           ))}
         </CardContent>
@@ -110,14 +140,14 @@ export default function SettingsPage() {
               <p className="text-sm text-emerald-50">Export All Data</p>
               <p className="text-xs text-emerald-400/50">Download complete dataset as CSV</p>
             </div>
-            <Button variant="secondary" size="sm">Export</Button>
+            <Button variant="secondary" size="sm" onClick={handleExport} loading={exporting}>{exporting ? 'Exporting...' : 'Export'}</Button>
           </div>
           <div className="flex items-center justify-between rounded-lg border border-emerald-800/20 bg-emerald-900/20 p-3">
             <div>
               <p className="text-sm text-emerald-50">Retrain Prediction Model</p>
-              <p className="text-xs text-emerald-400/50">Update with latest waste data</p>
+              <p className="text-xs text-emerald-400/50">{retrainDone ? 'Model retrained successfully' : 'Update with latest waste data'}</p>
             </div>
-            <Button variant="secondary" size="sm" icon={<RefreshCw className="h-3.5 w-3.5" />}>Retrain</Button>
+            <Button variant="secondary" size="sm" icon={<RefreshCw className="h-3.5 w-3.5" />} onClick={handleRetrain} loading={retraining}>{retraining ? 'Retraining...' : retrainDone ? 'Done' : 'Retrain'}</Button>
           </div>
         </CardContent>
       </Card>
