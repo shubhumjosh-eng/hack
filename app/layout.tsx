@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     'enterprise',
   ],
   authors: [{ name: 'EcoOS Core Team' }],
+  icons: {
+    icon: '/icon.svg',
+  },
   openGraph: {
     title: 'EcoOS Core — Enterprise Environmental Intelligence',
     description: 'AI-powered waste triage and analytics platform',
