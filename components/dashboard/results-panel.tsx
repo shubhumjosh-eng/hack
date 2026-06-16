@@ -2,7 +2,7 @@
 
 import { PredictionResult, PredictionInput } from '@/lib/types';
 import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download, Copy } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 import { downloadPredictionCSV } from '@/lib/utils';
 
@@ -166,6 +166,7 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
                   {copySuccess ? <CheckCircle className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                 </button>
               )}
+            </div>
             <div className="space-y-2">
               {result.actionableInterventions.map((intervention, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
