@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { User, MOCK_USERS, getTeamById, findUserByEmail, checkPassword, getRegisteredUsers, supabaseSignIn, supabaseSignOut, supabaseSignUp, logAuthError, type Team } from '@/lib/auth';
+import { User, MOCK_USERS, getTeamById, findUserByEmail, checkPassword, getRegisteredUsers, REGISTERED_USERS_KEY, supabaseSignIn, supabaseSignOut, supabaseSignUp, logAuthError, type Team } from '@/lib/auth';
 import { createClient } from '@/lib/supabase';
 
 interface AuthContextValue {
@@ -68,12 +68,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(AUTH_KEY);
       } else if (event === 'SIGNED_IN' && session?.user) {
         const email = session.user.email!;
-        const found = findUserByEmail(email) || MOCK_USERS.find(u => u.email === email);
+        const mockUser = MOCK_USERS.find(u => u.email === email);
+        const found = findUserByEmail(email) || mockUser;
         if (found) {
           const merged = { ...found, id: session.user.id };
           setUser(merged);
           setTeam(getTeamById(found.teamId) ?? null);
           localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: merged.id, teamId: found.teamId }));
+        } else {
+          const users = getRegisteredUsers();
+          const metaName = session.user.user_metadata?.name || email.split('@')[0];
+          const isFirst = users.length === 0;
+          const newUser: User = {
+            id: session.user.id,
+            email,
+            name: metaName,
+            role: isFirst ? 'admin' : 'editor',
+            teamId: 'team-1',
+          };
+          users.push(newUser);
+          localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+          setUser(newUser);
+          setTeam(getTeamById('team-1') ?? null);
+          localStorage.setItem(AUTH_KEY, JSON.stringify({ userId: newUser.id, teamId: 'team-1' }));
         }
       }
     });

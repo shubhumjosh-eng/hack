@@ -41,7 +41,7 @@ export const MOCK_USERS: User[] = [
   { id: 'user-4', email: 'admin@mercyhealth.org', name: 'Dr. James Okafor', role: 'admin', teamId: 'team-3' },
 ];
 
-const REGISTERED_USERS_KEY = 'ecoos-registered-users';
+export const REGISTERED_USERS_KEY = 'ecoos-registered-users';
 
 export function getRegisteredUsers(): User[] {
   try {
