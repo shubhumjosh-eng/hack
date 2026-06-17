@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -14,19 +14,24 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [password, setPassword] = useState('');
+  const [captchaReady, setCaptchaReady] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [inviteTeam, setInviteTeam] = useState<string | null>(null);
-  const recaptchaReady = useRef(false);
   const { signup, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.ready(() => setCaptchaReady(true));
+      return;
+    }
     const script = document.createElement('script');
     script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
     script.async = true;
-    script.onload = () => { recaptchaReady.current = true; };
+    script.onload = () => {
+      grecaptcha.ready(() => setCaptchaReady(true));
+    };
     document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
   }, []);
 
   useEffect(() => {
@@ -199,7 +204,7 @@ export default function SignupPage() {
             required
           />
 
-          <Button type="submit" disabled={loading || success} className="w-full">
+          <Button type="submit" disabled={loading || success || !captchaReady} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> create account</>}
           </Button>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -19,17 +19,22 @@ const QUICK_LOGIN = [
 
 export default function LoginPage() {
   const [error, setError] = useState('');
-  const recaptchaReady = useRef(false);
+  const [captchaReady, setCaptchaReady] = useState(false);
   const { login, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.ready(() => setCaptchaReady(true));
+      return;
+    }
     const script = document.createElement('script');
     script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
     script.async = true;
-    script.onload = () => { recaptchaReady.current = true; };
+    script.onload = () => {
+      grecaptcha.ready(() => setCaptchaReady(true));
+    };
     document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
   }, []);
 
   function getRedirect() {
@@ -126,7 +131,7 @@ export default function LoginPage() {
             required
           />
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading || !captchaReady} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> authenticate</>}
           </Button>
 
