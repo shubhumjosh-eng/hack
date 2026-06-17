@@ -43,6 +43,7 @@ export default function LoginPage() {
     if (!email || !password) { setError('Email and password are required.'); return; }
     const ok = await login(email, password);
     if (ok) {
+      await new Promise(r => setTimeout(r, 0));
       router.push(getRedirect());
     } else setError('Invalid email or password. If you recently signed up, try the forgot password link.');
   }
