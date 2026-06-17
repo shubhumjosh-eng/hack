@@ -4,10 +4,9 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
-import { Terminal, Loader2, Shield } from 'lucide-react';
+import { Terminal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const RECAPTCHA_SITE_KEY = '6Lee7SItAAAAACfifkAALUdpv68XcY2cBWhsSthG';
 
@@ -15,12 +14,20 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [password, setPassword] = useState('');
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [inviteTeam, setInviteTeam] = useState<string | null>(null);
-  const captchaRef = useRef<ReCAPTCHA>(null);
+  const recaptchaReady = useRef(false);
   const { signup, loading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.onload = () => { recaptchaReady.current = true; };
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -54,8 +61,11 @@ export default function SignupPage() {
     e.preventDefault();
     setError('');
 
-    if (!captchaToken) {
-      setError('Please complete the security check.');
+    let captchaToken = '';
+    try {
+      captchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'signup' });
+    } catch {
+      setError('Security check failed. Please try again.');
       return;
     }
 
@@ -67,8 +77,6 @@ export default function SignupPage() {
     const captchaResult = await verify.json();
     if (!captchaResult.success) {
       setError('Security check failed. Please try again.');
-      captchaRef.current?.reset();
-      setCaptchaToken(null);
       return;
     }
 
@@ -191,15 +199,6 @@ export default function SignupPage() {
             required
           />
 
-          <div className="flex justify-center">
-            <ReCAPTCHA
-              ref={captchaRef}
-              sitekey={RECAPTCHA_SITE_KEY}
-              onChange={(token) => setCaptchaToken(token)}
-              theme="dark"
-            />
-          </div>
-
           <Button type="submit" disabled={loading || success} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> create account</>}
           </Button>
@@ -210,11 +209,6 @@ export default function SignupPage() {
               log in
             </Link>
           </p>
-
-          <div className="flex items-center justify-center gap-1 text-[8px] text-emerald-700">
-            <Shield className="h-2.5 w-2.5" />
-            Protected by reCAPTCHA
-          </div>
         </form>
       </div>
     </div>
