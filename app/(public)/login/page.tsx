@@ -44,6 +44,7 @@ export default function LoginPage() {
     const ok = await login(email, password);
     if (ok) {
       await new Promise(r => setTimeout(r, 0));
+      sessionStorage.setItem('ecoos-just-logged-in', 'true');
       router.push(getRedirect());
     } else setError('Invalid email or password. If you recently signed up, try the forgot password link.');
   }

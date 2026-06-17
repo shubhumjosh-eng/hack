@@ -35,6 +35,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   useEffect(() => {
     if (!loading && !isAuthenticated && pathname !== '/' && pathname !== '/login' && pathname !== '/signup') {
+      const justLoggedIn = sessionStorage.getItem('ecoos-just-logged-in');
+      if (justLoggedIn === 'true') {
+        sessionStorage.removeItem('ecoos-just-logged-in');
+        return;
+      }
       router.push('/');
     }
   }, [loading, isAuthenticated, pathname, router]);
