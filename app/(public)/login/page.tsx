@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
 import { Terminal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-const RECAPTCHA_SITE_KEY = '6Lee7SItAAAAACfifkAALUdpv68XcY2cBWhsSthG';
 
 const QUICK_LOGIN = [
   { email: 'admin@greenvalley.edu', label: 'Admin — Green Valley Unified' },
@@ -19,42 +17,8 @@ const QUICK_LOGIN = [
 
 export default function LoginPage() {
   const [error, setError] = useState('');
-  const [captchaReady, setCaptchaReady] = useState(false);
-  const [captchaBypass, setCaptchaBypass] = useState(false);
-  const captchaInitialized = useRef(false);
   const { login, loading } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.ready(() => {
-        captchaInitialized.current = true;
-        setCaptchaReady(true);
-      });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-    script.async = true;
-    script.onload = () => {
-      grecaptcha.ready(() => {
-        captchaInitialized.current = true;
-        setCaptchaReady(true);
-      });
-    };
-    script.onerror = () => {
-      setCaptchaReady(true);
-      setCaptchaBypass(true);
-    };
-    document.head.appendChild(script);
-    const timeout = setTimeout(() => {
-      if (!captchaInitialized.current) {
-        setCaptchaReady(true);
-        setCaptchaBypass(true);
-      }
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, []);
 
   function getRedirect() {
     if (typeof window === 'undefined') return '/dashboard';
@@ -73,28 +37,6 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
-
-    if (!captchaBypass) {
-      let captchaToken = '';
-      try {
-        captchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' });
-      } catch {
-        setError('Security check failed. Please try again.');
-        return;
-      }
-
-      const verify = await fetch('/api/auth/verify-captcha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: captchaToken }),
-      });
-      const captchaResult = await verify.json();
-      if (!captchaResult.success) {
-        setError('Security check failed. Please try again.');
-        return;
-      }
-    }
-
     const data = new FormData(e.currentTarget);
     const email = (data.get('email') as string) || '';
     const password = (data.get('password') as string) || '';
@@ -152,7 +94,7 @@ export default function LoginPage() {
             required
           />
 
-          <Button type="submit" disabled={loading || !captchaReady} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span className="text-emerald-500/70">&gt;</span> authenticate</>}
           </Button>
 
