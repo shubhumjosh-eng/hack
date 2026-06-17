@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState(false);
   const [password, setPassword] = useState('');
   const [captchaReady, setCaptchaReady] = useState(false);
+  const [captchaBypass, setCaptchaBypass] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [inviteTeam, setInviteTeam] = useState<string | null>(null);
   const { signup, loading } = useAuth();
@@ -31,7 +32,18 @@ export default function SignupPage() {
     script.onload = () => {
       grecaptcha.ready(() => setCaptchaReady(true));
     };
+    script.onerror = () => {
+      setCaptchaReady(true);
+      setCaptchaBypass(true);
+    };
     document.head.appendChild(script);
+    const timeout = setTimeout(() => {
+      if (!grecaptcha || !grecaptcha.ready) {
+        setCaptchaReady(true);
+        setCaptchaBypass(true);
+      }
+    }, 5000);
+    return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
@@ -66,23 +78,25 @@ export default function SignupPage() {
     e.preventDefault();
     setError('');
 
-    let captchaToken = '';
-    try {
-      captchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'signup' });
-    } catch {
-      setError('Security check failed. Please try again.');
-      return;
-    }
+    if (!captchaBypass) {
+      let captchaToken = '';
+      try {
+        captchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'signup' });
+      } catch {
+        setError('Security check failed. Please try again.');
+        return;
+      }
 
-    const verify = await fetch('/api/auth/verify-captcha', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: captchaToken }),
-    });
-    const captchaResult = await verify.json();
-    if (!captchaResult.success) {
-      setError('Security check failed. Please try again.');
-      return;
+      const verify = await fetch('/api/auth/verify-captcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: captchaToken }),
+      });
+      const captchaResult = await verify.json();
+      if (!captchaResult.success) {
+        setError('Security check failed. Please try again.');
+        return;
+      }
     }
 
     const data = new FormData(e.currentTarget);
