@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/layout/auth-provider';
@@ -16,6 +16,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [captchaReady, setCaptchaReady] = useState(false);
   const [captchaBypass, setCaptchaBypass] = useState(false);
+  const captchaInitialized = useRef(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [inviteTeam, setInviteTeam] = useState<string | null>(null);
   const { signup, loading } = useAuth();
@@ -23,14 +24,20 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.ready(() => setCaptchaReady(true));
+      grecaptcha.ready(() => {
+        captchaInitialized.current = true;
+        setCaptchaReady(true);
+      });
       return;
     }
     const script = document.createElement('script');
     script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
     script.async = true;
     script.onload = () => {
-      grecaptcha.ready(() => setCaptchaReady(true));
+      grecaptcha.ready(() => {
+        captchaInitialized.current = true;
+        setCaptchaReady(true);
+      });
     };
     script.onerror = () => {
       setCaptchaReady(true);
@@ -38,7 +45,7 @@ export default function SignupPage() {
     };
     document.head.appendChild(script);
     const timeout = setTimeout(() => {
-      if (!grecaptcha || !grecaptcha.ready) {
+      if (!captchaInitialized.current) {
         setCaptchaReady(true);
         setCaptchaBypass(true);
       }
