@@ -11,6 +11,7 @@ import {
   getWebhooks, createWebhook, deleteWebhook, toggleWebhook,
   API_ENDPOINTS, type ApiKey, type Webhook, type WebhookEvent, WEBHOOK_EVENTS,
 } from '@/lib/api-keys';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function ApiKeysPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
@@ -25,6 +26,8 @@ export default function ApiKeysPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [tab, setTab] = useState<'keys' | 'webhooks' | 'docs'>('keys');
   const [showTour, setShowTour] = useState(false);
+  const [confirmDelKey, setConfirmDelKey] = useState<{ id: string; name: string } | null>(null);
+  const [confirmDelWh, setConfirmDelWh] = useState<{ id: string; name: string } | null>(null);
 
   function load() { setKeys(getApiKeys()); setWebhooks(getWebhooks()); }
   useEffect(() => { load(); }, []);
@@ -142,7 +145,7 @@ export default function ApiKeysPage() {
                       <button onClick={() => toggleApiKey(k.id)} className="p-1 text-emerald-700 hover:text-emerald-500" title={k.enabled ? 'Disable' : 'Enable'}>
                         {k.enabled ? <ToggleRight className="h-3 w-3" /> : <ToggleLeft className="h-3 w-3" />}
                       </button>
-                      <button onClick={() => { deleteApiKey(k.id); load(); }} className="p-1 text-red-700 hover:text-red-500" title="Delete">
+                      <button onClick={() => setConfirmDelKey({ id: k.id, name: k.name })} className="p-1 text-red-700 hover:text-red-500" title="Delete">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
@@ -206,7 +209,7 @@ export default function ApiKeysPage() {
                       <button onClick={() => toggleWebhook(w.id)} className="p-1 text-emerald-700 hover:text-emerald-500">
                         {w.enabled ? <ToggleRight className="h-3 w-3" /> : <ToggleLeft className="h-3 w-3" />}
                       </button>
-                      <button onClick={() => { deleteWebhook(w.id); load(); }} className="p-1 text-red-700 hover:text-red-500">
+                      <button onClick={() => setConfirmDelWh({ id: w.id, name: w.name })} className="p-1 text-red-700 hover:text-red-500">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
@@ -241,6 +244,27 @@ export default function ApiKeysPage() {
         </div>
       </div>
       {showTour && <PageTour steps={API_KEYS_TOUR} pageId="api-keys" onComplete={() => setShowTour(false)} />}
+
+      {confirmDelKey && (
+        <ConfirmDialog
+          open={!!confirmDelKey}
+          title="Delete API Key"
+          message={`Permanently delete the API key "${confirmDelKey.name}"? Any services using this key will immediately lose access.`}
+          confirmLabel="delete"
+          onConfirm={() => { deleteApiKey(confirmDelKey.id); load(); setConfirmDelKey(null); }}
+          onCancel={() => setConfirmDelKey(null)}
+        />
+      )}
+      {confirmDelWh && (
+        <ConfirmDialog
+          open={!!confirmDelWh}
+          title="Delete Webhook"
+          message={`Permanently delete the webhook "${confirmDelWh.name}"? This cannot be undone.`}
+          confirmLabel="delete"
+          onConfirm={() => { deleteWebhook(confirmDelWh.id); load(); setConfirmDelWh(null); }}
+          onCancel={() => setConfirmDelWh(null)}
+        />
+      )}
     </div>
   );
 }

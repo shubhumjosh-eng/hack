@@ -11,6 +11,7 @@ import {
   getThresholds, createThreshold, toggleThreshold, deleteThreshold,
   type ScheduledAudit, type ThresholdAlert,
 } from '@/lib/scheduler';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const WEATHERS = ['sunny', 'cloudy', 'rainy', 'snowy', 'humid'];
@@ -26,6 +27,8 @@ export default function SchedulesPage() {
   const [showNewThresh, setShowNewThresh] = useState(false);
   const [newThresh, setNewThresh] = useState({ name: '', metric: 'predictedWasteKg' as ThresholdAlert['metric'], condition: 'above' as ThresholdAlert['condition'], value: 100, cooldown: 60, channels: [] as string[] });
   const [showTour, setShowTour] = useState(false);
+  const [confirmDelSched, setConfirmDelSched] = useState<{ id: string; name: string } | null>(null);
+  const [confirmDelThresh, setConfirmDelThresh] = useState<{ id: string; name: string } | null>(null);
 
   function load() { setSchedules(getSchedules()); setThresholds(getThresholds()); }
   useEffect(() => { load(); }, []);
@@ -176,7 +179,7 @@ export default function SchedulesPage() {
                       <button onClick={() => { toggleSchedule(s.id); load(); }} className="p-1 text-emerald-700 hover:text-emerald-500">
                         {s.enabled ? <ToggleRight className="h-3 w-3" /> : <ToggleLeft className="h-3 w-3" />}
                       </button>
-                      <button onClick={() => { deleteSchedule(s.id); load(); }} className="p-1 text-red-700 hover:text-red-500">
+                      <button onClick={() => setConfirmDelSched({ id: s.id, name: s.name })} className="p-1 text-red-700 hover:text-red-500">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
@@ -259,7 +262,7 @@ export default function SchedulesPage() {
                       <button onClick={() => { toggleThreshold(t.id); load(); }} className="p-1 text-emerald-700 hover:text-emerald-500">
                         {t.enabled ? <ToggleRight className="h-3 w-3" /> : <ToggleLeft className="h-3 w-3" />}
                       </button>
-                      <button onClick={() => { deleteThreshold(t.id); load(); }} className="p-1 text-red-700 hover:text-red-500">
+                      <button onClick={() => setConfirmDelThresh({ id: t.id, name: t.name })} className="p-1 text-red-700 hover:text-red-500">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
@@ -272,6 +275,27 @@ export default function SchedulesPage() {
         </div>
       </div>
       {showTour && <PageTour steps={SCHEDULES_TOUR} pageId="schedules" onComplete={() => setShowTour(false)} />}
+
+      {confirmDelSched && (
+        <ConfirmDialog
+          open={!!confirmDelSched}
+          title="Delete Schedule"
+          message={`Permanently delete the schedule "${confirmDelSched.name}"? This will stop all automated audits for this schedule.`}
+          confirmLabel="delete"
+          onConfirm={() => { deleteSchedule(confirmDelSched.id); load(); setConfirmDelSched(null); }}
+          onCancel={() => setConfirmDelSched(null)}
+        />
+      )}
+      {confirmDelThresh && (
+        <ConfirmDialog
+          open={!!confirmDelThresh}
+          title="Delete Threshold Alert"
+          message={`Permanently delete the threshold alert "${confirmDelThresh.name}"? You will no longer be notified when this threshold is crossed.`}
+          confirmLabel="delete"
+          onConfirm={() => { deleteThreshold(confirmDelThresh.id); load(); setConfirmDelThresh(null); }}
+          onCancel={() => setConfirmDelThresh(null)}
+        />
+      )}
     </div>
   );
 }

@@ -116,7 +116,13 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-emerald-800/10">
-              {users.map(u => (
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center">
+                    <p className="text-xs text-emerald-700">No users registered yet.</p>
+                  </td>
+                </tr>
+              ) : users.map(u => (
                 <tr key={u.id} className="hover:bg-emerald-900/5 transition-colors">
                   <td className="py-2 px-3">
                     <div className="flex items-center gap-2">

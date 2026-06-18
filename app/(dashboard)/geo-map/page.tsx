@@ -98,7 +98,12 @@ export default function GeoMapPage() {
                 </button>
               </div>
 
-              <div className="border border-emerald-800/20 bg-gray-950 overflow-hidden" data-tour="geo-map-container">
+              <div className="border border-emerald-800/20 bg-gray-950 overflow-hidden relative" data-tour="geo-map-container">
+                {filtered.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-xs text-emerald-700 font-mono">No sites match the selected risk filter.</p>
+                  </div>
+                )}
                 <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto">
                   {filtered.map(site => {
                     const pos = latLngToSvg(site.lat, site.lng, bounds);
@@ -135,7 +140,7 @@ export default function GeoMapPage() {
                     </g>
                   ))}
 
-                  <text x={SVG_W / 2} y={SVG_H - 5} textAnchor="middle" fill="#065f46" fontSize="7" fontFamily="monospace">San Francisco — Waste Source Map</text>
+                  <text x={SVG_W / 2} y={SVG_H - 5} textAnchor="middle" fill="#065f46" fontSize="7" fontFamily="monospace">Hong Kong — Waste Source Map</text>
                 </svg>
               </div>
             </div>
