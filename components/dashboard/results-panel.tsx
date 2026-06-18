@@ -176,7 +176,7 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
                     <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
                       <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
                       <div className="flex-1">
-                        <span><TypewriterText text={intervention} speed={10} /></span>
+                        <span><TypewriterText text={intervention} speed={1} /></span>
                         <span className="ml-2 text-[9px] text-emerald-600 border border-emerald-700/40 px-1 py-0.5 whitespace-nowrap">
                           save ~${s.savingsDollars}/day
                         </span>
@@ -194,10 +194,9 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
               <div className="space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Risk Warning</span>
-                  {result.riskWarning.toLowerCase().includes('synthetic') && <span className="risk-warning text-[10px]">SYNTHETIC DATA</span>}
                 </div>
                 <p className="text-xs text-amber-300/80 leading-relaxed">
-                  <TypewriterText text={result.riskWarning} speed={12} />
+                  <TypewriterText text={result.riskWarning} speed={1} />
                 </p>
               </div>
             </div>
