@@ -2,7 +2,7 @@
 
 import { PredictionResult, PredictionInput, computeInterventionSavings } from '@/lib/types';
 import { AlertTriangle, AlertCircle, Shield, CheckCircle, Terminal, Loader2, Download, Copy } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 import { downloadPredictionCSV } from '@/lib/utils';
 
@@ -17,6 +17,11 @@ interface ResultsPanelProps {
 export function ResultsPanel({ result, loading, error, input, onDismiss }: ResultsPanelProps) {
   const [acknowledged, setAcknowledged] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [completedInts, setCompletedInts] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    setCompletedInts(new Set());
+  }, [result]);
 
   if (loading) {
     return (
@@ -176,10 +181,12 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
                     <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
                       <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
                       <div className="flex-1">
-                        <span><TypewriterText text={intervention} speed={1} /></span>
-                        <span className="ml-2 text-[9px] text-emerald-600 border border-emerald-700/40 px-1 py-0.5 whitespace-nowrap">
-                          save ~${s.savingsDollars}/day
-                        </span>
+                        <span><TypewriterText text={intervention} speed={1} onComplete={() => setCompletedInts(prev => new Set([...prev, i]))} /></span>
+                        {completedInts.has(i) && (
+                          <span className="ml-2 text-[9px] text-emerald-600 border border-emerald-700/40 px-1 py-0.5 whitespace-nowrap animate-fade-in">
+                            save ~${s.savingsDollars}/day
+                          </span>
+                        )}
                       </div>
                     </div>
                   );

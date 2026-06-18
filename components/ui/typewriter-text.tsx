@@ -1,15 +1,16 @@
 'use client';
 
+import { useTypewriter } from '@/hooks/use-typewriter';
+
 interface TypewriterTextProps {
   text: string;
   speed?: number;
   className?: string;
+  onComplete?: () => void;
 }
 
-import { useTypewriter } from '@/hooks/use-typewriter';
-
-export function TypewriterText({ text, speed = 20, className = '' }: TypewriterTextProps) {
-  const { displayed, isComplete } = useTypewriter({ text, speed });
+export function TypewriterText({ text, speed = 20, className = '', onComplete }: TypewriterTextProps) {
+  const { displayed, isComplete } = useTypewriter({ text, speed, onComplete });
 
   return (
     <span className={className}>
