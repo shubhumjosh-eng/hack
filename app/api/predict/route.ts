@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { predictWasteWithLLM } from '@/lib/huggingface';
+import { predictWasteWithLLM, predictWasteLocally } from '@/lib/huggingface';
 import { PredictionInput } from '@/lib/types';
 
 export const maxDuration = 60;
@@ -11,16 +11,6 @@ const VALID_WEATHER = ['Sunny', 'Cloudy', 'Rainy', 'Snowy', 'Hot', 'Cold', 'Mild
 
 export async function POST(request: NextRequest) {
   try {
-    if (!HF_API_KEY) {
-      return NextResponse.json(
-        {
-          error: 'Hugging Face API key not configured. Set HF_API_KEY environment variable.',
-          code: 'CONFIG_ERROR',
-        },
-        { status: 500 }
-      );
-    }
-
     const body: PredictionInput = await request.json();
 
     const errors: string[] = [];
@@ -45,26 +35,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await predictWasteWithLLM(body, HF_API_KEY);
+    let result;
+    let usedFallback = false;
+
+    if (HF_API_KEY) {
+      try {
+        result = await predictWasteWithLLM(body, HF_API_KEY);
+      } catch {
+        result = predictWasteLocally(body);
+        usedFallback = true;
+      }
+    } else {
+      result = predictWasteLocally(body);
+      usedFallback = true;
+    }
 
     return NextResponse.json(result, {
       status: 200,
       headers: {
         'X-Processing-Time': `${result.metadata.latencyMs}ms`,
+        'X-Prediction-Mode': usedFallback ? 'local' : 'llm',
         'Cache-Control': 'no-store, no-cache, must-revalidate',
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    const isModelLoading = message.toLowerCase().includes('loading');
+
+    try {
+      const body = await request.json().catch(() => null);
+      if (body && body.scheduledMenu) {
+        const { predictWasteLocally } = await import('@/lib/huggingface');
+        const result = predictWasteLocally(body as PredictionInput);
+        return NextResponse.json(result, {
+          status: 200,
+          headers: { 'X-Prediction-Mode': 'local-fallback', 'Cache-Control': 'no-store' },
+        });
+      }
+    } catch {}
 
     return NextResponse.json(
-      {
-        error: message,
-        code: isModelLoading ? 'MODEL_LOADING' : 'PROCESSING_ERROR',
-        retryAfter: isModelLoading ? 30 : undefined,
-      },
-      { status: isModelLoading ? 503 : 500 }
+      { error: message, code: 'PROCESSING_ERROR' },
+      { status: 500 }
     );
   }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { triageText } from '@/lib/huggingface';
+import { triageText, triageFallback } from '@/lib/huggingface';
 import { TriageInput, TriageResult } from '@/lib/types';
 
 export const runtime = 'edge';
@@ -11,16 +11,6 @@ export async function POST(request: NextRequest) {
   const startTime = performance.now();
 
   try {
-    if (!HF_API_KEY) {
-      return NextResponse.json(
-        {
-          error: 'Hugging Face API key not configured. Set HF_API_KEY environment variable.',
-          code: 'CONFIG_ERROR',
-        },
-        { status: 500 }
-      );
-    }
-
     const body: TriageInput = await request.json();
 
     if (!body.text || typeof body.text !== 'string') {
@@ -43,35 +33,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result: TriageResult = await triageText(body.text, HF_API_KEY);
+    let result: TriageResult;
+    let usedFallback = false;
+
+    if (HF_API_KEY) {
+      try {
+        result = await triageText(body.text, HF_API_KEY);
+      } catch {
+        result = triageFallback(body.text);
+        usedFallback = true;
+      }
+    } else {
+      result = triageFallback(body.text);
+      usedFallback = true;
+    }
+
     const totalLatency = Math.round(performance.now() - startTime);
 
     return NextResponse.json(
-      {
-        ...result,
-        totalLatencyMs: totalLatency,
-      },
+      { ...result, totalLatencyMs: totalLatency },
       {
         status: 200,
         headers: {
           'X-Processing-Time': `${totalLatency}ms`,
+          'X-Triage-Mode': usedFallback ? 'local' : 'llm',
           'Cache-Control': 'no-store, no-cache, must-revalidate',
         },
       }
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    const isModelLoading = message.includes('loading');
+
+    try {
+      const body = await request.json().catch(() => null);
+      if (body?.text) {
+        const result = triageFallback(body.text);
+        return NextResponse.json(
+          { ...result, totalLatencyMs: Math.round(performance.now() - startTime) },
+          { status: 200, headers: { 'X-Triage-Mode': 'local-fallback', 'Cache-Control': 'no-store' } }
+        );
+      }
+    } catch {}
 
     return NextResponse.json(
-      {
-        error: message,
-        code: isModelLoading ? 'MODEL_LOADING' : 'PROCESSING_ERROR',
-        retryAfter: isModelLoading ? 30 : undefined,
-      },
-      {
-        status: isModelLoading ? 503 : 500,
-      }
+      { error: message, code: 'PROCESSING_ERROR' },
+      { status: 500 }
     );
   }
 }

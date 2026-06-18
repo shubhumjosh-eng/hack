@@ -29,16 +29,16 @@ export const ROLE_PERMISSIONS: Record<User['role'], Permission[]> = {
 };
 
 export const MOCK_TEAMS: Team[] = [
-  { id: 'team-1', name: 'Green Valley Unified', slug: 'green-valley', createdAt: '2025-09-01T00:00:00Z', memberCount: 12, plan: 'pro' },
-  { id: 'team-2', name: 'Coastal Prep Schools', slug: 'coastal-prep', createdAt: '2025-10-15T00:00:00Z', memberCount: 8, plan: 'free' },
-  { id: 'team-3', name: 'Mercy Health System', slug: 'mercy-health', createdAt: '2026-01-10T00:00:00Z', memberCount: 24, plan: 'enterprise' },
+  { id: 'team-1', name: 'Demo Secondary School', slug: 'demo-school', createdAt: '2025-09-01T00:00:00Z', memberCount: 12, plan: 'pro' },
+  { id: 'team-2', name: 'Partner School District', slug: 'partner-district', createdAt: '2025-10-15T00:00:00Z', memberCount: 8, plan: 'free' },
+  { id: 'team-3', name: 'Enterprise School Group', slug: 'enterprise-group', createdAt: '2026-01-10T00:00:00Z', memberCount: 24, plan: 'enterprise' },
 ];
 
 export const MOCK_USERS: User[] = [
-  { id: 'user-1', email: 'admin@greenvalley.edu', name: 'Dr. Sarah Chen', role: 'admin', teamId: 'team-1' },
-  { id: 'user-2', email: 'editor@greenvalley.edu', name: 'Mark Rivera', role: 'editor', teamId: 'team-1' },
-  { id: 'user-3', email: 'viewer@coastalprep.org', name: 'Lisa Park', role: 'viewer', teamId: 'team-2' },
-  { id: 'user-4', email: 'admin@mercyhealth.org', name: 'Dr. James Okafor', role: 'admin', teamId: 'team-3' },
+  { id: 'user-1', email: 'admin@demo.edu.hk', name: 'Ms. Wong, Cafeteria Manager', role: 'admin', teamId: 'team-1' },
+  { id: 'user-2', email: 'editor@demo.edu.hk', name: 'Mr. Chen, Sustainability', role: 'editor', teamId: 'team-1' },
+  { id: 'user-3', email: 'viewer@demo.edu.hk', name: 'Lisa, Eco-Club Student', role: 'viewer', teamId: 'team-2' },
+  { id: 'user-4', email: 'admin@partner.edu.hk', name: 'Dr. Patel, Partner Admin', role: 'admin', teamId: 'team-3' },
 ];
 
 export const REGISTERED_USERS_KEY = 'ecoos-registered-users';

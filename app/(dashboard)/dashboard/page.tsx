@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { ParameterControl } from '@/components/dashboard/parameter-control';
 import { ResultsPanel } from '@/components/dashboard/results-panel';
 import { PredictionInput, PredictionResult, DashboardHistoryEntry, computeLandfillMetric } from '@/lib/types';
-import { Terminal, History, Download, Printer, AlertTriangle, HelpCircle } from 'lucide-react';
+import { Terminal, History, Download, Printer, AlertTriangle, HelpCircle, BarChart3, TrendingDown, Leaf } from 'lucide-react';
 import { getPredictions, addPrediction, seedDemoData } from '@/lib/storage';
 import { ReportView } from '@/components/dashboard/report-view';
 import { EventLog } from '@/components/ui/event-log';
@@ -37,6 +37,13 @@ export default function DashboardPage() {
   const { logs, addLog, clearLogs } = useEventLog();
   const beep = useBeep();
 
+  const [impact, setImpact] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem('ecoos-session-impact');
+      return stored ? JSON.parse(stored) : { predictions: 0, totalWasteKg: 0, totalCostSavings: 0, totalCo2Tonnes: 0, interventions: 0 };
+    } catch { return { predictions: 0, totalWasteKg: 0, totalCostSavings: 0, totalCo2Tonnes: 0, interventions: 0 }; }
+  });
+
   useEffect(() => {
     seedDemoData();
     const stored = getPredictions();
@@ -66,6 +73,17 @@ export default function DashboardPage() {
       const data: PredictionResult = await res.json();
       setResult(data);
       beep(880, 100);
+
+      const annualKg = data.predictedWasteKg * 180;
+      const updated = {
+        predictions: impact.predictions + 1,
+        totalWasteKg: impact.totalWasteKg + data.predictedWasteKg,
+        totalCostSavings: impact.totalCostSavings + Math.round(annualKg * 4.50),
+        totalCo2Tonnes: Math.round((impact.totalCo2Tonnes + annualKg * 2.5 / 1000) * 100) / 100,
+        interventions: impact.interventions + data.actionableInterventions.length,
+      };
+      setImpact(updated);
+      sessionStorage.setItem('ecoos-session-impact', JSON.stringify(updated));
 
       const entry: DashboardHistoryEntry = {
         id: generateId(),
@@ -124,28 +142,60 @@ export default function DashboardPage() {
         </button>
       </div>
 
+      {impact.predictions > 0 && (
+        <div className="border border-emerald-800/30 bg-gradient-to-r from-emerald-950/40 to-gray-950 p-3 sm:p-4 animate-fade-in">
+          <div className="flex items-center gap-2 mb-2 text-[10px] text-emerald-600 uppercase tracking-widest">
+            <BarChart3 className="h-3 w-3" />
+            <span>Session Impact — This browser session</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="border border-emerald-800/20 bg-gray-900/50 p-2 text-center">
+              <p className="text-lg font-bold text-emerald-300 tabular-nums">{impact.predictions}</p>
+              <p className="text-[9px] text-emerald-600">predictions run</p>
+            </div>
+            <div className="border border-emerald-800/20 bg-gray-900/50 p-2 text-center">
+              <p className="text-lg font-bold text-emerald-300 tabular-nums">{impact.totalWasteKg.toFixed(1)} <span className="text-[10px] text-emerald-600">kg</span></p>
+              <p className="text-[9px] text-emerald-600">waste identified</p>
+            </div>
+            <div className="border border-emerald-800/20 bg-gray-900/50 p-2 text-center">
+              <p className="text-lg font-bold text-amber-300 tabular-nums">${impact.totalCostSavings.toLocaleString()}</p>
+              <p className="text-[9px] text-emerald-600">projected savings</p>
+            </div>
+            <div className="border border-emerald-800/20 bg-gray-900/50 p-2 text-center">
+              <p className="text-lg font-bold text-red-300 tabular-nums">{impact.totalCo2Tonnes.toFixed(2)} <span className="text-[10px] text-emerald-600">t</span></p>
+              <p className="text-[9px] text-emerald-600">CO₂e reduction</p>
+            </div>
+            <div className="border border-emerald-800/20 bg-gray-900/50 p-2 text-center">
+              <p className="text-lg font-bold text-emerald-300 tabular-nums">{impact.interventions}</p>
+              <p className="text-[9px] text-emerald-600">interventions</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="border border-emerald-800/30 bg-gradient-to-r from-emerald-950/40 to-gray-950 p-4 sm:p-5 animate-fade-in">
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-emerald-600/40 bg-emerald-900/20">
-            <AlertTriangle className="h-5 w-5 text-emerald-400" />
+            <TrendingDown className="h-5 w-5 text-emerald-400" />
           </div>
           <div className="space-y-2 flex-1">
             <p className="text-sm font-bold text-emerald-200">
-              Hong Kong Landfills <span className="text-amber-300">3,600 Tonnes</span> of Food Waste Daily
+              Your School&apos;s Cafeteria — <span className="text-amber-300">AI Predicts Waste Before Lunch is Served</span>
             </p>
             <p className="text-xs text-emerald-500/80 leading-relaxed">
-              That&apos;s over <span className="text-emerald-300">30%</span> of all municipal solid waste — 
-              <span className="text-emerald-300"> 446,000 tonnes</span> of CO₂e per year. 
-              Every <span className="text-emerald-300">$1 HKD</span> invested in waste reduction saves 
-              <span className="text-emerald-300">$7 HKD</span> in disposal and operational costs.
-              EcoOS uses AI to predict waste before it happens, enabling precise production adjustments.
+              Enter your menu, attendance, and weather. EcoOS instantly predicts how much food will go uneaten —{' '}
+              down to the kilogram — and gives you <span className="text-emerald-300">3 actionable interventions</span> to reduce waste.{' '}
+              Every prediction includes a <span className="text-emerald-300">risk warning</span>,{' '}
+              <span className="text-emerald-300">confidence interval</span>, and{' '}
+              <span className="text-emerald-300">human-in-the-loop safeguard</span>.
+              Built for Direction A: Food Waste Rescue Radar — USAII Global AI Hackathon 2026.
             </p>
           </div>
           <div className="flex items-center gap-2 text-[10px] text-emerald-700 shrink-0">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-            <span>SYSTEM ONLINE</span>
+            <span>SCHOOL FOOD WASTE AI</span>
             <span className="text-emerald-800">|</span>
-            <span>LLAMA-3-8B</span>
+            <span>v2.5.0</span>
           </div>
         </div>
       </div>

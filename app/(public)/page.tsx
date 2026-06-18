@@ -109,9 +109,9 @@ export default function LandingPage() {
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
             <div className="flex items-center gap-2 text-[10px] text-emerald-700 mb-8 tracking-[0.2em]">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse-glow" />
-              <span>SYSTEM ONLINE v2.5.0</span>
+              <span>FOOD WASTE RESCUE RADAR</span>
               <span className="text-emerald-800">|</span>
-              <span>ENTERPRISE ENVIRONMENTAL INTELLIGENCE</span>
+              <span>USAII GLOBAL AI HACKATHON 2026</span>
             </div>
 
             <div className="max-w-3xl">
@@ -120,22 +120,22 @@ export default function LandingPage() {
                   <Radar className="h-5 w-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-emerald-700 tracking-[0.3em] uppercase">EcoOS Core</p>
+                  <p className="text-[10px] text-emerald-700 tracking-[0.3em] uppercase">EcoOS Core — School Food Waste AI</p>
                 </div>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-emerald-50 leading-tight mb-4">
-                Predict Food Waste.{' '}
-                <span className="text-emerald-400 glow-text">Save Money.</span>{' '}
-                <span className="text-emerald-600">Protect the Planet.</span>
+                Your school cafeteria wastes{' '}
+                <span className="text-emerald-400 glow-text">40kg of food</span>{' '}
+                <span className="text-emerald-600">every Tuesday.</span>
               </h1>
 
               <p className="text-sm sm:text-base text-emerald-500/70 leading-relaxed max-w-2xl mb-8">
-                AI-powered waste prediction and triage for institutional food service.
-                Reduce waste by up to 35%, save thousands in operating costs, and
-                minimize your environmental footprint — before the food hits the plate.
+                Before a single plate is served, EcoOS predicts exactly how much food will go uneaten —{' '}
+                down to the menu item, day of week, and weather. AI identifies patterns, recommends interventions,{' '}
+                and keeps a human in the loop. No API keys needed. No setup. Just your menu and attendance.{' '}
+                <span className="text-emerald-600">Built for Direction A: Food Waste Rescue Radar</span>
                 {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[HK EPD 2024]</a>
-                {' '}<a href="https://www.nature.com/articles/s43016-023-00844-6" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[Nature Food 2023]</a>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -144,23 +144,15 @@ export default function LandingPage() {
                   className="inline-flex items-center justify-center gap-2 bg-emerald-600/20 border border-emerald-500/50 text-emerald-200 px-6 py-3 text-sm hover:bg-emerald-600/30 hover:border-emerald-400/60 transition-all duration-200"
                 >
                   <Terminal className="h-4 w-4" />
-                  <span>Sign In</span>
+                  <span>Launch Demo — Try Your School</span>
                   <ArrowRight className="h-3.5 w-3.5 text-emerald-500/70" />
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/login"
                   className="inline-flex items-center justify-center gap-2 bg-transparent border border-emerald-800/40 text-emerald-400 px-6 py-3 text-sm hover:bg-emerald-700/20 hover:border-emerald-600/50 transition-all duration-200"
                 >
-                  <span>Create Account</span>
+                  <span>Quick Demo (30s)</span>
                   <ChevronRight className="h-3.5 w-3.5" />
-                </Link>
-
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 text-[11px] text-emerald-700 hover:text-emerald-500 px-3 py-3 transition-colors"
-                >
-                  <span>skip to dashboard</span>
-                  <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
             </div>

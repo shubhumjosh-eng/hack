@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const QUICK_LOGIN = [
-  { email: 'admin@greenvalley.edu', label: 'Admin — Green Valley Unified' },
-  { email: 'editor@greenvalley.edu', label: 'Editor — Green Valley Unified' },
-  { email: 'viewer@coastalprep.org', label: 'Viewer — Coastal Prep Schools' },
-  { email: 'admin@mercyhealth.org', label: 'Admin — Mercy Health System' },
+  { email: 'admin@demo.edu.hk', label: 'Ms. Wong — Cafeteria Manager' },
+  { email: 'editor@demo.edu.hk', label: 'Mr. Chen — Sustainability' },
+  { email: 'viewer@demo.edu.hk', label: 'Lisa — Eco-Club Student' },
+  { email: 'admin@partner.edu.hk', label: 'Dr. Patel — Partner School' },
 ];
 
 export default function LoginPage() {

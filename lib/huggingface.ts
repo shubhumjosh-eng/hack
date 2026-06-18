@@ -250,6 +250,141 @@ function parseTriageResponse(text: string): {
   }
 }
 
+export function predictWasteLocally(input: PredictionInput): PredictionResult {
+  const menu = input.scheduledMenu.toLowerCase();
+  const attendance = input.expectedAttendance;
+
+  let basePer100 = 8;
+  if (menu.includes('fish') || menu.includes('seafood')) basePer100 = 15;
+  else if (menu.includes('liver') || menu.includes('tofu') || menu.includes('eggplant')) basePer100 = 13;
+  else if (menu.includes('salad') || menu.includes('vegetable stir')) basePer100 = 11;
+  else if (menu.includes('stir-fry') || menu.includes('soup')) basePer100 = 10;
+  else if (menu.includes('pizza') || menu.includes('pasta') || menu.includes('spaghetti')) basePer100 = 6;
+  else if (menu.includes('chicken tend') || menu.includes('nugget') || menu.includes('burger')) basePer100 = 5;
+  else if (menu.includes('taco') || menu.includes('wrap') || menu.includes('sandwich')) basePer100 = 7;
+  else if (menu.includes('mac') && menu.includes('cheese')) basePer100 = 6;
+
+  const dayMult: Record<string, number> = { Monday: 1.15, Tuesday: 1.05, Wednesday: 0.90, Thursday: 1.10, Friday: 0.85, Saturday: 1.20, Sunday: 1.25 };
+  const weatherMult: Record<string, number> = { Sunny: 0.90, Cloudy: 1.00, Rainy: 1.20, Snowy: 1.15, Hot: 1.10, Cold: 1.15, Mild: 0.95, Windy: 1.05 };
+  const temp = input.temperature ?? 70;
+  const tempMult = temp > 90 || temp < 40 ? 1.15 : temp > 80 || temp < 50 ? 1.05 : 1.0;
+  const dayFactor = dayMult[input.dayOfWeek] ?? 1.0;
+  const weatherFactor = weatherMult[input.weatherCondition] ?? 1.0;
+  const raw = basePer100 * (attendance / 100) * dayFactor * weatherFactor * tempMult + attendance * 0.01;
+  const predictedWasteKg = Math.round(raw * 10) / 10;
+
+  const day = input.dayOfWeek;
+  const short = menu.split(' ').slice(0, 3).join(' ');
+
+  let interventions: string[];
+  if (predictedWasteKg > 40) {
+    interventions = [
+      `Reduce ${short} portions by 25% on ${day}s — high waste pattern detected for this menu`,
+      `Run a taste-test alternative on ${day}s for 3 weeks to find a higher-acceptance option`,
+      `Switch to pre-orders closing 24h before ${day} lunch to get accurate counts`,
+    ];
+  } else if (predictedWasteKg > 25) {
+    interventions = [
+      `Reduce ${short} production by 15% on ${day}s — moderate overproduction pattern detected`,
+      `Add a half-portion option to reduce plate waste from students who don't finish`,
+      `Monitor ${input.weatherCondition.toLowerCase()} day patterns — weather is amplifying waste`,
+    ];
+  } else {
+    interventions = [
+      `Maintain current ${short} levels — this menu performs well on ${day}s`,
+      `Consider a seasonal fruit side to further improve meal acceptance`,
+      `Track ${day} waste weekly — this low-waste profile is the benchmark for other days`,
+    ];
+  }
+
+  return {
+    predictedWasteKg,
+    actionableInterventions: interventions,
+    riskWarning: 'This prediction uses generalized food service patterns — actual waste varies by ±35% depending on local student preferences. Validate against manual measurements before making procurement changes.',
+    humanInTheLoopAction: 'Do NOT modify supply orders automatically. Run a 2-week test: apply the first intervention manually, measure waste daily, compare against prediction. Only automate after calibration shows consistent results.',
+    metadata: {
+      modelUsed: 'EcoOS Local Predictor v1.0',
+      latencyMs: 0,
+      processedAt: new Date().toISOString(),
+      inputSnapshot: { ...input },
+    },
+  };
+}
+
+export function triageFallback(input: string): TriageResult {
+  const text = input.toLowerCase();
+  const hasNumbers = /\d+/.test(text);
+  const hasLocation = /kitchen|cafeteria|dining|hall|classroom/.test(text);
+  let category: EnvironmentalIntent['category'] = 'waste';
+  if (/energy|electricity|power|gas/.test(text)) category = 'energy';
+  else if (/water|tap|faucet/.test(text)) category = 'water';
+  else if (/emission|carbon|co2|greenhouse/.test(text)) category = 'emission';
+  let scale: GeoLocation['estimatedScale'] = 'medium';
+  if (/whole school|district|all|entire/.test(text)) scale = 'large';
+  else if (/classroom|office|single/.test(text)) scale = 'small';
+
+  return {
+    rawInput: input,
+    processedAt: new Date().toISOString(),
+    environmentalIntent: {
+      category,
+      confidence: 0.85,
+      subcategory: hasNumbers ? 'Measurable waste with quantities reported' : 'Qualitative description — recommend quantifying with a 1-week audit',
+    },
+    locations: [{ name: hasLocation ? 'School cafeteria / kitchen' : 'Unspecified school location', type: 'school', estimatedScale: scale }],
+    actions: [
+      {
+        id: 'f-all-1',
+        description: hasNumbers
+          ? 'Set up a daily weigh station to track waste consistently — you already have initial numbers, make it systematic'
+          : 'Start a 1-week manual waste audit — weigh and categorize all post-meal discard by food type',
+        priority: 'high',
+        environmentalImpact: 'Establishes measurable baseline for targeted waste reduction',
+        estimatedSavings: 'Typically identifies 15-25% reduction opportunities',
+        effort: 'moderate',
+      },
+      {
+        id: 'f-all-2',
+        description: 'Create a share table for unopened packaged items (milk, fruit, wrapped sandwiches)',
+        priority: 'high',
+        environmentalImpact: 'Captures 30-50% of recoverable packaged waste before the bin',
+        estimatedSavings: '$200-500/month in recovered food value',
+        effort: 'quick',
+      },
+      {
+        id: 'f-all-3',
+        description: 'Conduct a student preference survey to identify least-liked menu items driving waste',
+        priority: 'medium',
+        environmentalImpact: 'Targeted menu changes have 3x the impact of generic cuts',
+        estimatedSavings: 'High-impact, low-cost intervention',
+        effort: 'quick',
+      },
+    ],
+    recommendation: {
+      summary: hasNumbers
+        ? 'You have initial data—good. Next: systematic tracking with a feedback loop to kitchen planning.'
+        : 'Start with a structured waste audit to quantify the problem, then target highest-impact streams.',
+      reasoning: [
+        hasNumbers ? 'Existing numbers show awareness exists but systematic tracking is missing' : 'Without baseline data, intervention effectiveness cannot be measured',
+        'Share tables and pre-order systems are the highest-ROI first steps for any school cafeteria',
+        'Student preference data ensures menu changes target actual dislikes, not assumptions',
+      ],
+      nextSteps: [
+        hasNumbers ? 'Set up daily weigh station and track for 2 consecutive weeks' : 'Conduct a 1-week manual waste sort measuring each food category separately',
+        'Launch a share table pilot alongside the audit',
+        'Administer a 5-question student lunch preference survey',
+      ],
+      impactProjection: {
+        wasteReduction: '20-35% reduction achievable within 60 days',
+        costSavings: '$300-800/month in reduced food costs and disposal fees',
+        co2Reduction: '1-3 tonnes CO₂e annually from landfill diversion',
+      },
+    },
+    modelUsed: 'EcoOS Local Triager v1.0',
+    latencyMs: 0,
+  };
+}
+
 function parsePredictionResponse(text: string): {
   predictedWasteKg: number;
   actionableInterventions: string[];
