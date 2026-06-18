@@ -98,7 +98,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         {!tourActive && (
           <button
             onClick={() => setTourActive(true)}
-            className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 text-[10px]
+            className="fixed bottom-20 right-4 sm:bottom-4 z-50 flex items-center gap-2 px-3 py-2 text-[10px]
               border border-emerald-700/40 bg-gray-950 text-emerald-500
               hover:border-emerald-500/60 hover:text-emerald-300 transition-all
               shadow-[0_0_10px_rgba(52,211,153,0.1)]"

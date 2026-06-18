@@ -190,8 +190,8 @@ export function Sidebar() {
         </button>
       </aside>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 flex sm:hidden border-t border-emerald-800/25 bg-gray-950">
-        {NAV_ITEMS.filter(i => i.href !== '/api-keys').map((item) => {
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex sm:hidden border-t border-emerald-800/25 bg-gray-950 overflow-x-auto">
+        {NAV_ITEMS.filter(i => i.href !== '/api-keys').slice(0, 6).map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
@@ -200,14 +200,14 @@ export function Sidebar() {
               href={item.href}
               data-tour={item.href.replace('/', '')}
               className={cn(
-                'flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-mono transition-colors',
+                'flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9px] font-mono transition-colors min-w-0',
                 isActive
                   ? 'text-emerald-300 bg-emerald-700/10'
                   : 'text-emerald-600 hover:text-emerald-400'
               )}
             >
-              <Icon className="h-4 w-4" />
-              <span>{item.label}</span>
+              <Icon className="h-4 w-4 mb-0.5" />
+              <span className="truncate max-w-full px-0.5">{item.label}</span>
             </Link>
           );
         })}

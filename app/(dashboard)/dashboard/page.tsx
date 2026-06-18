@@ -182,12 +182,12 @@ export default function DashboardPage() {
             <p className="text-sm font-bold text-emerald-200">
               Your School&apos;s Cafeteria — <span className="text-amber-300">AI Predicts Waste Before Lunch is Served</span>
             </p>
-            <p className="text-xs text-emerald-500/80 leading-relaxed">
+            <p className="text-xs text-emerald-300/90 leading-relaxed">
               Enter your menu, attendance, and weather. EcoOS instantly predicts how much food will go uneaten —{' '}
-              down to the kilogram — and gives you <span className="text-emerald-300">3 actionable interventions</span> to reduce waste.{' '}
-              Every prediction includes a <span className="text-emerald-300">risk warning</span>,{' '}
-              <span className="text-emerald-300">confidence interval</span>, and{' '}
-              <span className="text-emerald-300">human-in-the-loop safeguard</span>.
+              down to the kilogram — and gives you <span className="text-emerald-200">3 actionable interventions</span> to reduce waste.{' '}
+              Every prediction includes a <span className="text-emerald-200">risk warning</span>,{' '}
+              <span className="text-emerald-200">confidence interval</span>, and{' '}
+              <span className="text-emerald-200">human-in-the-loop safeguard</span>.
               Built for Direction A: Food Waste Rescue Radar — USAII Global AI Hackathon 2026.
             </p>
           </div>

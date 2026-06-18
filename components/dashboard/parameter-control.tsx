@@ -45,7 +45,7 @@ export function ParameterControl({
       <div className="terminal-header flex items-center gap-2">
         <Terminal className="h-3.5 w-3.5 text-emerald-500" />
         <span>Parameter Control Room</span>
-        <span className="text-emerald-700 ml-auto text-[10px] tracking-normal">set input parameters</span>
+        <span className="text-emerald-700 ml-auto text-xs tracking-normal">set input parameters</span>
       </div>
       <div className="terminal-content space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">

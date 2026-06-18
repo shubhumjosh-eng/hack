@@ -23,19 +23,19 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex h-10 items-center justify-between border-b border-emerald-800/20 bg-gray-950/90 px-4">
+    <header className="flex h-10 items-center justify-between border-b border-emerald-800/20 bg-gray-950/90 pl-10 sm:pl-4 pr-4">
       <div className="flex items-center gap-4 text-[10px] font-mono">
         <div className="flex items-center gap-1.5 text-emerald-600">
           <Activity className="h-3 w-3" />
           <span>all systems nominal</span>
         </div>
-        <span className="text-emerald-800">|</span>
-        <div className="flex items-center gap-1.5 text-emerald-600">
+        <span className="text-emerald-800 hidden sm:inline">|</span>
+        <div className="items-center gap-1.5 text-emerald-600 hidden sm:flex">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
           <span>hf inference</span>
         </div>
-        <span className="text-emerald-800">|</span>
-        <div className="flex items-center gap-1.5 text-emerald-600">
+        <span className="text-emerald-800 hidden md:inline">|</span>
+        <div className="items-center gap-1.5 text-emerald-600 hidden md:flex">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
           <span>prediction engine</span>
         </div>
