@@ -248,8 +248,8 @@ export default function LandingPage() {
         <div className="border-b border-emerald-800/20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
             <div className="text-center mb-10">
-              <h2 className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Platform Capabilities</h2>
-              <h3 className="text-xl sm:text-2xl font-bold text-emerald-100">Everything you need to eliminate food waste</h3>
+              <p className="text-[10px] text-emerald-600 tracking-[0.3em] uppercase mb-2">Platform Capabilities</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-emerald-100">Everything you need to eliminate food waste</h2>
               <p className="text-xs text-emerald-600 mt-2 max-w-xl mx-auto">
                 From AI prediction to actionable interventions, EcoOS gives institutional kitchens
                 the tools to reduce waste, save money, and track environmental impact.
@@ -261,7 +261,7 @@ export default function LandingPage() {
                 return (
                   <div key={i} className="border border-emerald-800/20 bg-gray-900/30 p-4 hover:border-emerald-700/40 transition-colors group">
                     <Icon className="h-5 w-5 text-emerald-500 mb-2 group-hover:text-emerald-300 transition-colors" />
-                    <h4 className="text-xs font-bold text-emerald-300 mb-1">{f.title}</h4>
+                    <h3 className="text-xs font-bold text-emerald-300 mb-1">{f.title}</h3>
                     <p className="text-[10px] text-emerald-600 leading-relaxed">{f.desc}</p>
                     {f.cite && (
                       <a
@@ -323,21 +323,21 @@ export default function LandingPage() {
             </div>
             <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
-                <p className="text-xs font-bold text-emerald-300 mb-2">Data Collection</p>
-                <p className="text-[10px] text-emerald-600 leading-relaxed">
-                  Aggregates 24+ months of historical waste records across menu items, attendance, and day-of-week patterns from Hong Kong institutional kitchens.
-                  {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[HK EPD]</a>
-                </p>
-              </div>
-              <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
-                <p className="text-xs font-bold text-emerald-300 mb-2">Ensemble ML Pipeline</p>
-                <p className="text-[10px] text-emerald-600 leading-relaxed">
-                  Five models (RF, XGBoost, Neural Network, Linear Regression, LLM) trained on 50,000+ meal events with 94.8% cross-validated accuracy.
-                  {' '}<a href="https://arxiv.org/abs/2305.16284" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[arXiv:2305.16284]</a>
-                </p>
-              </div>
-              <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
-                <p className="text-xs font-bold text-emerald-300 mb-2">Intervention Engine</p>
+<h3 className="text-xs font-bold text-emerald-300 mb-2">Data Collection</h3>
+                 <p className="text-[10px] text-emerald-600 leading-relaxed">
+                   Aggregates 24+ months of historical waste records across menu items, attendance, and day-of-week patterns from Hong Kong institutional kitchens.
+                   {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[HK EPD]</a>
+                 </p>
+               </div>
+               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
+                 <h3 className="text-xs font-bold text-emerald-300 mb-2">Ensemble ML Pipeline</h3>
+                 <p className="text-[10px] text-emerald-600 leading-relaxed">
+                   Five models (RF, XGBoost, Neural Network, Linear Regression, LLM) trained on 50,000+ meal events with 94.8% cross-validated accuracy.
+                   {' '}<a href="https://arxiv.org/abs/2305.16284" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[arXiv:2305.16284]</a>
+                 </p>
+               </div>
+               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
+                 <h3 className="text-xs font-bold text-emerald-300 mb-2">Intervention Engine</h3>
                 <p className="text-[10px] text-emerald-600 leading-relaxed">
                   Generates ranked recommendations with projected savings — average 35% waste reduction and 7x ROI across Hong Kong pilot sites.
                   {' '}<a href="https://doi.org/10.1016/j.wasman.2022.08.011" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[Waste Management 2022]</a>
