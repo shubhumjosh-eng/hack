@@ -45,11 +45,11 @@ const PLATFORMS = [
 ];
 
 const DATA_SOURCES = [
-  { name: 'Hong Kong EPD — Waste Statistics', url: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
+  { name: 'Hong Kong EPD — Waste Statistics', url: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html' },
   { name: 'IPCC — GHG Protocol Guidelines (2019)', url: 'https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/' },
-  { name: 'UNEP — Food Waste Index Report 2024', url: 'https://www.unep.org/resources/report/unep-food-waste-index-report-2024' },
+  { name: 'UNEP — Food Waste Index Report 2024', url: 'https://www.unep.org/resources/publication/food-waste-index-report-2024' },
   { name: 'FAO — Food Loss and Waste Database', url: 'https://www.fao.org/platform-food-loss-waste/en/' },
-  { name: 'HK Climate Ready — Climate Action Plan 2050', url: 'https://www.climateready.gov.hk/' },
+  { name: 'HK Climate Ready — Climate Action Plan 2050', url: 'https://www.info.gov.hk/gia/general/202110/08/P2021100800588.htm' },
 ];
 
 export default function AboutPage() {
@@ -167,9 +167,9 @@ export default function AboutPage() {
               ))}
             </div>
             <p className="text-[8px] text-emerald-800 mt-3 text-center">
-              Sources: <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">HK EPD</a>
+              Sources: <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">HK EPD</a>
               &nbsp;&middot;&nbsp;
-              <a href="https://www.nature.com/articles/s43016-023-00844-6" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">Nature Food 2023</a>
+              <a href="https://link.springer.com/article/10.1007/s10163-023-01706-8" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">Nature Food 2023</a>
               &nbsp;&middot;&nbsp;
               <a href="https://arxiv.org/abs/2305.16284" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">arXiv:2305.16284</a>
             </p>

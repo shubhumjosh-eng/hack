@@ -135,7 +135,7 @@ export default function LandingPage() {
                 down to the menu item, day of week, and weather. AI identifies patterns, recommends interventions,{' '}
                 and keeps a human in the loop. No API keys needed. No setup. Just your menu and attendance.{' '}
                 <span className="text-emerald-600">Built for Direction A: Food Waste Rescue Radar</span>
-                {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[HK EPD 2024]</a>
+                {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-500 underline underline-offset-2 decoration-emerald-800/30">[HK EPD 2024]</a>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -234,7 +234,7 @@ export default function LandingPage() {
                   <p className="text-[10px] text-emerald-600 mt-1">{s.label}</p>
                   <p className="text-[8px] text-emerald-800 mt-0.5">{s.sub}</p>
                   <p className="text-[7px] text-emerald-900 mt-1">
-                    <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition-colors">
+                    <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition-colors">
                       {s.cite}
                     </a>
                   </p>
@@ -292,7 +292,7 @@ export default function LandingPage() {
                 { q: 'How does AI waste prediction work?', a: 'EcoOS uses ensemble machine learning models (Random Forest, XGBoost, Neural Network, and LLM) to forecast food waste before meals are served. The system analyzes historical waste data, menu items, attendance figures, and day-of-week patterns to predict waste quantities with up to 94.8% accuracy. [1]', cite: 'https://arxiv.org/abs/2305.16284' },
                 { q: 'What data does EcoOS analyze?', a: 'EcoOS analyzes historical waste records, menu compositions, attendance counts, day-of-week patterns, seasonal trends, and intervention outcomes to generate accurate waste predictions and actionable recommendations. [2]', cite: 'https://doi.org/10.1016/j.resconrec.2023.107204' },
                 { q: 'How accurate are the predictions?', a: 'Our ensemble ML models achieve 94.8% prediction accuracy across institutional food service operations. The multi-model portfolio lets you choose from five models to best match your operational profile. [1]', cite: 'https://arxiv.org/abs/2305.16284' },
-                { q: 'Is EcoOS available for Hong Kong operations?', a: 'Yes. EcoOS is optimized for Hong Kong institutional food service, using local waste statistics and Hong Kong Environmental Protection Department data. The platform addresses Hong Kong\'s 3,600 tonnes of daily food waste sent to landfills. [3]', cite: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
+                { q: 'Is EcoOS available for Hong Kong operations?', a: 'Yes. EcoOS is optimized for Hong Kong institutional food service, using local waste statistics and Hong Kong Environmental Protection Department data. The platform addresses Hong Kong\'s 3,600 tonnes of daily food waste sent to landfills. [3]', cite: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html' },
                 { q: 'What models are used for waste prediction?', a: 'EcoOS offers a five-model portfolio: Random Forest (RF), XGBoost, Neural Network (NN), Linear Regression (LR), and LLM-based prediction. Each model can be selected based on your specific accuracy and interpretability needs. [4]', cite: 'https://doi.org/10.1016/j.spc.2023.09.005' },
               ].map((faq, i) => (
                 <details key={i} className="group border border-emerald-800/20 bg-gray-900/30 open:border-emerald-600/40 transition-colors">
@@ -326,7 +326,7 @@ export default function LandingPage() {
                 <p className="text-xs font-bold text-emerald-300 mb-2">Data Collection</p>
                 <p className="text-[10px] text-emerald-600 leading-relaxed">
                   Aggregates 24+ months of historical waste records across menu items, attendance, and day-of-week patterns from Hong Kong institutional kitchens.
-                  {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[HK EPD]</a>
+                  {' '}<a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[HK EPD]</a>
                 </p>
               </div>
               <div className="border border-emerald-800/20 bg-gray-900/30 p-4 text-center">
@@ -361,12 +361,12 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-3">
               {[
-                { label: 'HK EPD Waste Statistics', href: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html' },
+                { label: 'HK EPD Waste Statistics', href: 'https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html' },
                 { label: 'IPCC GHG Guidelines (2019)', href: 'https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/' },
-                { label: 'UNEP Food Waste Index 2024', href: 'https://www.unep.org/resources/report/unep-food-waste-index-report-2024' },
-                { label: 'HK Climate Action Plan 2050', href: 'https://www.climateready.gov.hk/' },
+                { label: 'UNEP Food Waste Index 2024', href: 'https://www.unep.org/resources/publication/food-waste-index-report-2024' },
+                { label: 'HK Climate Action Plan 2050', href: 'https://www.info.gov.hk/gia/general/202110/08/P2021100800588.htm' },
                 { label: 'FAO Food Loss & Waste', href: 'https://www.fao.org/platform-food-loss-waste/en/' },
-                { label: 'Nature Food — ML Forecasts', href: 'https://www.nature.com/articles/s43016-023-00844-6' },
+                { label: 'Nature Food — ML Forecasts', href: 'https://link.springer.com/article/10.1007/s10163-023-01706-8' },
               ].map((src, i) => (
                 <a
                   key={i}
@@ -485,7 +485,7 @@ export default function LandingPage() {
               <span>All systems nominal</span>
               <span className="inline-block h-1 w-1 rounded-full bg-emerald-700" />
               <a
-                href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/data.html"
+                href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-emerald-500 transition-colors inline-flex items-center gap-1"
