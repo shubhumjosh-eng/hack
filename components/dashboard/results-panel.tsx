@@ -17,10 +17,10 @@ interface ResultsPanelProps {
 export function ResultsPanel({ result, loading, error, input, onDismiss }: ResultsPanelProps) {
   const [acknowledged, setAcknowledged] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [completedInts, setCompletedInts] = useState<Set<number>>(new Set());
+  const [completedInts, setCompletedInts] = useState<number[]>([]);
 
   useEffect(() => {
-    setCompletedInts(new Set());
+    setCompletedInts([]);
   }, [result]);
 
   if (loading) {
@@ -181,8 +181,8 @@ export function ResultsPanel({ result, loading, error, input, onDismiss }: Resul
                     <div key={i} className="flex items-start gap-2 text-sm text-emerald-300/90 border-l-2 border-emerald-700/40 pl-3 py-1">
                       <span className="text-emerald-600 shrink-0 font-mono">{'>>'}</span>
                       <div className="flex-1">
-                        <span><TypewriterText text={intervention} speed={1} onComplete={() => setCompletedInts(prev => new Set([...prev, i]))} /></span>
-                        {completedInts.has(i) && (
+                        <span><TypewriterText text={intervention} speed={1} onComplete={() => setCompletedInts(prev => [...prev, i])} /></span>
+                        {completedInts.includes(i) && (
                           <span className="ml-2 text-[9px] text-emerald-600 border border-emerald-700/40 px-1 py-0.5 whitespace-nowrap animate-fade-in">
                             save ~${s.savingsDollars}/day
                           </span>
