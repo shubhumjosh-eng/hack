@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Shield, Key, Ban, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/layout/auth-provider';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface AdminUser {
   id: string;
@@ -21,6 +22,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [confirmBan, setConfirmBan] = useState<{ id: string; name: string; banned: boolean } | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -154,8 +156,8 @@ export default function AdminPage() {
                   <td className="py-2 px-3 text-right">
                     {!u.is_mock && (
                       <button
-                        onClick={() => toggleBan(u.id, u.banned)}
-                        className={`text-[9px] px-2 py-0.5 rounded border ${
+                        onClick={() => setConfirmBan({ id: u.id, name: u.name, banned: u.banned })}
+                        className={`text-xs px-2 py-0.5 rounded border ${
                           u.banned
                             ? 'border-emerald-800/30 text-emerald-500 hover:bg-emerald-900/20'
                             : 'border-red-800/30 text-red-400 hover:bg-red-900/20'
@@ -170,6 +172,17 @@ export default function AdminPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {confirmBan && (
+        <ConfirmDialog
+          open={!!confirmBan}
+          title={confirmBan.banned ? 'Unban User' : 'Ban User'}
+          message={`Are you sure you want to ${confirmBan.banned ? 'unban' : 'ban'} ${confirmBan.name}? ${confirmBan.banned ? 'They will regain access to the platform.' : 'They will lose all access immediately.'}`}
+          confirmLabel={confirmBan.banned ? 'unban' : 'ban'}
+          onConfirm={() => { toggleBan(confirmBan.id, confirmBan.banned); setConfirmBan(null); }}
+          onCancel={() => setConfirmBan(null)}
+        />
       )}
     </div>
   );

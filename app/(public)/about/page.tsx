@@ -118,7 +118,7 @@ export default function AboutPage() {
               <p className="text-[11px] text-emerald-400/80 leading-relaxed mb-3">{member.bio}</p>
               <div className="flex flex-wrap gap-2">
                 {member.expertise.map((skill) => (
-                  <span key={skill} className="border border-emerald-800/20 bg-gray-900/50 px-2 py-1 text-[9px] text-emerald-500">
+                  <span key={skill} className="border border-emerald-800/20 bg-gray-900/50 px-2 py-1 text-xs text-emerald-500">
                     {skill}
                   </span>
                 ))}
@@ -162,11 +162,11 @@ export default function AboutPage() {
               {KEY_METRICS.map((m, i) => (
                 <div key={i} className="text-center">
                   <p className="text-lg font-bold text-emerald-200">{m.value}</p>
-                  <p className="text-[8px] text-emerald-600 mt-0.5">{m.label}</p>
+                  <p className="text-[11px] text-emerald-600 mt-0.5">{m.label}</p>
                 </div>
               ))}
             </div>
-            <p className="text-[8px] text-emerald-800 mt-3 text-center">
+            <p className="text-[11px] text-emerald-800 mt-3 text-center">
               Sources: <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">HK EPD</a>
               &nbsp;&middot;&nbsp;
               <a href="https://link.springer.com/article/10.1007/s10163-023-01706-8" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500">Nature Food 2023</a>
@@ -216,7 +216,7 @@ export default function AboutPage() {
               <div key={i} className="flex gap-4 border-l border-emerald-800/20 pl-4 pb-4 last:pb-0 relative">
                 <div className="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-emerald-600 border-2 border-gray-950" />
                 <div>
-                  <p className="text-[9px] text-emerald-700 mb-0.5">{item.year}</p>
+                  <p className="text-xs text-emerald-700 mb-0.5">{item.year}</p>
                   <p className="text-[11px] text-emerald-400/80">{item.event}</p>
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function AboutPage() {
 
       {/* Footer */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-        <div className="flex items-center justify-between text-[9px] text-emerald-800">
+        <div className="flex items-center justify-between text-xs text-emerald-800">
           <div className="flex items-center gap-2">
             <Radar className="h-3 w-3" />
             <span>EcoOS Core v2.5.0</span>

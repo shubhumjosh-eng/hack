@@ -73,6 +73,8 @@ export default function SignupPage() {
       setError(err);
     } else {
       setSuccess(true);
+      await new Promise(r => setTimeout(r, 0));
+      sessionStorage.setItem('ecoos-just-logged-in', 'true');
       router.push('/dashboard');
     }
   }
@@ -152,7 +154,7 @@ export default function SignupPage() {
                   />
                 ))}
               </div>
-              <p className={`text-[9px] ${strength >= 4 ? 'text-emerald-500' : strength >= 2 ? 'text-yellow-500' : 'text-red-500'}`}>
+              <p className={`text-xs ${strength >= 4 ? 'text-emerald-500' : strength >= 2 ? 'text-yellow-500' : 'text-red-500'}`}>
                 {strengthLabel}
               </p>
             </div>

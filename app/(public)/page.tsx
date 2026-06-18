@@ -163,7 +163,7 @@ export default function LandingPage() {
                 <span className="inline-block h-2 w-2 rounded-full bg-red-500/60" />
                 <span className="inline-block h-2 w-2 rounded-full bg-amber-500/60" />
                 <span className="inline-block h-2 w-2 rounded-full bg-emerald-500/60" />
-                <span className="ml-2 text-[9px] text-emerald-700 tracking-[0.2em]">PREDICTION TERMINAL</span>
+                <span className="ml-2 text-xs text-emerald-700 tracking-[0.2em]">PREDICTION TERMINAL</span>
               </div>
               <div className="p-4 space-y-1.5 text-xs">
                 <p><span className="text-emerald-600">$</span> <span className="text-emerald-300">predict</span> --day Wednesday --menu &quot;Grilled Chicken&quot; --attendance 350</p>
@@ -189,7 +189,7 @@ export default function LandingPage() {
               <div className="terminal-header flex items-center gap-2">
                 <Terminal className="h-3 w-3 text-emerald-500" />
                 <span className="text-[10px]">type a command to begin</span>
-                <span className="ml-auto text-[8px] text-emerald-800">ONBOARDING v1.0</span>
+                <span className="ml-auto text-[11px] text-emerald-800">ONBOARDING v1.0</span>
               </div>
               <div className="terminal-content space-y-3">
                 <p className="text-[11px] text-emerald-500/70">
@@ -212,13 +212,13 @@ export default function LandingPage() {
                       <span className="text-[10px] font-bold text-emerald-500 w-5 shrink-0">[{opt.key}]</span>
                       <div className="flex-1">
                         <p className="text-xs text-emerald-300 group-hover:text-emerald-200 transition-colors">{opt.label}</p>
-                        <p className="text-[9px] text-emerald-700">{opt.desc}</p>
+                        <p className="text-xs text-emerald-700">{opt.desc}</p>
                       </div>
                       <ChevronRight className="h-3 w-3 text-emerald-700 group-hover:text-emerald-500 transition-colors shrink-0" />
                     </Link>
                   ))}
                 </div>
-                <p className="text-[9px] text-emerald-800 text-center pt-1">Tip: You can also type <span className="text-emerald-600">A</span>, <span className="text-emerald-600">B</span>, <span className="text-emerald-600">C</span>, <span className="text-emerald-600">D</span>, or <span className="text-emerald-600">E</span> on your keyboard</p>
+                <p className="text-xs text-emerald-800 text-center pt-1">Tip: You can also type <span className="text-emerald-600">A</span>, <span className="text-emerald-600">B</span>, <span className="text-emerald-600">C</span>, <span className="text-emerald-600">D</span>, or <span className="text-emerald-600">E</span> on your keyboard</p>
               </div>
             </div>
           </div>
@@ -232,8 +232,8 @@ export default function LandingPage() {
                 <div key={i} className="border border-emerald-800/20 bg-gray-900/50 p-4 text-center">
                   <p className="text-xl sm:text-2xl font-bold text-emerald-200 glow-text">{s.value}</p>
                   <p className="text-[10px] text-emerald-600 mt-1">{s.label}</p>
-                  <p className="text-[8px] text-emerald-800 mt-0.5">{s.sub}</p>
-                  <p className="text-[7px] text-emerald-900 mt-1">
+                  <p className="text-[11px] text-emerald-800 mt-0.5">{s.sub}</p>
+                  <p className="text-[11px] text-emerald-900 mt-1">
                     <a href="https://www.epd.gov.hk/epd/english/environmentinhk/waste/data/waste_data.html" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition-colors">
                       {s.cite}
                     </a>
@@ -268,7 +268,7 @@ export default function LandingPage() {
                         href={`https://${f.cite}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block mt-1.5 text-[7px] text-emerald-800 hover:text-emerald-500 transition-colors"
+                        className="inline-block mt-1.5 text-[11px] text-emerald-800 hover:text-emerald-500 transition-colors"
                       >
                         [{f.cite}]
                       </a>
@@ -303,7 +303,7 @@ export default function LandingPage() {
                   <div className="px-4 pb-3 text-[11px] text-emerald-500/80 leading-relaxed border-t border-emerald-800/20 pt-2 mt-0">
                     {faq.a}
                     {faq.cite && (
-                      <a href={faq.cite} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[8px] text-emerald-800 hover:text-emerald-500 transition-colors">
+                      <a href={faq.cite} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[11px] text-emerald-800 hover:text-emerald-500 transition-colors">
                         Source: {faq.cite.replace('https://', '')}
                       </a>
                     )}
@@ -344,7 +344,7 @@ export default function LandingPage() {
                 </p>
               </div>
             </div>
-            <p className="text-[9px] text-emerald-800 text-center mt-4 max-w-xl mx-auto">
+            <p className="text-xs text-emerald-800 text-center mt-4 max-w-xl mx-auto">
               Methodology validated against HK EPD waste composition data and IPCC GHG Protocol guidelines.
               {' '}<a href="https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines-for-national-greenhouse-gas-inventories/" target="_blank" rel="noopener noreferrer" className="text-emerald-800 hover:text-emerald-500">[IPCC 2019]</a>
             </p>
@@ -396,30 +396,30 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center justify-center gap-8 text-center">
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">94.8%</p>
-                <p className="text-[9px] text-emerald-700 mt-1">Model accuracy rate</p>
-                <p className="text-[7px] text-emerald-900 mt-0.5">validated on HK data</p>
+                <p className="text-xs text-emerald-700 mt-1">Model accuracy rate</p>
+                <p className="text-[11px] text-emerald-900 mt-0.5">validated on HK data</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">5</p>
-                <p className="text-[9px] text-emerald-700 mt-1">ML model ensemble</p>
-                <p className="text-[7px] text-emerald-900 mt-0.5">RF, XGB, NN, LR, LLM</p>
+                <p className="text-xs text-emerald-700 mt-1">ML model ensemble</p>
+                <p className="text-[11px] text-emerald-900 mt-0.5">RF, XGB, NN, LR, LLM</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">35%</p>
-                <p className="text-[9px] text-emerald-700 mt-1">Avg waste reduction</p>
-                <p className="text-[7px] text-emerald-900 mt-0.5">across pilot sites</p>
+                <p className="text-xs text-emerald-700 mt-1">Avg waste reduction</p>
+                <p className="text-[11px] text-emerald-900 mt-0.5">across pilot sites</p>
               </div>
               <div className="h-8 w-px bg-emerald-800/20" />
               <div>
                 <p className="text-2xl font-bold text-emerald-200 glow-text">7x</p>
-                <p className="text-[9px] text-emerald-700 mt-1">Return on investment</p>
-                <p className="text-[7px] text-emerald-900 mt-0.5">per HKD invested</p>
+                <p className="text-xs text-emerald-700 mt-1">Return on investment</p>
+                <p className="text-[11px] text-emerald-900 mt-0.5">per HKD invested</p>
               </div>
             </div>
             <div className="text-center mt-6">
-              <p className="text-[9px] text-emerald-800 max-w-xl mx-auto leading-relaxed">
+              <p className="text-xs text-emerald-800 max-w-xl mx-auto leading-relaxed">
                 EcoOS Core &copy; 2025 &mdash; Expertise areas: machine learning, food waste reduction, environmental intelligence, Hong Kong waste management analytics.
                 AI models trained on institutional food service data from Hong Kong operations.
                 <br />
@@ -470,7 +470,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[9px] text-emerald-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-emerald-800">
             <div className="flex items-center gap-2">
               <Radar className="h-3 w-3" />
               <span>EcoOS Core v2.5.0</span>
