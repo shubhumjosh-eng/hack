@@ -31,37 +31,36 @@ export default function TeamPage() {
         </div>
       )}
 
-      <div className="grid gap-2">
+      <div className="space-y-2">
         {teamMembers.map(m => {
           const isYou = m.id === user?.id;
           const isMock = MOCK_USERS.find(u => u.id === m.id);
           return (
             <div
               key={m.id}
-              className={`border p-4 text-xs flex items-center gap-4 ${
-                isYou ? 'border-emerald-600/40 bg-emerald-950/15' : 'border-emerald-800/20 bg-gray-950'
+              className={`flex items-center gap-3 p-3 text-xs border-l-2 ${
+                isYou
+                  ? 'border-l-emerald-500 bg-emerald-950/15 border-emerald-600/40'
+                  : 'border-l-emerald-700/50 bg-gray-950 border-emerald-800/20'
               }`}
             >
-              <div className="h-8 w-8 rounded-full bg-emerald-700/30 border border-emerald-600/40 flex items-center justify-center text-sm font-bold text-emerald-300">
+              <div className="h-8 w-8 shrink-0 rounded-full bg-emerald-700/30 border border-emerald-600/40 flex items-center justify-center text-sm font-bold text-emerald-300">
                 {m.name.charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-300 font-medium">{m.name}</span>
-                  {isYou && <BadgeCheck className="h-3 w-3 text-emerald-500" />}
-                  {isMock && <span className="text-[8px] text-amber-500 uppercase border border-amber-800/30 px-1">demo</span>}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-emerald-300 font-medium truncate max-w-[120px]">{m.name}</span>
+                  {isYou && <BadgeCheck className="h-3 w-3 shrink-0 text-emerald-500" />}
+                  {isMock && <span className="shrink-0 text-[8px] text-amber-500 uppercase border border-amber-800/30 px-1">demo</span>}
                 </div>
-                <div className="flex items-center gap-3 mt-0.5 text-emerald-600">
-                  <span className="flex items-center gap-1">
-                    <Mail className="h-3 w-3" />
-                    {m.email}
-                  </span>
-                  <span className="flex items-center gap-1 uppercase">
-                    <Shield className="h-3 w-3" />
-                    {m.role}
-                  </span>
+                <div className="flex items-center gap-1 mt-0.5 text-emerald-600 truncate max-w-full">
+                  <Mail className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{m.email}</span>
                 </div>
               </div>
+              <span className="shrink-0 text-[9px] uppercase tracking-wider font-mono border border-emerald-700/30 px-1.5 py-0.5 text-emerald-400">
+                {m.role}
+              </span>
             </div>
           );
         })}

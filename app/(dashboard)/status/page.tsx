@@ -60,7 +60,7 @@ export default function StatusPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20 sm:pb-0">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-mono flex items-center gap-2">
@@ -87,8 +87,8 @@ export default function StatusPage() {
           <div className="terminal-panel p-4">
             <h2 className="text-xs font-mono text-emerald-400 mb-3">Backend Services</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {Object.entries(serviceStatus).map(([name, ok]) => (
-                <div key={name} className="border border-emerald-800/20 p-3 flex items-center gap-2">
+              {Object.entries(serviceStatus).map(([name, ok], i) => (
+                <div key={name} className={`border border-emerald-800/20 p-3 flex items-center gap-2 ${Object.entries(serviceStatus).length - 1 === i ? 'col-span-2 sm:col-span-1' : ''}`}>
                   {ok ? (
                     <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   ) : (

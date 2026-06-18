@@ -64,9 +64,9 @@ export default function SessionsPage() {
       </div>
 
       {isMockUser ? (
-        <div className="border border-amber-800/40 bg-amber-950/20 p-4 flex items-center gap-3">
-          <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
-          <p className="text-xs text-amber-300/80">
+        <div className="border border-amber-800/40 bg-amber-950/20 p-3 flex items-start gap-2">
+          <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-amber-300/80 leading-snug">
             Session management is not available for demo accounts. Create a real account to manage sessions.
           </p>
         </div>
