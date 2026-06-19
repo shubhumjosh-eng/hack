@@ -1,109 +1,95 @@
-# EcoOS Core — Pitch Video Script (3–4 min)
+# EcoOS Core — Pitch Video Script (2:30–3:00)
 
-## [0:00–1:00] The Problem & User
+## [0:00–0:20] Hook + Problem
 
 ```
-[Camera — you, natural lighting, speak directly to lens]
+[Camera — you, natural light, speak to lens]
 ```
 
-**You:** "Every Tuesday at 11am, a school cafeteria in Hong Kong prepares 120 portions of baked chicken. By 1pm, 40 kilograms of that food sits untouched in the trash. That's over a tonne of food waste every school year — from just one menu item, one day a week."
+**You:** "Every Tuesday, a Hong Kong school cafeteria throws away 40 kilograms of untouched chicken. Over a school year, that's one tonne of waste from a single menu item."
 
-"Multiply that across 580 secondary schools in Hong Kong. That's 3,600 tonnes of food waste sent to landfills every single day — generating 446,000 tonnes of CO₂e per year."
-
-"I'm [your name], and we built EcoOS Core — an AI-powered waste prediction platform for the USAII Global AI Hackathon 2026, Direction A: Food Waste Rescue Radar."
-
-"Our user is Ms. Wong, a cafeteria manager at Demo Secondary School in Hong Kong. She's been running a school kitchen for twelve years. She knows food gets wasted — but she doesn't know when, why, or how to stop it without either wasting money or running out of food."
-
-"Until now."
+"Hong Kong sends 3,600 tonnes of food to landfill every day. We built EcoOS Core to stop it before it hits the bin."
 
 ---
 
-## [1:00–2:00] How the AI Works
+## [0:20–1:40] Live Demo
 
 ```
-[Cut to screen recording — app, landing page with terminal boot animation]
+[Cut to screen recording — already on the dashboard, skip login]
+[Zoom in so text is readable — Cmd+ to magnify if needed]
 ```
 
-**You (voiceover):** "Here's what Ms. Wong opens on her laptop. A terminal — green on black, scanning in real time."
+**You (voiceover):** "This is Ms. Wong. She runs a school kitchen. She opens EcoOS — a terminal-green dashboard that predicts waste before lunch is served."
 
-"Behind this terminal, we built an ensemble machine learning engine. Five models — Random Forest, XGBoost, Neural Network, Linear Regression, and LLM — each cross-validated against 50,000+ meal events."
-
-```
-[Show the prediction terminal widget on the landing page]
-```
-
-"The inputs are simple: menu item, day of week, weather, attendance count, and historical waste data. Ms. Wong types in 'Wednesday, Grilled Chicken, 350 students' — and the AI returns:"
-
-" 'Predicted waste: 42.3 kilograms. Confidence: 94.2%. Risk level: moderate.' "
-
-"Three actionable interventions appear ranked by cost savings — like 'reduce chicken portions by 15%' and 'offer a vegetarian alternative.'"
-
-"After she runs the prediction, she can triage a situation report — the AI reads raw text and structures it into an environmental response plan. Every result feeds into the session impact tracker, which accumulates real-time metrics: kilograms of waste identified, dollars in projected savings, CO₂e prevented, and interventions applied."
+"Three inputs: menu, attendance, weather."
 
 ```
-[Show dashboard: prediction page, triage page, impact tracker bar]
+[Click menu field, type "Grilled chicken" — have it pre-typed, just click into it]
+[Set attendance slider to 350]
+[Click "Run Waste Prediction"]
 ```
 
----
-
-## [2:00–3:00] Walkthrough
+"In seconds, the AI returns: 42.3 kilograms predicted waste with a confidence interval, a risk level, and three interventions ranked by cost savings."
 
 ```
-[Live demo — login to dashboard, walk through features]
+[Pause briefly on results — let the typewriter effect play]
+[Point cursor at "Reduce chicken portions by 15%"]
 ```
 
-**You (live or voiceover):** "Let me show you the full flow."
+"Each recommendation includes a dollar savings estimate. She can copy, download, or review them."
 
-"Ms. Wong logs in — quick demo, no password needed. She lands on the dashboard. She sees her school's waste stats: 446,000 tonnes CO₂e, 30% of municipal waste is food, and her session impact tracking the results she's generated today."
-
-"She opens the prediction console. She picks a menu item, enters attendance, and runs the model. Within seconds, EcoOS returns a waste forecast with confidence interval and risk level. She can select which ML model to use — from the simple Linear Regression for speed, to the LLM for deeper analysis."
-
-"She switches to the triage console. She pastes a situation report — 'Students left most of the fried rice uneaten on a hot day' — and the AI structures it: category: overproduction. Cause: weather-related appetite drop. Action: adjust rice portions on hot days."
-
-"She reviews the recommendation. She clicks approve — or rejects it. The AI never takes action without a human in the loop."
-
-"Over on the analytics page, she can see waste trends over time: which menu items waste most, best-performing models, and what-if scenarios with CO₂ impact visualizations."
+"Next she opens the Triage console. She pastes a situation report — already copied to her clipboard."
 
 ```
-[Show analytics and what-if pages briefly — 3-5 seconds each]
+[Switch to triage page]
+[Paste pre-copied text: "Students left most of the fried rice uneaten on a hot day"]
+[Show structured output appear]
+```
+
+"The AI structures it: category, cause, action plan. She reviews the recommendation and acknowledges the risk — she stays in control."
+
+```
+[Briefly show analytics page — 3 seconds]
+[Show session impact tracker bar — 2 seconds]
 ```
 
 ---
 
-## [3:00–3:45] Responsible AI
+## [1:40–2:00] How It Works
+
+**You (voiceover):** "Behind the terminal is an ensemble of five ML models — Random Forest, XGBoost, Neural Network, Linear Regression, and an LLM — trained on 50,000+ meal events."
+
+"If the HuggingFace API is unavailable, a local deterministic fallback takes over silently. The user never sees an error."
+
+---
+
+## [2:00–2:20] Responsible AI
 
 ```
 [Back to camera]
 ```
 
-**You:** "We designed three responsible AI safeguards into EcoOS Core."
-
-"First: **human-in-the-loop**. The AI predicts and recommends — but it never places an order, never changes a menu, and never dispatches resources. Only Ms. Wong can approve an intervention. Because only she knows about the school's upcoming sports day celebration that will increase attendance."
-
-"Second: **confidence transparency**. Every prediction shows a confidence percentage and risk level — low, moderate, or high. Users can see when the AI is uncertain, and choose whether to trust it."
-
-"Third: **deterministic fallback**. If the HuggingFace API is unavailable or the AI model returns low confidence, a local deterministic predictor takes over — computing waste estimates from menu keywords, day of week, and attendance patterns. The app never breaks, never shows an error. It always gives an answer."
-
-"Ms. Wong doesn't need to trust black-box AI. She sees the reasoning, she stays in control, and the system never leaves her without guidance."
+**You:** "Three safeguards. One: every prediction shows a confidence interval and risk level — you always see how certain the AI is. Two: a deterministic fallback guarantees the app never errors during a demo. Three: the human acknowledges the risk before any recommendation is acted on — because only Ms. Wong knows about the sports day that doubles attendance tomorrow."
 
 ---
 
-## [3:45–4:00] Closing
+## [2:20–2:45] Closing
 
 ```
 [Back to camera]
 ```
 
-**You:** "We built EcoOS Core because climate action shouldn't feel abstract. For Ms. Wong, it's not about global carbon targets. It's about Tuesday's chicken."
+**You:** "For Ms. Wong, climate action isn't about global targets. It's about Tuesday's chicken. EcoOS gives her the data to cut waste without cutting portions — and keep her students fed."
 
 "AI predicts. Humans decide. Waste decreases."
 
-"EcoOS Core — Food Waste Rescue Radar, Direction A. Thank you."
+"EcoOS Core — USAII Global AI Hackathon 2026, Direction A: Food Waste Rescue Radar. Thank you."
 
 ---
 
-> **Tips for recording:**
-> - Keep energy up — speak with conviction, not reading
-> - Screen recordings: use 1080p, clean your desktop, zoom into relevant areas
-> - Walkthrough section: record live if possible, or pre-record clips and splice them
-> - Total length: 3:45–4:00 is ideal (max 5 min)
+> **Recording tips:**
+> - Speak conversationally, not reading — glance at script on second monitor
+> - Screen recording: 1080p, clean desktop, Cmd+ to zoom browser to 150% so terminal text is readable
+> - Have text pre-copied before recording (menu text, triage report, etc.)
+> - Total: keep under 3 minutes — shorter = judges actually watch
+> - Upload to YouTube as **unlisted**, paste link into Devpost
