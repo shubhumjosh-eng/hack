@@ -1,39 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { predictWasteWithLLM, predictWasteLocally } from '@/lib/huggingface';
 import { PredictionInput } from '@/lib/types';
+import { requireOrigin, checkRateLimit, safeJsonParse, securityHeaders } from '@/lib/api-auth';
+import { sanitizePredictionInput } from '@/lib/sanitize';
 
 export const maxDuration = 60;
+export const runtime = 'edge';
 
 const HF_API_KEY = process.env.HF_API_KEY;
 
-const VALID_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const VALID_WEATHER = ['Sunny', 'Cloudy', 'Rainy', 'Snowy', 'Hot', 'Cold', 'Mild', 'Windy'];
-
 export async function POST(request: NextRequest) {
+  const originCheck = requireOrigin(request);
+  if (!originCheck.authorized) return originCheck.response;
+
+  const rateCheck = checkRateLimit(request, 20, 60_000);
+  if (!rateCheck.authorized) return rateCheck.response;
+
   try {
-    const body: PredictionInput = await request.json();
+    const parseResult = await safeJsonParse<Record<string, unknown>>(request);
+    if (parseResult.error) return parseResult.error;
 
-    const errors: string[] = [];
-    if (!body.dayOfWeek) errors.push('dayOfWeek is required');
-    if (!body.scheduledMenu) errors.push('scheduledMenu is required');
-    if (body.expectedAttendance == null || body.expectedAttendance < 1) {
-      errors.push('expectedAttendance must be a positive number');
-    }
-    if (!body.weatherCondition) errors.push('weatherCondition is required');
-
-    if (!VALID_DAYS.includes(body.dayOfWeek)) {
-      errors.push(`dayOfWeek must be one of: ${VALID_DAYS.join(', ')}`);
-    }
-    if (!VALID_WEATHER.includes(body.weatherCondition)) {
-      errors.push(`weatherCondition must be one of: ${VALID_WEATHER.join(', ')}`);
-    }
-
-    if (errors.length > 0) {
+    const sanitized = sanitizePredictionInput(parseResult.data ?? {});
+    if (sanitized.errors) {
       return NextResponse.json(
-        { error: 'Validation failed', details: errors, code: 'VALIDATION_ERROR' },
-        { status: 400 }
+        { error: 'Validation failed', details: sanitized.errors, code: 'VALIDATION_ERROR' },
+        { status: 400, headers: securityHeaders() }
       );
     }
+
+    const body: PredictionInput = {
+      dayOfWeek: sanitized.data!.dayOfWeek,
+      scheduledMenu: sanitized.data!.scheduledMenu,
+      expectedAttendance: sanitized.data!.expectedAttendance,
+      weatherCondition: sanitized.data!.weatherCondition,
+      temperature: sanitized.data!.temperature,
+    };
 
     let result;
     let usedFallback = false;
@@ -53,9 +54,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result, {
       status: 200,
       headers: {
+        ...securityHeaders(),
         'X-Processing-Time': `${result.metadata.latencyMs}ms`,
         'X-Prediction-Mode': usedFallback ? 'local' : 'llm',
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
       },
     });
   } catch (error) {
@@ -68,14 +69,14 @@ export async function POST(request: NextRequest) {
         const result = predictWasteLocally(body as PredictionInput);
         return NextResponse.json(result, {
           status: 200,
-          headers: { 'X-Prediction-Mode': 'local-fallback', 'Cache-Control': 'no-store' },
+          headers: { ...securityHeaders(), 'X-Prediction-Mode': 'local-fallback' },
         });
       }
     } catch {}
 
     return NextResponse.json(
       { error: message, code: 'PROCESSING_ERROR' },
-      { status: 500 }
+      { status: 500, headers: securityHeaders() }
     );
   }
 }

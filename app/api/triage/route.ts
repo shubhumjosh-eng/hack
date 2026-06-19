@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { triageText, triageFallback } from '@/lib/huggingface';
 import { TriageInput, TriageResult } from '@/lib/types';
+import { requireOrigin, checkRateLimit, safeJsonParse, securityHeaders } from '@/lib/api-auth';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 export const runtime = 'edge';
 export const maxDuration = 60;
@@ -10,28 +12,33 @@ const HF_API_KEY = process.env.HF_API_KEY;
 export async function POST(request: NextRequest) {
   const startTime = performance.now();
 
+  const originCheck = requireOrigin(request);
+  if (!originCheck.authorized) return originCheck.response;
+
+  const rateCheck = checkRateLimit(request, 15, 60_000);
+  if (!rateCheck.authorized) return rateCheck.response;
+
   try {
-    const body: TriageInput = await request.json();
+    const parseResult = await safeJsonParse<Record<string, unknown>>(request);
+    if (parseResult.error) return parseResult.error;
 
-    if (!body.text || typeof body.text !== 'string') {
+    const rawText = String(parseResult.data?.text ?? '').trim();
+    if (!rawText) {
       return NextResponse.json(
-        {
-          error: 'Invalid input. Provide a non-empty "text" field.',
-          code: 'VALIDATION_ERROR',
-        },
-        { status: 400 }
+        { error: 'Invalid input. Provide a non-empty "text" field.', code: 'VALIDATION_ERROR' },
+        { status: 400, headers: securityHeaders() }
       );
     }
 
-    if (body.text.length > 10000) {
+    const text = sanitizeHtml(rawText, 10000);
+    if (!text) {
       return NextResponse.json(
-        {
-          error: 'Input too long. Maximum 10,000 characters.',
-          code: 'VALIDATION_ERROR',
-        },
-        { status: 400 }
+        { error: 'Invalid input after sanitization.', code: 'VALIDATION_ERROR' },
+        { status: 400, headers: securityHeaders() }
       );
     }
+
+    const body: TriageInput = { text };
 
     let result: TriageResult;
     let usedFallback = false;
@@ -55,9 +62,9 @@ export async function POST(request: NextRequest) {
       {
         status: 200,
         headers: {
+          ...securityHeaders(),
           'X-Processing-Time': `${totalLatency}ms`,
           'X-Triage-Mode': usedFallback ? 'local' : 'llm',
-          'Cache-Control': 'no-store, no-cache, must-revalidate',
         },
       }
     );
@@ -70,14 +77,14 @@ export async function POST(request: NextRequest) {
         const result = triageFallback(body.text);
         return NextResponse.json(
           { ...result, totalLatencyMs: Math.round(performance.now() - startTime) },
-          { status: 200, headers: { 'X-Triage-Mode': 'local-fallback', 'Cache-Control': 'no-store' } }
+          { status: 200, headers: { ...securityHeaders(), 'X-Triage-Mode': 'local-fallback' } }
         );
       }
     } catch {}
 
     return NextResponse.json(
       { error: message, code: 'PROCESSING_ERROR' },
-      { status: 500 }
+      { status: 500, headers: securityHeaders() }
     );
   }
 }
