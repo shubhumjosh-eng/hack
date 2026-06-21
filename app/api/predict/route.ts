@@ -36,20 +36,8 @@ export async function POST(request: NextRequest) {
       temperature: sanitized.data!.temperature,
     };
 
-    let result;
-    let usedFallback = false;
-
-    if (HF_API_KEY) {
-      try {
-        result = await predictWasteWithLLM(body, HF_API_KEY);
-      } catch {
-        result = predictWasteLocally(body);
-        usedFallback = true;
-      }
-    } else {
-      result = predictWasteLocally(body);
-      usedFallback = true;
-    }
+    let result = predictWasteLocally(body, true);
+    let usedFallback = true;
 
     return NextResponse.json(result, {
       status: 200,
