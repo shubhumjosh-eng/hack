@@ -14,7 +14,14 @@ export function useTypewriter({ text, speed = 20, delay = 0, onComplete }: UseTy
   const [started, setStarted] = useState(false);
   const idxRef = useRef(0);
   const calledRef = useRef(false);
-  const prevTextRef = useRef(text);
+  const textRef = useRef(text);
+  const speedRef = useRef(speed);
+
+  textRef.current = text;
+  speedRef.current = speed;
+
+  const completeRef = useRef(onComplete);
+  completeRef.current = onComplete;
 
   useEffect(() => {
     const timer = setTimeout(() => setStarted(true), delay);
@@ -22,26 +29,27 @@ export function useTypewriter({ text, speed = 20, delay = 0, onComplete }: UseTy
   }, [delay]);
 
   useEffect(() => {
-    if (text !== prevTextRef.current) {
-      idxRef.current = 0;
-      setDisplayed('');
-      calledRef.current = false;
-      prevTextRef.current = text;
-      if (!started) return;
-    }
-    if (idxRef.current >= text.length) {
-      if (onComplete && !calledRef.current) {
-        calledRef.current = true;
-        onComplete();
-      }
-      return;
-    }
-    const timer = setTimeout(() => {
-      setDisplayed(prev => prev + text[idxRef.current]);
-      idxRef.current += 1;
-    }, speed);
-    return () => clearTimeout(timer);
-  }, [started, text, speed, onComplete]);
+    if (!started) return;
+    idxRef.current = 0;
+    setDisplayed('');
+    calledRef.current = false;
 
-  return { displayed, isComplete: idxRef.current >= text.length };
+    const interval = setInterval(() => {
+      const t = textRef.current;
+      if (idxRef.current >= t.length) {
+        clearInterval(interval);
+        if (completeRef.current && !calledRef.current) {
+          calledRef.current = true;
+          completeRef.current();
+        }
+        return;
+      }
+      setDisplayed(t.slice(0, idxRef.current + 1));
+      idxRef.current += 1;
+    }, speedRef.current);
+
+    return () => clearInterval(interval);
+  }, [started, text]);
+
+  return { displayed, isComplete: idxRef.current >= textRef.current.length };
 }
