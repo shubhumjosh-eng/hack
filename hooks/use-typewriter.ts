@@ -14,6 +14,7 @@ export function useTypewriter({ text, speed = 20, delay = 0, onComplete }: UseTy
   const [started, setStarted] = useState(false);
   const idxRef = useRef(0);
   const calledRef = useRef(false);
+  const prevTextRef = useRef(text);
 
   useEffect(() => {
     const timer = setTimeout(() => setStarted(true), delay);
@@ -21,7 +22,13 @@ export function useTypewriter({ text, speed = 20, delay = 0, onComplete }: UseTy
   }, [delay]);
 
   useEffect(() => {
-    if (!started) return;
+    if (text !== prevTextRef.current) {
+      idxRef.current = 0;
+      setDisplayed('');
+      calledRef.current = false;
+      prevTextRef.current = text;
+      if (!started) return;
+    }
     if (idxRef.current >= text.length) {
       if (onComplete && !calledRef.current) {
         calledRef.current = true;
